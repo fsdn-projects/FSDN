@@ -1,0 +1,12 @@
+NUGET
+  remote: http://api.nuget.org/v3/index.json
+  specs:
+    FSharp.Core (4.0.0.1)
+    Suave (1.1.1)
+      FSharp.Core (>= 3.1.2.5)
+
+GROUP Build
+NUGET
+  remote: http://api.nuget.org/v3/index.json
+  specs:
+    FAKE (4.20.0)

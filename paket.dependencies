@@ -1,0 +1,8 @@
+source https://api.nuget.org/v3/index.json
+
+nuget Suave
+
+group Build
+  source https://api.nuget.org/v3/index.json
+
+  nuget FAKE

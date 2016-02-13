@@ -1,0 +1,13 @@
+{
+  "name": "FSDN",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc ./src/front"
+  },
+  "license": "Unlicense",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "1.7.5"
+  }
+}
