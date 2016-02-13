@@ -1,5 +1,6 @@
 #r @"packages/build/FAKE/tools/FakeLib.dll"
 open Fake
+open Fake.Azure.WebJobs
 open System
 open System.IO
 
@@ -14,8 +15,10 @@ let tags = "fsharp F#"
 // File system information
 let solutionFile  = "FSDN.sln"
 
+let configuration = environVarOrDefault "configuration" "Release"
+
 // Pattern specifying assemblies to be tested using NUnit
-let testAssemblies = "tests/**/bin/Release/*Tests*.dll"
+let testAssemblies = "tests/**/bin" @@ configuration @@ "*Tests*.dll"
 
 // Git configuration (used for publishing documentation in gh-pages branch)
 // The profile where the project is posted
@@ -37,8 +40,12 @@ let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/pocketberserke
 // src folder to support multiple project outputs
 Target "CopyBinaries" (fun _ ->
     !! "src/**/*.??proj"
-    |>  Seq.map (fun f -> ((System.IO.Path.GetDirectoryName f) @@ "bin/Release", "bin" @@ (System.IO.Path.GetFileNameWithoutExtension f)))
+    |>  Seq.map (fun f -> ((System.IO.Path.GetDirectoryName f) @@ "bin" @@ configuration, "bin" @@ (System.IO.Path.GetFileNameWithoutExtension f)))
     |>  Seq.iter (fun (fromDir, toDir) -> CopyDir toDir fromDir (fun _ -> true))
+)
+
+Target "CopyWebConfig" (fun _ ->
+  CopyFile ("bin" @@ project @@ "Web.config") ("config" @@ sprintf "Web.%s.config" configuration)
 )
 
 // --------------------------------------------------------------------------------------
@@ -53,8 +60,45 @@ Target "Clean" (fun _ ->
 
 Target "Build" (fun _ ->
     !! solutionFile
-    |> MSBuildRelease "" "Rebuild"
+    |> MSBuild "" "Rebuild" [("Configuration", configuration)]
     |> ignore
+)
+
+// --------------------------------------------------------------------------------------
+// Deploy
+
+Target "Deploy" (fun _ ->
+  let artifacts = currentDirectory @@ ".." @@ "artifacts"
+  let kuduSync = findToolInSubPath "KuduSync.NET.exe" (currentDirectory @@ "packages")
+  let deploymentSource =
+    currentDirectory @@ "bin" @@ project
+  let deploymentTarget =
+    match environVarOrNone "DEPLOYMENT_TARGET" with
+    | Some v -> v
+    | None -> artifacts @@ "wwwroot"
+  let nextManifestPath =
+    match environVarOrNone "NEXT_MANIFEST_PATH" with
+    | Some v -> v
+    | None -> artifacts @@ "manifest"
+  let previousManifestPath =
+    match environVarOrNone "PREVIOUS_MANIFEST_PATH" with
+    | Some v -> v
+    | None -> nextManifestPath
+  if environVarOrNone "IN_PLACE_DEPLOYMENT" <> Some "1" then
+    let args =
+      sprintf "-v 50 -f \"%s\" -t \"%s\" -n \"%s\" -p \"%s\" -i \".git;.hg;.deployment;\""
+        deploymentSource deploymentTarget nextManifestPath previousManifestPath
+    let exitCode =
+      ExecProcess (fun info ->
+        info.FileName <- kuduSync
+        info.Arguments <- args)
+        TimeSpan.MaxValue
+    if exitCode <> 0 then failwithf "Failed KuduSync: %s" args
+    environVarOrNone "POST_DEPLOYMENT_ACTION"
+    |> Option.iter (fun c ->
+      let exitCode = ExecProcess (fun info -> info.FileName <- c) TimeSpan.MaxValue
+      if exitCode <> 0 then failwithf "Failed: post deployment action"
+    )
 )
 
 Target "All" DoNothing
@@ -62,6 +106,10 @@ Target "All" DoNothing
 "Clean"
   ==> "Build"
   ==> "CopyBinaries"
+  ==> "CopyWebConfig"
   ==> "All"
+
+"CopyWebConfig"
+  ==> "Deploy"
 
 RunTargetOrDefault "All"
