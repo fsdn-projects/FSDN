@@ -2,6 +2,7 @@ source https://api.nuget.org/v3/index.json
 
 nuget Suave
 nuget Argu
+nuget FSharpApiSearch
 
 group Build
   source https://api.nuget.org/v3/index.json
