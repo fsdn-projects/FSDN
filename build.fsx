@@ -1,6 +1,5 @@
 #r @"packages/build/FAKE/tools/FakeLib.dll"
 open Fake
-open Fake.Azure.WebJobs
 open System
 open System.IO
 
