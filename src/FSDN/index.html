@@ -1,20 +1,66 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
       <meta charset="utf-8">
       <title>FSDN</title>
-      <link href="https://cdn.jsdelivr.net/primer/2.5.0/primer.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
       <link href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
   </head>
   <body>
-    <h1>FSDN</h1>
-      <a class="btn" href="https://github.com/pocketberserker/FSDN/issues" role="button">
-        <span class="octicon octicon-issue-opened"></span>
-        Issue
-      </a>
-      <a class="btn" href="https://github.com/pocketberserker/FSDN" role="button">
-        <span class="octicon octicon-repo-forked"></span>
-        Fork
-      </a>
+    <nav class="light-blue darken-2">
+      <div class="nav-wrapper">
+        <a href="/" class="brand-logo">
+          <span class="fa-stack" style="color:#000000">
+            <i class="fa fa-square fa-stack-2x"></i>
+            <i class="fa fa-search fa-stack-1x fa-inverse fa-2x"></i>
+          </span>
+          FSDN
+        </a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li>
+            <a href="https://github.com/pocketberserker/FSDN/issues">
+              <span class="octicon octicon-issue-opened"></span>
+              Issue
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/pocketberserker/FSDN">
+              <span class="octicon octicon-repo-forked"></span>
+              Fork
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="row">
+      <div class="col s2">
+        <div class="collection">
+          <a href="#" class="collection-item">Search</a>
+          <a href="#" class="collection-item">Libraries</a>
+          <a href="#" class="collection-item">Query Spec</a>
+        </div>
+      </div>
+      <form class="col s10">
+        <div class="input-field col s10">
+          <input placeholder="a -> a" id="search_query" type="text" class="validate">
+        </div>
+        <div class="row">
+          <p class="col s4">
+            <input type="checkbox" class="filled-in" id="strict" />
+            <label for="strict">Strict</label>
+          </p>
+          <p class="col s4">
+            <input type="checkbox" class="filled-in" id="similarity" />
+            <label for="similarity">Similarity</label>
+          </p>
+        </div>
+        <button class="btn waves-effect waves-light" type="submit" name="search">
+          <i class="fa fa-search fa-inversex left"></i>
+          Search
+        </button>
+      </form>
+    </div>
   </body>
 </html>
