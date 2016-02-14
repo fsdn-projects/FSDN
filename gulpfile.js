@@ -20,11 +20,14 @@ gulp.task("pack", ["compile"], function() {
   browserify({
     entries: files
   })
+    .plugin("licensify")
     .bundle()
     .pipe(source("app.js"))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(uglify())  // minify
+    .pipe(uglify({
+      preserveComments: "license"
+    }))
     .pipe(sourcemaps.write("./"))
     .pipe(gulp.dest("./bin/FSDN/"));
 });
