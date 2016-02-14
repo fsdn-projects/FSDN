@@ -15,14 +15,14 @@ gulp.task("compile", function(cb) {
   });
 });
 
-gulp.task("pack", ["compile"], function() {
-  var files = glob.sync("./bin/scripts/**/*.js");
-  browserify({
+var pack = function(path, name) {
+  var files = glob.sync(path);
+  return browserify({
     entries: files
   })
     .plugin("licensify")
     .bundle()
-    .pipe(source("app.js"))
+    .pipe(source(name + ".js"))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(uglify({
@@ -30,6 +30,16 @@ gulp.task("pack", ["compile"], function() {
     }))
     .pipe(sourcemaps.write("./"))
     .pipe(gulp.dest("./bin/FSDN/"));
+};
+
+gulp.task("pack-search", ["compile"], function() {
+  pack("./bin/scripts/search.js", "search");
 });
+
+gulp.task("pack-libraries", ["compile"], function() {
+  pack("./bin/scripts/libraries.js", "libraries");
+});
+
+gulp.task("pack", ["pack-search", "pack-libraries"]);
 
 gulp.task("default", ["compile"]);

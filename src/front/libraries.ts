@@ -22,6 +22,6 @@ request
   .end((err, res) => {
     if (err || !res.ok) {
     } else {
-      app.$set("libraries", JSON.parse(res.text).libraries);
+      app.$set("libraries", JSON.parse(res.text).values);
     }
   });
