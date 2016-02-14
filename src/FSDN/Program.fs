@@ -32,7 +32,10 @@ let configAndApp (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
   let app =
     choose [
       log logger logFormat >=> never
-      GET >=> path "/" >=> browseFile home "index.html"
+      GET >=> choose [
+        path "/" >=> browseFile home "index.html"
+      ]
+      Api.app
     ]
 
   let serverConfig = {
