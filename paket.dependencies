@@ -1,6 +1,7 @@
 source https://api.nuget.org/v3/index.json
 
 nuget Suave
+nuget Argu
 
 group Build
   source https://api.nuget.org/v3/index.json
