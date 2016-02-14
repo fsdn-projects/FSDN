@@ -63,6 +63,40 @@ Target "Build" (fun _ ->
     |> ignore
 )
 
+open NpmHelper
+
+Target "BuildFront" (fun _ ->
+  if not <| directoryExists (currentDirectory @@ "node_modules") then
+    Npm (fun p ->
+      {
+        p with
+          Command = Install Standard
+          WorkingDirectory = currentDirectory
+          NpmFilePath = "./packages/build/Npm.js/tools/npm.cmd"
+      })
+  if not <| directoryExists (currentDirectory @@ "typings/main") then
+    let exitCode =
+      ExecProcess (fun info ->
+        info.FileName <- "./packages/build/Npm.js/tools/npm.cmd"
+        info.Arguments <- "install typings -g")
+        TimeSpan.MaxValue
+    if exitCode <> 0 then failwith "Failed: npm install typings -g"
+    let typings = findToolInSubPath "typings.cmd" (currentDirectory @@ "packages")
+    let exitCode =
+      ExecProcess (fun info ->
+        info.FileName <- typings
+        info.Arguments <- "install")
+        TimeSpan.MaxValue
+    if exitCode <> 0 then failwith "Failed: typings install"
+  Npm (fun p ->
+    {
+      p with
+        Command = Run "pack"
+        WorkingDirectory = currentDirectory
+        NpmFilePath = "./packages/build/Npm.js/tools/npm.cmd"
+    })
+)
+
 // --------------------------------------------------------------------------------------
 // Deploy
 
@@ -105,6 +139,7 @@ Target "All" DoNothing
 "Clean"
   ==> "Build"
   ==> "CopyBinaries"
+  ==> "BuildFront"
   ==> "CopyWebConfig"
   ==> "All"
 

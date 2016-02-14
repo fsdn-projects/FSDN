@@ -2,12 +2,22 @@
   "name": "FSDN",
   "version": "1.0.0",
   "scripts": {
-    "build": "tsc ./src/front"
+    "build": "gulp compile",
+    "pack": "gulp pack"
   },
   "license": "Unlicense",
   "dependencies": {
+    "vue": "1.0.16",
+    "superagent": "1.7.2"
   },
   "devDependencies": {
-    "typescript": "1.7.5"
+    "typescript": "1.7.5",
+    "gulp": "3.9.1",
+    "browserify": "13.0.0",
+    "gulp-sourcemaps": "1.6.0",
+    "gulp-uglify": "1.5.2",
+    "vinyl-source-stream": "1.1.0",
+    "vinyl-buffer": "1.0.0",
+    "glob": "7.0.0"
   }
 }

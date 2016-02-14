@@ -2,10 +2,10 @@
   "compilerOptions": {
     "target": "ES5",
     "module": "commonjs",
-    "noLib": true,
+    "sourceMap": true,
     "noImplicitAny": true,
     "removeComments": true,
-    "outDir": "../../bin"
+    "outDir": "../../bin/scripts"
   },
   "exclude": [
     "node_modules"

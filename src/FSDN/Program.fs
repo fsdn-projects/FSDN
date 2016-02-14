@@ -34,6 +34,10 @@ let configAndApp (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
       log logger logFormat >=> never
       GET >=> choose [
         path "/" >=> browseFile home "index.html"
+        pathScan "/%s.html" (browseFile home << sprintf "%s.html")
+        pathScan "/%s.js" (browseFile home << sprintf "%s.js")
+        pathScan "/%s.js.map" (browseFile home << sprintf "%s.js.map")
+        path "/libraries.html" >=> browseFile home "libraries.html"
       ]
       Api.app
     ]
