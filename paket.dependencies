@@ -10,3 +10,4 @@ group Build
   nuget FAKE
   nuget KuduSync.NET
   nuget Npm.js
+  nuget FSharp.Formatting

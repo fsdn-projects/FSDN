@@ -104,6 +104,14 @@ Target "BuildFront" (fun _ ->
     })
 )
 
+Target "GenerateViews" (fun _ ->
+  let definitions =
+    if configuration = "Release" then ["--define:RELEASE"]
+    else []
+  if not <| executeFSIWithArgs "views/tools" "generate.fsx" definitions [] then
+    failwith "Failed: generating views"
+)
+
 // --------------------------------------------------------------------------------------
 // Deploy
 
@@ -146,11 +154,16 @@ Target "All" DoNothing
 "Clean"
   ==> "Build"
   ==> "CopyBinaries"
-  ==> "BuildFront"
   ==> "CopyWebConfig"
   ==> "All"
 
 "CopyWebConfig"
   ==> "Deploy"
+
+"BuildFront"
+  ==> "All"
+
+"GenerateViews"
+  ==> "All"
 
 RunTargetOrDefault "All"

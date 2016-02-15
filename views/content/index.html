@@ -1,0 +1,22 @@
+﻿<div class="input-field col s10">
+  <input placeholder="'a -> 'a" v-model="query" type="text" class="validate">
+</div>
+<div class="row">
+  <p class="col s4">
+    <input type="checkbox" class="filled-in" v-model="strict" id="strict" />
+    <label for="strict">Strict</label>
+  </p>
+  <p class="col s4">
+    <input type="checkbox" class="filled-in" v-model="similarity" id="similarity" />
+    <label for="similarity">Similarity</label>
+  </p>
+</div>
+<button class="btn waves-effect waves-light" v-on:click="search">
+  <i class="fa fa-search fa-inversex left"></i>
+  Search
+</button>
+<ul class="collection">
+  <li class="collection-item" v-for="result in search_results">
+    {{ result.api.name }}
+  </li>
+</ul>
