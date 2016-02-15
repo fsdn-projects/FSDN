@@ -10,12 +10,16 @@ const baseUrl =
     return u.join("/");
   }();
 
+function boolToStatus(value: boolean): string {
+  return value ? "enabled" : "disabled";
+}
+
 let app = new Vue({
   el: "#app",
   data: {
     query: undefined,
-    strict: "enabled",
-    similarity: "disabled",
+    strict: true,
+    similarity: false,
     search_results: []
   },
   methods: {
@@ -24,8 +28,8 @@ let app = new Vue({
         .get(baseUrl + "/api/search")
         .query({
           query: this.query,
-          strict: this.strict,
-          similarity: this.similarity
+          strict: boolToStatus(this.strict),
+          similarity: boolToStatus(this.similarity)
         })
         .end((err, res) => {
           if (err || !res.ok) {
