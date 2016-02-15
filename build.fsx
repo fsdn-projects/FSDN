@@ -66,22 +66,30 @@ Target "Build" (fun _ ->
 open NpmHelper
 
 Target "BuildFront" (fun _ ->
-  if not <| directoryExists (currentDirectory @@ "node_modules") then
-    Npm (fun p ->
-      {
-        p with
-          Command = Install Standard
-          WorkingDirectory = currentDirectory
-          NpmFilePath = "./packages/build/Npm.js/tools/npm.cmd"
-      })
+  let npm =
+    let target = if isUnix then"npm" else "npm.cmd"
+    match tryFindFileOnPath target with
+    | Some npm -> npm
+    | None -> findToolInSubPath target (currentDirectory @@ "packages/build")
+  Npm (fun p ->
+    {
+      p with
+        Command = Install Standard
+        WorkingDirectory = currentDirectory
+        NpmFilePath = npm
+    })
   if not <| directoryExists (currentDirectory @@ "typings/main") then
     let exitCode =
       ExecProcess (fun info ->
-        info.FileName <- "./packages/build/Npm.js/tools/npm.cmd"
+        info.FileName <- npm
         info.Arguments <- "install typings -g")
         TimeSpan.MaxValue
     if exitCode <> 0 then failwith "Failed: npm install typings -g"
-    let typings = findToolInSubPath "typings.cmd" (currentDirectory @@ "packages")
+    let typings =
+      let target = if isUnix then"typings" else "typings.cmd"
+      match tryFindFileOnPath target with
+      | Some typings -> typings
+      | None -> findToolInSubPath target currentDirectory
     let exitCode =
       ExecProcess (fun info ->
         info.FileName <- typings
@@ -93,7 +101,7 @@ Target "BuildFront" (fun _ ->
       p with
         Command = Run "pack"
         WorkingDirectory = currentDirectory
-        NpmFilePath = "./packages/build/Npm.js/tools/npm.cmd"
+        NpmFilePath = npm
     })
 )
 
