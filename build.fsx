@@ -78,24 +78,23 @@ Target "BuildFront" (fun _ ->
         WorkingDirectory = currentDirectory
         NpmFilePath = npm
     })
-  if not <| directoryExists (currentDirectory @@ "typings/main") then
-    let exitCode =
-      ExecProcess (fun info ->
-        info.FileName <- npm
-        info.Arguments <- "install typings -g")
-        TimeSpan.MaxValue
-    if exitCode <> 0 then failwith "Failed: npm install typings -g"
-    let typings =
-      let target = if isUnix then"typings" else "typings.cmd"
-      match tryFindFileOnPath target with
-      | Some typings -> typings
-      | None -> findToolInSubPath target currentDirectory
-    let exitCode =
-      ExecProcess (fun info ->
-        info.FileName <- typings
-        info.Arguments <- "install")
-        TimeSpan.MaxValue
-    if exitCode <> 0 then failwith "Failed: typings install"
+  let exitCode =
+    ExecProcess (fun info ->
+      info.FileName <- npm
+      info.Arguments <- "install typings -g")
+      TimeSpan.MaxValue
+  if exitCode <> 0 then failwith "Failed: npm install typings -g"
+  let typings =
+    let target = if isUnix then"typings" else "typings.cmd"
+    match tryFindFileOnPath target with
+    | Some typings -> typings
+    | None -> findToolInSubPath target currentDirectory
+  let exitCode =
+    ExecProcess (fun info ->
+      info.FileName <- typings
+      info.Arguments <- "install")
+      TimeSpan.MaxValue
+  if exitCode <> 0 then failwith "Failed: typings install"
   Npm (fun p ->
     {
       p with
