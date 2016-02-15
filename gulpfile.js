@@ -6,6 +6,7 @@ var uglify = require("gulp-uglify");
 var sourcemaps = require("gulp-sourcemaps");
 var glob = require('glob');
 var exec = require('child_process').exec;
+var path = require("path");
 
 gulp.task("compile", function(cb) {
   exec("tsc -p ./src/front", function(err, stdout, stderr) {
@@ -15,31 +16,28 @@ gulp.task("compile", function(cb) {
   });
 });
 
-var pack = function(path, name) {
-  var files = glob.sync(path);
-  return browserify({
-    entries: files
-  })
-    .plugin("licensify")
-    .bundle()
-    .pipe(source(name + ".js"))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(uglify({
-      preserveComments: "license"
-    }))
-    .pipe(sourcemaps.write("./"))
-    .pipe(gulp.dest("./bin/FSDN/"));
-};
-
-gulp.task("pack-search", ["compile"], function() {
-  pack("./bin/scripts/search.js", "search");
+var targets = glob.sync("./src/front/*.ts")
+  .map(function(target) {
+    return path.basename(target, ".ts");
+  });
+targets.forEach(function(target) {
+  gulp.task("pack-" + target, ["compile"], function() {
+    return browserify({
+      entries: "./bin/scripts/" + target + ".js"
+    })
+      .plugin("licensify")
+      .bundle()
+      .pipe(source(target + ".js"))
+      .pipe(buffer())
+      .pipe(sourcemaps.init({loadMaps: true}))
+      .pipe(uglify({
+          preserveComments: "license"
+      }))
+      .pipe(sourcemaps.write("./"))
+      .pipe(gulp.dest("./bin/FSDN/"));
+  });
 });
 
-gulp.task("pack-libraries", ["compile"], function() {
-  pack("./bin/scripts/libraries.js", "libraries");
-});
-
-gulp.task("pack", ["pack-search", "pack-libraries"]);
+gulp.task("pack", targets.map(function(target) { return "pack-" + target; }));
 
 gulp.task("default", ["compile"]);
