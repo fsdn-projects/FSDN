@@ -16,6 +16,7 @@ NUGET
   remote: http://api.nuget.org/v3/index.json
   specs:
     FAKE (4.20.0)
+    FParsec (1.0.2)
     FSharp.Compiler.Service (2.0.0.5)
     FSharp.Formatting (2.14.0)
       FSharp.Compiler.Service (>= 2.0.0.3 < 2.1.0)
@@ -26,3 +27,9 @@ NUGET
     Node.js (5.3.0)
     Npm.js (2.13.1)
       Node.js (>= 0.12.7)
+GITHUB
+  remote: hafuu/FSharpApiSearch
+  specs:
+    README.md (7acdbcf0b0a7f3331e00d8ebeea816dfab9492ea)
+      FParsec
+      FSharp.Compiler.Service

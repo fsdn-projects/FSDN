@@ -40,13 +40,13 @@
         <div class="collection">
           <a href="@Root/" class="collection-item">Search</a>
           <a href="@Root/libraries.html" class="collection-item">Libraries</a>
-          <a href="#" class="collection-item">Query Spec</a>
+          <a href="@Root/query_spec.html" class="collection-item">Query Spec</a>
         </div>
       </div>
       <div class="col s10">
         @RenderBody()
       </div>
     </div>
-    <script src="@Properties["script"]"></script>
+    <script src="@Root@Properties["script"]"></script>
   </body>
 </html>

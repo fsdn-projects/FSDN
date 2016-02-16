@@ -11,3 +11,5 @@ group Build
   nuget KuduSync.NET
   nuget Npm.js
   nuget FSharp.Formatting
+
+  github hafuu/FSharpApiSearch:7acdbcf0b0a7f3331e00d8ebeea816dfab9492ea README.md
