@@ -30,6 +30,6 @@ NUGET
 GITHUB
   remote: hafuu/FSharpApiSearch
   specs:
-    README.md (7acdbcf0b0a7f3331e00d8ebeea816dfab9492ea)
+    README.md (29ebeb281c70b1d260b95b56484b6b543ce2cd24)
       FParsec
       FSharp.Compiler.Service

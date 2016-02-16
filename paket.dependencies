@@ -12,4 +12,4 @@ group Build
   nuget Npm.js
   nuget FSharp.Formatting
 
-  github hafuu/FSharpApiSearch:7acdbcf0b0a7f3331e00d8ebeea816dfab9492ea README.md
+  github hafuu/FSharpApiSearch:29ebeb281c70b1d260b95b56484b6b543ce2cd24 README.md
