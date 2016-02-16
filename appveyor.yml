@@ -15,3 +15,8 @@ test: off
 
 build_script:
   - cmd: build.cmd
+
+cache:
+  - node_modules -> package.json
+  - packages -> paket.lock
+  - paket-files -> paket.lock
