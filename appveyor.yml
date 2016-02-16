@@ -13,6 +13,9 @@ clone_depth: 50
 
 test: off
 
+install:
+  - ps: Install-Product node ''
+
 build_script:
   - cmd: build.cmd
 
