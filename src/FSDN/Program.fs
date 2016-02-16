@@ -28,13 +28,18 @@ let configAndApp (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
     | Some l -> l
     | None -> LogLevel.Warn
     |> Loggers.ConsoleWindowLogger
+ 
+  let notFound ctx = asyncOption {
+    let! ctx = browseFile home "404.html" ctx
+    return { ctx with response = { ctx.response with status = HTTP_404 } }
+  }
   
   let app =
     choose [
       log logger logFormat >=> never
       GET >=> choose [
         path "/" >=> browseFile home "index.html"
-        pathScan "/%s.html" (browseFile home << sprintf "%s.html")
+        pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile home) notFound)
         pathScan "/%s.js" (browseFile home << sprintf "%s.js")
         pathScan "/%s.js.map" (browseFile home << sprintf "%s.js.map")
       ]
