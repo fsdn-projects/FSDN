@@ -65,6 +65,15 @@ Target "Build" (fun _ ->
 
 open NpmHelper
 
+let installTypings npm isGlobal =
+  let args = "install typings" + if isGlobal then " -g" else ""
+  let exitCode =
+    ExecProcess (fun info ->
+      info.FileName <- npm
+      info.Arguments <- args)
+      TimeSpan.MaxValue
+  if exitCode <> 0 then failwithf "Failed: npm %s" args
+
 Target "BuildFront" (fun _ ->
   let npm =
     let target = if isUnix then"npm" else "npm.cmd"
@@ -78,17 +87,17 @@ Target "BuildFront" (fun _ ->
         WorkingDirectory = currentDirectory
         NpmFilePath = npm
     })
-  let exitCode =
-    ExecProcess (fun info ->
-      info.FileName <- npm
-      info.Arguments <- "install typings -g")
-      TimeSpan.MaxValue
-  if exitCode <> 0 then failwith "Failed: npm install typings -g"
   let typings =
     let target = if isUnix then"typings" else "typings.cmd"
     match tryFindFileOnPath target with
     | Some typings -> typings
-    | None -> findToolInSubPath target currentDirectory
+    | None ->
+      installTypings npm true
+      match tryFindFileOnPath target with
+      | Some typings -> typings
+      | None ->
+        installTypings npm false
+        findToolInSubPath target currentDirectory
   let exitCode =
     ExecProcess (fun info ->
       info.FileName <- typings
