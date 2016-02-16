@@ -60,7 +60,6 @@ let generateQuerySpec () =
         |> Seq.map (function | Heading(n, spans) -> Heading(n + 1, spans) | other -> other)
     }
     |> Seq.toList
-  printfn "%A" paragraphs
   Literate.ProcessDocument(
     doc.With(paragraphs = paragraphs),
     output @@ "query_spec.html",
