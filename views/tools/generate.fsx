@@ -65,9 +65,9 @@ module QuerySpec =
           |> List.map (fun (Line spans) ->
             spans
             |> List.fold (fun l -> function
-              | Token(_, v, _) -> l + v
-              | Error(_, v, _) -> l + v
-              | Omitted(_, v) -> l + v
+              | Token(_, v, _)
+              | Error(_, v, _)
+              | Omitted(_, v)
               | Output v -> l + v
               ) ""
           )
