@@ -48,6 +48,37 @@ let buildDocumentation () =
 
 let readme = "../../paket-files/build/hafuu/FSharpApiSearch/README.md"
 
+module QuerySpec =
+
+  open FSharp.CodeFormat
+
+  let rec format = function
+  | Heading(n, spans) -> Heading(n + 1, spans)
+  | EmbedParagraphs(cmd) as embed ->
+    match cmd with
+    | :? LiterateParagraph as p ->
+      match p with
+      | FormattedCode lines ->
+        LanguageTaggedCode(
+          "bash",
+          lines
+          |> List.map (fun (Line spans) ->
+            spans
+            |> List.fold (fun l -> function
+              | Token(_, v, _) -> l + v
+              | Error(_, v, _) -> l + v
+              | Omitted(_, v) -> l + v
+              | Output v -> l + v
+              ) ""
+          )
+          |> String.concat System.Environment.NewLine
+        )
+        :> MarkdownEmbedParagraphs
+        |> EmbedParagraphs
+      | _ -> embed
+    | _ -> embed
+  | other -> other
+
 let generateQuerySpec () =
   let doc = Literate.ParseMarkdownFile(readme)
   let paragraphs =
@@ -57,13 +88,14 @@ let generateQuerySpec () =
       yield! doc.Paragraphs
         |> Seq.skipWhile (function | Heading(2, [Literal "クエリ仕様"]) -> false | _ -> true)
         |> Seq.takeWhile (function | Heading(2, [Literal "動作環境"]) -> false | _ -> true)
-        |> Seq.map (function | Heading(n, spans) -> Heading(n + 1, spans) | other -> other)
+        |> Seq.map QuerySpec.format
     }
     |> Seq.toList
   Literate.ProcessDocument(
     doc.With(paragraphs = paragraphs),
     output @@ "query_spec.html",
     docTemplate,
+    lineNumbers = false,
     layoutRoots = layoutRoots,
     replacements = ("root", root) :: ("script", "query_spec.js") :: info
   )
