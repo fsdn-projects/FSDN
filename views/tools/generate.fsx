@@ -59,22 +59,19 @@ module QuerySpec =
     | :? LiterateParagraph as p ->
       match p with
       | FormattedCode lines ->
-        LanguageTaggedCode(
-          "bash",
-          lines
-          |> List.map (fun (Line spans) ->
-            spans
-            |> List.fold (fun l -> function
-              | Token(_, v, _)
-              | Error(_, v, _)
-              | Omitted(_, v)
-              | Output v -> l + v
-              ) ""
-          )
-          |> String.concat System.Environment.NewLine
+        lines
+        |> List.map (fun (Line spans) ->
+          spans
+          |> List.fold (fun l -> function
+            | Token(_, v, _)
+            | Error(_, v, _)
+            | Omitted(_, v)
+            | Output v -> l + v
+            ) ""
         )
-        :> MarkdownEmbedParagraphs
-        |> EmbedParagraphs
+        |> String.concat System.Environment.NewLine
+        |> sprintf """<pre><code class="markdown">%s</code></pre>"""
+        |> InlineBlock
       | _ -> embed
     | _ -> embed
   | other -> other
