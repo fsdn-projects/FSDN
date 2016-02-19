@@ -133,7 +133,7 @@ let validate (req: HttpRequest) key validate (f: string -> WebPart) : WebPart =
       | Choice1Of2 param -> f param
       | Choice2Of2 msg -> Suave.RequestErrors.BAD_REQUEST msg
     )
-    (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not found." key)
+    (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not exist." key)
 
 let app: WebPart =
   choose [
