@@ -1,5 +1,6 @@
 ﻿module Api
 
+open System
 open System.Runtime.Serialization
 open Suave
 open Suave.Operators
@@ -125,6 +126,15 @@ module Api =
       | (Choice2Of2 _, Choice2Of2 _) -> id
       <| SearchOptions.defaultOptions
 
+let validate (req: HttpRequest) key validate (f: string -> WebPart) : WebPart =
+  cond (req.queryParam key)
+    (fun param ->
+      match validate param with
+      | Choice1Of2 param -> f param
+      | Choice2Of2 msg -> Suave.RequestErrors.BAD_REQUEST msg
+    )
+    (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" is not found." key)
+
 let app: WebPart =
   choose [
     GET >=> choose [
@@ -132,11 +142,14 @@ let app: WebPart =
         >=> (Libraries.find |> Json.toJson |> Suave.Successful.ok)
       path "/api/search" >=>
         request (fun req ->
-          cond (req.queryParam "query")
+          validate req "query"
+            (fun param ->
+              if String.IsNullOrEmpty(param) then Choice2Of2 "Search query require non empty string."
+              else Choice1Of2 param)
             (Api.search (Api.SearchOptions.parse req)
               >> Api.toSerializable
               >> Json.toJson
               >> Suave.Successful.ok)
-            never)
+        )
     ]
   ]
