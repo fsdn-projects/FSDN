@@ -15,6 +15,17 @@
   <i class="fa fa-search fa-inversex left"></i>
   Search
 </button>
+<div class="preloader-wrapper small active">
+  <div class="spinner-layer spinner-green-only" v-bind:class="{ 'hide': hide_progress }">
+    <div class="circle-clipper left">
+      <div class="circle"></div>
+    </div><div class="gap-patch">
+      <div class="circle"></div>
+    </div><div class="circle-clipper right">
+      <div class="circle"></div>
+    </div>
+  </div>
+</div>
 <ul class="collection">
   <li class="collection-item" v-for="result in search_results">
     {{ result.api.name }}

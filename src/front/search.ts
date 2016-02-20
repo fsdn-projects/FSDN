@@ -34,6 +34,7 @@ let app = new Vue({
     query: undefined,
     strict: true,
     similarity: false,
+    hide_progress: true,
     search_results: []
   },
   computed: {
@@ -46,13 +47,17 @@ let app = new Vue({
   },
   methods: {
     search: function() {
-      if(validate(this.query)) {
+      if (! this.hide_progress) {
+        return;
+      } else if (validate(this.query)) {
+        this.hide_progress = false;
         search(this.query, this.strict, this.similarity)
           .end((err, res) => {
             if (err || !res.ok) {
             } else {
               this.search_results = JSON.parse(res.text).values;
             }
+            this.hide_progress = true;
           });
       }
     }
