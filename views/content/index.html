@@ -26,7 +26,7 @@
     </div>
   </div>
 </div>
-<div class="row" v-bind:class="{ 'hide': searched }">
+<div class="row" v-bind:class="{ 'hide': searched || raised_error }">
   <div class="col s12 m6">
     <div class="card light-blue darken-2">
       <div class="card-content white-text">
@@ -38,7 +38,23 @@
     </div>
   </div>
 </div>
-<ul class="collection" v-bind:class="{ 'hide': ! searched }">
+<div class="row" v-bind:class="{ 'hide': ! raised_error }">
+  <div class="col s10 m8">
+    <div class="card red darken-2">
+      <div class="card-content white-text">
+        <span class="card-title">Error!</span>
+        <p>{{ error_message }}</p>
+        <div class="card-action">
+          <a href="https://github.com/pocketberserker/FSDN/issues">
+            <span class="octicon octicon-issue-opened"></span>
+            Report Issue
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="collection" v-bind:class="{ 'hide': (! searched) || raised_error }">
   <li class="collection-item" v-for="result in search_results">
     {{ result.api.name }}
   </li>

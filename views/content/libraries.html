@@ -1,4 +1,20 @@
 ﻿<h2>Target Libraries</h2>
-<ul class="collection">
+<div class="row" v-bind:class="{ 'hide': ! raised_error }">
+  <div class="col s10 m8">
+    <div class="card red darken-2">
+      <div class="card-content white-text">
+        <span class="card-title">Error!</span>
+        <p>{{ error_message }}</p>
+        <div class="card-action">
+          <a href="https://github.com/pocketberserker/FSDN/issues">
+            <span class="octicon octicon-issue-opened"></span>
+            Report Issue
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="collection" v-bind:class="{ 'hide': raised_error }">
   <li class="collection-item" v-for="library in libraries">{{ library.name }}</li>
 </ul>
