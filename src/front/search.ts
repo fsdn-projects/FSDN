@@ -14,6 +14,20 @@ function boolToStatus(value: boolean): string {
   return value ? "enabled" : "disabled";
 }
 
+function validate(query: string): boolean {
+  return Boolean(query);
+}
+
+function search(query: string, strict: boolean, similarity: boolean) {
+  return request
+    .get(baseUrl + "/api/search")
+    .query({
+      query,
+      strict: boolToStatus(strict),
+      similarity: boolToStatus(similarity)
+    });
+}
+
 let app = new Vue({
   el: "#app",
   data: {
@@ -22,21 +36,25 @@ let app = new Vue({
     similarity: false,
     search_results: []
   },
+  computed: {
+    invalid: function(): boolean {
+      return ! validate(this.query);
+    },
+    valid: function(): boolean {
+      return validate(this.query);
+    },
+  },
   methods: {
     search: function() {
-      request
-        .get(baseUrl + "/api/search")
-        .query({
-          query: this.query,
-          strict: boolToStatus(this.strict),
-          similarity: boolToStatus(this.similarity)
-        })
-        .end((err, res) => {
-          if (err || !res.ok) {
-          } else {
-            this.search_results = JSON.parse(res.text).values;
-          }
-        });
+      if(validate(this.query)) {
+        search(this.query, this.strict, this.similarity)
+          .end((err, res) => {
+            if (err || !res.ok) {
+            } else {
+              this.search_results = JSON.parse(res.text).values;
+            }
+          });
+      }
     }
   }
 });

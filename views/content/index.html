@@ -11,7 +11,7 @@
     <label for="similarity">Similarity</label>
   </p>
 </div>
-<button class="btn waves-effect waves-light" v-on:click="search">
+<button class="btn tooltipped" v-bind:class="{ 'disabled': invalid, 'waves-effect': valid, 'waves-light': valid }" v-on:click="search" data-position="bottom" data-delay="50" data-tooltip="search query requires non empty.">
   <i class="fa fa-search fa-inversex left"></i>
   Search
 </button>
