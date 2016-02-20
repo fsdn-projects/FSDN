@@ -3,6 +3,7 @@
 #r "FakeLib.dll"
 open Fake
 open System.IO
+open System.Net
 open Fake.FileHelper
 open FSharp.Literate
 open FSharp.MetadataFormat
@@ -70,6 +71,7 @@ module QuerySpec =
             ) ""
         )
         |> String.concat System.Environment.NewLine
+        |> WebUtility.HtmlEncode
         |> sprintf """<pre><code class="markdown">%s</code></pre>"""
         |> InlineBlock
       | _ -> embed
