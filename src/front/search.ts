@@ -38,9 +38,6 @@ let app = new Vue({
     search_results: undefined
   },
   computed: {
-    invalid: function(): boolean {
-      return ! validate(this.query);
-    },
     valid: function(): boolean {
       return validate(this.query);
     },
