@@ -16,7 +16,7 @@ gulp.task("compile", function(cb) {
   });
 });
 
-var targets = glob.sync("./src/front/*.ts")
+var targets = glob.sync("./src/front/!(util).ts")
   .map(function(target) {
     return path.basename(target, ".ts");
   });

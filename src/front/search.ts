@@ -2,13 +2,7 @@
 "use strict";
 import Vue = require("vue");
 import * as request from "superagent";
-
-const baseUrl =
-  function() {
-    let u = window.location.href.split("/");
-    u.pop();
-    return u.join("/");
-  }();
+import {baseUrl} from "./util";
 
 function boolToStatus(value: boolean): string {
   return value ? "enabled" : "disabled";

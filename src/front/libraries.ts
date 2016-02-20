@@ -2,6 +2,7 @@
 "use strict";
 import Vue = require("vue");
 import * as request from "superagent";
+import {baseUrl} from "./util";
 
 let app = new Vue({
   el: "#app",
@@ -15,13 +16,6 @@ let app = new Vue({
     }
   }
 });
-
-const baseUrl =
-  function() {
-    let u = window.location.href.split("/");
-    u.pop();
-    return u.join("/");
-  }();
 
 request
   .get(baseUrl + "/api/libraries")
