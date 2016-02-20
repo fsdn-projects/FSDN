@@ -35,7 +35,7 @@ let app = new Vue({
     strict: true,
     similarity: false,
     hide_progress: true,
-    search_results: []
+    search_results: undefined
   },
   computed: {
     invalid: function(): boolean {
@@ -44,14 +44,18 @@ let app = new Vue({
     valid: function(): boolean {
       return validate(this.query);
     },
+    searched: function(): boolean {
+      return this.search_results !== undefined;
+    }
   },
   methods: {
-    search: function() {
+    search: function(input?: string) {
+      const query = input ? input : this.query;
       if (! this.hide_progress) {
         return;
-      } else if (validate(this.query)) {
+      } else if (validate(query)) {
         this.hide_progress = false;
-        search(this.query, this.strict, this.similarity)
+        search(query, this.strict, this.similarity)
           .end((err, res) => {
             if (err || !res.ok) {
             } else {
