@@ -94,9 +94,12 @@ module Api =
 
   let client = FSharpApiSearchClient(FSharpApiSearchClient.DefaultTargets, FSharpApiSearchClient.DefaultReferences)
 
-  let search opts (query: string) =
-    client.Search(query, opts)
-    |> Seq.filter (fun x -> x.Distance < 3)
+  let trySearch opts (query: string) =
+    try
+      client.Search(query, opts)
+      |> Seq.filter (fun x -> x.Distance < 3)
+      |> Choice1Of2
+    with e -> Choice2Of2 e
 
   module OptionStatus =
 
@@ -135,7 +138,18 @@ let validate (req: HttpRequest) key validate (f: string -> WebPart) : WebPart =
     )
     (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not exist." key)
 
-let app: WebPart =
+let search logger opts query =
+  match Api.trySearch opts query with
+  | Choice1Of2 results ->
+    results
+    |> Api.toSerializable
+    |> Json.toJson
+    |> Suave.Successful.ok
+  | Choice2Of2 e ->
+    Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "search error"
+    RequestErrors.BAD_REQUEST e.Message
+
+let app logger : WebPart =
   choose [
     GET >=> choose [
       path "/api/libraries"
@@ -146,10 +160,7 @@ let app: WebPart =
             (fun param ->
               if String.IsNullOrEmpty(param) then Choice2Of2 "Search query require non empty string."
               else Choice1Of2 param)
-            (Api.search (Api.SearchOptions.parse req)
-              >> Api.toSerializable
-              >> Json.toJson
-              >> Suave.Successful.ok)
+            (search logger (Api.SearchOptions.parse req))
         )
     ]
   ]

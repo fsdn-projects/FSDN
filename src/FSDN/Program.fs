@@ -43,7 +43,7 @@ let configAndApp (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
         pathScan "/%s.js" (browseFile home << sprintf "%s.js")
         pathScan "/%s.js.map" (browseFile home << sprintf "%s.js.map")
       ]
-      Api.app
+      Api.app logger
     ]
 
   let serverConfig = {
