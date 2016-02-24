@@ -54,8 +54,12 @@
     </div>
   </div>
 </div>
-<ul class="collection" v-bind:class="{ 'hide': (! searched) || raised_error }">
-  <li class="collection-item" v-for="result in search_results">
-    {{ result.api.name }}
+<ul class="collapsible" data-collapsible="expandable" v-bind:class="{ 'hide': (! searched) || raised_error }">
+  <li v-for="result in search_results">
+    <div class="collapsible-header">{{ result.api.name }}: {{ result.api.signature }}</div>
+    <div class="collapsible-body">
+      <span>distance: {{ result.distance }}</span>
+      <span>kind: {{ result.api.kind }}</span>
+    </div>
   </li>
 </ul>
