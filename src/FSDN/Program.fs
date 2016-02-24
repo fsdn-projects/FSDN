@@ -1,4 +1,6 @@
-﻿open System.IO
+﻿module Program
+
+open System.IO
 open System.Net
 open Suave
 open Suave.Web
@@ -43,7 +45,7 @@ let configAndApp (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
         pathScan "/%s.js" (browseFile home << sprintf "%s.js")
         pathScan "/%s.js.map" (browseFile home << sprintf "%s.js.map")
       ]
-      Api.app logger
+      FSDN.Api.app logger
     ]
 
   let serverConfig = {

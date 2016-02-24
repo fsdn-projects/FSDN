@@ -49,6 +49,9 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Response.fs" />
+    <Compile Include="Libraries.fs" />
+    <Compile Include="FSharpApi.fs" />
     <Compile Include="Api.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
