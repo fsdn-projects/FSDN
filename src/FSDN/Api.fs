@@ -15,8 +15,8 @@ let validate (req: HttpRequest) key validate (f: string -> WebPart) : WebPart =
     )
     (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not exist." key)
 
-let search logger opts query =
-  match FSharpApi.trySearch opts query with
+let search client logger opts query =
+  match FSharpApi.trySearch client opts query with
   | Choice1Of2 results ->
     results
     |> FSharpApi.toSerializable
@@ -26,7 +26,7 @@ let search logger opts query =
     Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "search error"
     RequestErrors.BAD_REQUEST e.Message
 
-let app logger : WebPart =
+let app client logger : WebPart =
   choose [
     GET >=> choose [
       path "/api/libraries"
@@ -37,7 +37,7 @@ let app logger : WebPart =
             (fun param ->
               if String.IsNullOrEmpty(param) then Choice2Of2 "Search query require non empty string."
               else Choice1Of2 param)
-            (search logger (FSharpApi.SearchOptions.parse req))
+            (search client logger (FSharpApi.SearchOptions.parse req))
         )
     ]
   ]

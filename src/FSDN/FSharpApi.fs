@@ -61,9 +61,7 @@ module FSharpApi =
         |> Seq.toArray
     }
 
-  let client = FSharpApiSearchClient(FSharpApiSearchClient.DefaultTargets, FSharpApiSearchClient.DefaultReferences)
-
-  let trySearch opts (query: string) =
+  let trySearch (client: FSharpApiSearchClient) opts (query: string) =
     try
       client.Search(query, opts)
       |> Seq.filter (fun x -> x.Distance < 3)

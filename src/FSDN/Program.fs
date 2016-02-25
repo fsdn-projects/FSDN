@@ -9,6 +9,7 @@ open Suave.Operators
 open Suave.Filters
 open Suave.Files
 open Argu
+open FSharpApiSearch
 
 type Args =
   | Port of Sockets.Port
@@ -22,7 +23,7 @@ with
       | Home_Directory _ -> "specify a home or root diretory."
       | Log_Level _ -> "specify log level."
 
-let configAndApp (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
+let configAndApp client (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
 
   let home = DirectoryInfo(args.GetResult(<@ Home_Directory @>, ".")).FullName
   let logger =
@@ -45,7 +46,7 @@ let configAndApp (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
         pathScan "/%s.js" (browseFile home << sprintf "%s.js")
         pathScan "/%s.js.map" (browseFile home << sprintf "%s.js.map")
       ]
-      FSDN.Api.app logger
+      FSDN.Api.app client logger
     ]
 
   let serverConfig = {
@@ -64,5 +65,6 @@ let parser = ArgumentParser.Create<Args>()
 [<EntryPoint>]
 let main args =
   let args = parser.Parse(args)
-  startWebServer <|| configAndApp args
+  let client = FSharpApiSearchClient(FSharpApiSearchClient.DefaultTargets, FSharpApiSearchClient.DefaultReferences)
+  startWebServer <|| configAndApp client args
   0
