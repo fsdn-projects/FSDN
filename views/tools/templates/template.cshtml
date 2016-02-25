@@ -19,7 +19,28 @@
           </span>
           FSDN
         </a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <ul class="right hide-on-med-and-down">
+          <li><a href="@Root/" class="collection-item">Search</a></li>
+          <li><a href="@Root/libraries.html" class="collection-item">Libraries</a></li>
+          <li><a href="@Root/query_spec.html" class="collection-item">Query Spec</a></li>
+          <li>
+            <a href="@Properties["project-github"]/issues">
+              <span class="octicon octicon-issue-opened"></span>
+              Issue
+            </a>
+          </li>
+          <li>
+            <a href="@Properties["project-github"]">
+              <span class="octicon octicon-repo-forked"></span>
+              Fork
+            </a>
+          </li>
+        </ul>
+        <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+        <ul id="nav-mobile" class="side-nav">
+          <li><a href="@Root/" class="collection-item">Search</a></li>
+          <li><a href="@Root/libraries.html" class="collection-item">Libraries</a></li>
+          <li><a href="@Root/query_spec.html" class="collection-item">Query Spec</a></li>
           <li>
             <a href="@Properties["project-github"]/issues">
               <span class="octicon octicon-issue-opened"></span>
@@ -36,17 +57,15 @@
       </div>
     </nav>
     <div id="app" class="row">
-      <div class="col s2">
-        <div class="collection">
-          <a href="@Root/" class="collection-item">Search</a>
-          <a href="@Root/libraries.html" class="collection-item">Libraries</a>
-          <a href="@Root/query_spec.html" class="collection-item">Query Spec</a>
-        </div>
-      </div>
       <div class="col s10">
         @RenderBody()
       </div>
     </div>
     <script src="@Root@Properties["script"]"></script>
+    <script>
+$(document).ready(function(){
+  $(".button-collapse").sideNav();
+});
+    </script>
   </body>
 </html>
