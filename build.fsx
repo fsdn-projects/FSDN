@@ -166,7 +166,7 @@ Target "All" DoNothing
   ==> "CopyWebConfig"
   ==> "All"
 
-"CopyWebConfig"
+"All"
   ==> "Deploy"
 
 "BuildFront"
