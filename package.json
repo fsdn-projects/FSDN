@@ -5,6 +5,7 @@
     "build": "gulp compile",
     "pack": "gulp pack"
   },
+  "homepage": "https://github.com/pocketberserker/FSDN",
   "license": "Unlicense",
   "repository" : {
     "type" : "git",
