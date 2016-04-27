@@ -23,7 +23,7 @@ with
       | Home_Directory _ -> "specify a home or root diretory."
       | Log_Level _ -> "specify log level."
 
-let configAndApp client homeDir (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
+let configAndApp database homeDir (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
 
   let homeDir = DirectoryInfo(homeDir).FullName
   let logger =
@@ -46,7 +46,7 @@ let configAndApp client homeDir (args: ParseResults<Args>) : (SuaveConfig * WebP
         pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
         pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
       ]
-      Api.app client logger
+      Api.app database logger
     ]
 
   let serverConfig = {
@@ -69,6 +69,5 @@ let main args =
   let database =
     Path.Combine(homeDir, ApiLoader.databaseName)
     |> ApiLoader.loadFromFile
-  let client = FSharpApiSearchClient(FSharpApiSearchClient.DefaultTargets, database)
-  startWebServer <|| configAndApp client homeDir args
+  startWebServer <|| configAndApp database homeDir args
   0

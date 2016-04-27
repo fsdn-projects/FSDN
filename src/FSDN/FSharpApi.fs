@@ -21,6 +21,13 @@ type SearchResult = {
   Api: FSharpApi
 }
 
+type SearchInformation = {
+  Database: ApiDictionary seq
+  Targets: string list
+  Options: SearchOptions
+  Query: string
+}
+
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module FSharpApi =
 
@@ -41,9 +48,10 @@ module FSharpApi =
         |> Seq.toArray
     }
 
-  let trySearch (client: FSharpApiSearchClient) opts (query: string) =
+  let trySearch info =
+    let client = FSharpApiSearchClient(info.Targets, info.Database)
     try
-      client.Search(query, opts)
+      client.Search(info.Query, info.Options)
       |> Seq.filter (fun x -> x.Distance < 3)
       |> Choice1Of2
     with e -> Choice2Of2 e

@@ -11,7 +11,7 @@ type TargetLibrary = {
 
 module Libraries =
 
-  let find =
+  let all =
     {
       Values =
         FSharpApiSearchClient.DefaultTargets
