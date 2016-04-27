@@ -42,8 +42,8 @@ let search database logger req =
 let app database logger : WebPart =
   choose [
     GET >=> choose [
-      path "/api/libraries"
-        >=> (Libraries.all |> Json.toJson |> Suave.Successful.ok)
+      path "/api/assemblies"
+        >=> (Assemblies.all |> Json.toJson |> Suave.Successful.ok)
       path "/api/search" >=>
         request (search database logger)
     ]

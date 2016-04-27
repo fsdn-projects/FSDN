@@ -7,7 +7,7 @@ import {baseUrl} from "./util";
 let app = new Vue({
   el: "#app",
   data: {
-    libraries: [],
+    assemblies: [],
     error_message: undefined
   },
   computed: {
@@ -18,12 +18,12 @@ let app = new Vue({
 });
 
 request
-  .get(baseUrl + "/api/libraries")
+  .get(baseUrl + "/api/assemblies")
   .end((err, res) => {
     if (err || !res.ok) {
       app.$set("error_message", res.text);
     } else {
       app.$set("error_message", undefined);
-      app.$set("libraries", JSON.parse(res.text).values);
+      app.$set("assemblies", JSON.parse(res.text).values);
     }
   });

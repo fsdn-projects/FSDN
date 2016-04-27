@@ -1,4 +1,4 @@
-﻿<h2>Target Libraries</h2>
+﻿<h2>Target Assemblies</h2>
 <div class="row" v-bind:class="{ 'hide': ! raised_error }">
   <div class="col s10 m8">
     <div class="card red darken-2">
@@ -16,5 +16,5 @@
   </div>
 </div>
 <ul class="collection" v-bind:class="{ 'hide': raised_error }">
-  <li class="collection-item" v-for="library in libraries">{{ library.name }}</li>
+  <li class="collection-item" v-for="assembly in assemblies">{{ assembly.name }}</li>
 </ul>

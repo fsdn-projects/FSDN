@@ -4,12 +4,12 @@ open System.Runtime.Serialization
 open FSharpApiSearch
 
 [<DataContract>]
-type TargetLibrary = {
+type TargetAssembly = {
   [<field: DataMember(Name = "name")>]
   Name: string
 }
 
-module Libraries =
+module Assemblies =
 
   let all =
     {
