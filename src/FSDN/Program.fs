@@ -1,4 +1,4 @@
-﻿module Program
+﻿module FSDN.Program
 
 open System.IO
 open System.Net
@@ -46,7 +46,7 @@ let configAndApp client homeDir (args: ParseResults<Args>) : (SuaveConfig * WebP
         pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
         pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
       ]
-      FSDN.Api.app client logger
+      Api.app client logger
     ]
 
   let serverConfig = {
