@@ -76,9 +76,9 @@ module FSharpApi =
     let parse (req: HttpRequest) =
       let update name value opt =
         match name with
-        | Strict -> { opt with StrictQueryVariable = OptionStatus.parseOrDefault Enabled value }
-        | Similarity -> { opt with SimilaritySearching = OptionStatus.parseOrDefault Disabled value }
-        | IgnoreArgStyle -> { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault Enabled value }
+        | Strict -> { opt with StrictQueryVariable = OptionStatus.parseOrDefault SearchOptions.defaultOptions.StrictQueryVariable value }
+        | Similarity -> { opt with SimilaritySearching = OptionStatus.parseOrDefault SearchOptions.defaultOptions.SimilaritySearching value }
+        | IgnoreArgStyle -> { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault SearchOptions.defaultOptions.IgnoreArgumentStyle value }
         | _ -> opt
       [Strict; Similarity; IgnoreArgStyle]
       |> List.fold (fun opt name ->
