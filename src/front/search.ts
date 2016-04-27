@@ -12,13 +12,14 @@ function validate(query: string): boolean {
   return Boolean(query);
 }
 
-function search(query: string, strict: boolean, similarity: boolean) {
+function search(query: string, strict: boolean, similarity: boolean, ignore_arg_style: boolean) {
   return request
     .get(baseUrl + "/api/search")
     .query({
       query,
       strict: boolToStatus(strict),
-      similarity: boolToStatus(similarity)
+      similarity: boolToStatus(similarity),
+      ignore_arg_style: boolToStatus(ignore_arg_style)
     });
 }
 
@@ -28,6 +29,7 @@ let app = new Vue({
     query: undefined,
     strict: true,
     similarity: false,
+    ignore_arg_style: true,
     hide_progress: true,
     search_results: undefined,
     error_message: undefined
@@ -50,7 +52,7 @@ let app = new Vue({
         return;
       } else if (validate(query)) {
         this.hide_progress = false;
-        search(query, this.strict, this.similarity)
+        search(query, this.strict, this.similarity, this.ignore_arg_style)
           .end((err, res) => {
             if (err || !res.ok) {
               this.error_message = res.text;
