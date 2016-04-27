@@ -113,6 +113,13 @@ Target "BuildFront" (fun _ ->
     })
 )
 
+Target "GenerateApiDatabase" (fun _ ->
+  let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ "packages" @@ "build")
+  let exitCode = ExecProcess (fun info -> info.FileName <- exe) TimeSpan.MaxValue
+  if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
+  MoveFile ("bin" @@ project) (currentDirectory @@ "database")
+)
+
 Target "GenerateViews" (fun _ ->
   let definitions =
     if configuration = "Release" then ["--define:RELEASE"]
@@ -170,6 +177,9 @@ Target "All" DoNothing
   ==> "Deploy"
 
 "BuildFront"
+  ==> "All"
+
+"GenerateApiDatabase"
   ==> "All"
 
 "GenerateViews"

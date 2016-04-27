@@ -25,6 +25,7 @@ NUGET
     FSharp.Formatting (2.14.2)
       FSharp.Compiler.Service (2.0.0.6)
       FSharpVSPowerTools.Core (>= 2.3.0 < 2.4.0)
+    FSharpApiSearch.Console (0.2.0-beta)
     FSharpVSPowerTools.Core (2.3.0)
       FSharp.Compiler.Service (>= 2.0.0.3)
     KuduSync.NET (1.3.0)
@@ -43,6 +44,6 @@ GITHUB
   remote: hafuu/FSharpApiSearch
   specs:
     README.md (10ac7b11fd6e1391818bf80acf457ebe2477eb8d)
-      FParsec (>= 1.0.2)
-      FSharp.Compiler.Service (>= 3.0.0)
-      FsPickler (>= 2.1.0)
+      FParsec
+      FSharp.Compiler.Service
+      FsPickler

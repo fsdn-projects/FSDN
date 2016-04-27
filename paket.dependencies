@@ -14,6 +14,7 @@ group Build
   nuget KuduSync.NET
   nuget Npm.js
   nuget FSharp.Formatting
+  nuget FSharpApiSearch.Console
 
 group Doc
   source https://api.nuget.org/v3/index.json
