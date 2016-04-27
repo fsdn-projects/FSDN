@@ -47,7 +47,7 @@ let buildDocumentation () =
       replacements = ("root", root) :: ("script", js) :: info
     )
 
-let readme = "../../paket-files/build/hafuu/FSharpApiSearch/README.md"
+let readme = "../../paket-files/doc/hafuu/FSharpApiSearch/README.md"
 
 module QuerySpec =
 

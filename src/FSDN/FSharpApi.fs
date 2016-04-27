@@ -24,27 +24,7 @@ type SearchResult = {
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module FSharpApi =
 
-  // copy from https://github.com/hafuu/FSharpApiSearch/blob/7acdbcf0b0a7f3331e00d8ebeea816dfab9492ea/src/FSharpApiSearch.Console/Program.fs#L58
-  // The MIT License (MIT)
-  // Copyright (c) 2015 MIYAZAKI Shohei
-  
-  let propertyKindText = function
-  | PropertyKind.GetSet -> "get set"
-  | PropertyKind.Set -> "set"
-  | PropertyKind.Get -> "get"
-
-  let apiKindText = function
-  | ApiKind.Constructor -> "constructor"
-  | ApiKind.ModuleValue -> "module value"
-  | ApiKind.StaticMethod -> "static method"
-  | ApiKind.StaticProperty prop -> sprintf "static property with %s" (propertyKindText prop)
-  | ApiKind.InstanceMethod -> "instance method"
-  | ApiKind.InstanceProperty prop -> sprintf "instance property with %s" (propertyKindText prop)
-  | ApiKind.Field -> "field"
-
-  // end
-
-  let toSerializable (results: FSharpApiSearch.SearchResult seq) =
+  let toSerializable (results: FSharpApiSearch.Result seq) =
     {
       Values =
         results
@@ -53,9 +33,9 @@ module FSharpApi =
             Distance = result.Distance
             Api =
               {
-                Name = result.Api.Name
-                Kind = apiKindText result.Api.Kind
-                Signature = Signature.display result.Api.Signature
+                Name = ReverseName.toString result.Api.Name
+                Kind = result.Api.Kind.Print()
+                Signature = result.Api.Signature.Print()
               }
           })
         |> Seq.toArray
@@ -84,16 +64,24 @@ module FSharpApi =
 
     open Suave
 
+    [<Literal>]
+    let Strict = "strict"
+
+    [<Literal>]
+    let Similarity = "similarity"
+
+    [<Literal>]
+    let IgnoreArgStyle = "ignore_arg_style"
+
     let parse (req: HttpRequest) =
-      match (req.queryParam "strict", req.queryParam "similarity") with
-      | (Choice1Of2 strict, Choice1Of2 similarity) -> fun opts ->
-        {
-          StrictQueryVariable = OptionStatus.parseOrDefault Enabled strict
-          SimilaritySearching = OptionStatus.parseOrDefault Disabled similarity
-        }
-      | (Choice1Of2 strict, Choice2Of2 _) -> fun opts ->
-        { opts with StrictQueryVariable = OptionStatus.parseOrDefault Enabled strict }
-      | (Choice2Of2 _, Choice1Of2 similarity) -> fun opts ->
-        { opts with SimilaritySearching = OptionStatus.parseOrDefault Disabled similarity }
-      | (Choice2Of2 _, Choice2Of2 _) -> id
-      <| SearchOptions.defaultOptions
+      let update name value opt =
+        match name with
+        | Strict -> { opt with StrictQueryVariable = OptionStatus.parseOrDefault Enabled value }
+        | Similarity -> { opt with SimilaritySearching = OptionStatus.parseOrDefault Disabled value }
+        | IgnoreArgStyle -> { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault Disabled value }
+        | _ -> opt
+      [Strict; Similarity; IgnoreArgStyle]
+      |> List.fold (fun opt name ->
+        match req.queryParam name with
+        | Choice1Of2 value -> update name value opt
+        | Choice2Of2 _ -> opt) SearchOptions.defaultOptions

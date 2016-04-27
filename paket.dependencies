@@ -1,8 +1,11 @@
 source https://api.nuget.org/v3/index.json
 
-nuget Suave
-nuget Argu
-nuget FSharpApiSearch
+group App
+  source https://api.nuget.org/v3/index.json
+
+  nuget Suave
+  nuget Argu
+  nuget FSharpApiSearch
 
 group Build
   source https://api.nuget.org/v3/index.json
@@ -12,4 +15,7 @@ group Build
   nuget Npm.js
   nuget FSharp.Formatting
 
-  github hafuu/FSharpApiSearch:29ebeb281c70b1d260b95b56484b6b543ce2cd24 README.md
+group Doc
+  source https://api.nuget.org/v3/index.json
+
+  github hafuu/FSharpApiSearch:10ac7b11fd6e1391818bf80acf457ebe2477eb8d README.md

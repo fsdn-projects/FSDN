@@ -23,9 +23,9 @@ with
       | Home_Directory _ -> "specify a home or root diretory."
       | Log_Level _ -> "specify log level."
 
-let configAndApp client (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
+let configAndApp client homeDir (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
 
-  let home = DirectoryInfo(args.GetResult(<@ Home_Directory @>, ".")).FullName
+  let homeDir = DirectoryInfo(homeDir).FullName
   let logger =
     match args.TryPostProcessResult(<@ Log_Level @>, LogLevel.FromString) with
     | Some l -> l
@@ -33,7 +33,7 @@ let configAndApp client (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
     |> Loggers.ConsoleWindowLogger
  
   let notFound ctx = asyncOption {
-    let! ctx = browseFile home "404.html" ctx
+    let! ctx = browseFile homeDir "404.html" ctx
     return { ctx with response = { ctx.response with status = HTTP_404 } }
   }
   
@@ -41,10 +41,10 @@ let configAndApp client (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
     choose [
       log logger logFormat >=> never
       GET >=> choose [
-        path "/" >=> browseFile home "index.html"
-        pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile home) notFound)
-        pathScan "/%s.js" (browseFile home << sprintf "%s.js")
-        pathScan "/%s.js.map" (browseFile home << sprintf "%s.js.map")
+        path "/" >=> browseFile homeDir "index.html"
+        pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
+        pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
+        pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
       ]
       FSDN.Api.app client logger
     ]
@@ -65,6 +65,10 @@ let parser = ArgumentParser.Create<Args>()
 [<EntryPoint>]
 let main args =
   let args = parser.Parse(args)
-  let client = FSharpApiSearchClient(FSharpApiSearchClient.DefaultTargets, FSharpApiSearchClient.DefaultReferences)
-  startWebServer <|| configAndApp client args
+  let homeDir = args.GetResult(<@ Home_Directory @>, ".")
+  let database =
+    Path.Combine(homeDir, ApiLoader.databaseName)
+    |> ApiLoader.loadFromFile
+  let client = FSharpApiSearchClient(FSharpApiSearchClient.DefaultTargets, database)
+  startWebServer <|| configAndApp client homeDir args
   0

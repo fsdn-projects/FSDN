@@ -1,25 +1,29 @@
+
+
+GROUP App
 NUGET
   remote: http://api.nuget.org/v3/index.json
   specs:
     Argu (2.1.0)
     FParsec (1.0.2)
-    FSharp.Compiler.Service (2.0.0.6)
+    FSharp.Compiler.Service (3.0.0)
     FSharp.Core (4.0.0.1)
-    FSharpApiSearch (0.1.0-beta)
-      FParsec
-      FSharp.Compiler.Service
-    Suave (1.1.1)
+    FSharpApiSearch (0.2.0-beta)
+      FParsec (>= 1.0.2)
+      FSharp.Compiler.Service (>= 3.0.0)
+      FsPickler (>= 2.1.0)
+    FsPickler (2.1.0)
+    Suave (1.1.2)
       FSharp.Core (>= 3.1.2.5)
 
 GROUP Build
 NUGET
   remote: http://api.nuget.org/v3/index.json
   specs:
-    FAKE (4.21.3)
-    FParsec (1.0.2)
+    FAKE (4.25.4)
     FSharp.Compiler.Service (2.0.0.6)
-    FSharp.Formatting (2.14.0)
-      FSharp.Compiler.Service (>= 2.0.0.3 < 2.1.0)
+    FSharp.Formatting (2.14.2)
+      FSharp.Compiler.Service (2.0.0.6)
       FSharpVSPowerTools.Core (>= 2.3.0 < 2.4.0)
     FSharpVSPowerTools.Core (2.3.0)
       FSharp.Compiler.Service (>= 2.0.0.3)
@@ -27,9 +31,18 @@ NUGET
     Node.js (5.3.0)
     Npm.js (2.13.1)
       Node.js (>= 0.12.7)
+
+GROUP Doc
+NUGET
+  remote: http://api.nuget.org/v3/index.json
+  specs:
+    FParsec (1.0.2)
+    FSharp.Compiler.Service (3.0.0)
+    FsPickler (2.1.0)
 GITHUB
   remote: hafuu/FSharpApiSearch
   specs:
-    README.md (29ebeb281c70b1d260b95b56484b6b543ce2cd24)
-      FParsec
-      FSharp.Compiler.Service
+    README.md (10ac7b11fd6e1391818bf80acf457ebe2477eb8d)
+      FParsec (>= 1.0.2)
+      FSharp.Compiler.Service (>= 3.0.0)
+      FsPickler (>= 2.1.0)
