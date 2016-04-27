@@ -78,7 +78,7 @@ module FSharpApi =
         match name with
         | Strict -> { opt with StrictQueryVariable = OptionStatus.parseOrDefault Enabled value }
         | Similarity -> { opt with SimilaritySearching = OptionStatus.parseOrDefault Disabled value }
-        | IgnoreArgStyle -> { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault Disabled value }
+        | IgnoreArgStyle -> { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault Enabled value }
         | _ -> opt
       [Strict; Similarity; IgnoreArgStyle]
       |> List.fold (fun opt name ->
