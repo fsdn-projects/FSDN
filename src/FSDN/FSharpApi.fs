@@ -1,5 +1,6 @@
 ﻿namespace FSDN
 
+open System.Collections.Generic
 open System.Runtime.Serialization
 open FSharpApiSearch
 
@@ -21,10 +22,13 @@ type SearchResult = {
   Api: FSharpApi
 }
 
+[<DataContract>]
 type SearchInformation = {
-  Database: ApiDictionary seq
-  Targets: string list
-  Options: SearchOptions
+  [<field: DataMember(Name = "target_assemblies")>]
+  Targets: string []
+  [<field: DataMember(Name = "search_options")>]
+  RawOptions: Dictionary<string, string>
+  [<field: DataMember(Name = "query")>]
   Query: string
 }
 
@@ -47,14 +51,6 @@ module FSharpApi =
           })
         |> Seq.toArray
     }
-
-  let trySearch info =
-    let client = FSharpApiSearchClient(info.Targets, info.Database)
-    try
-      client.Search(info.Query, info.Options)
-      |> Seq.filter (fun x -> x.Distance < 3)
-      |> Choice1Of2
-    with e -> Choice2Of2 e
 
   module OptionStatus =
 
@@ -81,15 +77,20 @@ module FSharpApi =
     [<Literal>]
     let IgnoreArgStyle = "ignore_arg_style"
 
-    let parse (req: HttpRequest) =
-      let update name value opt =
+    let parse info =
+      let update opt (KeyValue(name, value)) =
         match name with
         | Strict -> { opt with StrictQueryVariable = OptionStatus.parseOrDefault SearchOptions.defaultOptions.StrictQueryVariable value }
         | Similarity -> { opt with SimilaritySearching = OptionStatus.parseOrDefault SearchOptions.defaultOptions.SimilaritySearching value }
         | IgnoreArgStyle -> { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault SearchOptions.defaultOptions.IgnoreArgumentStyle value }
         | _ -> opt
-      [Strict; Similarity; IgnoreArgStyle]
-      |> List.fold (fun opt name ->
-        match req.queryParam name with
-        | Choice1Of2 value -> update name value opt
-        | Choice2Of2 _ -> opt) SearchOptions.defaultOptions
+      info.RawOptions
+      |> Seq.fold update SearchOptions.defaultOptions
+
+  let trySearch database info =
+    let client = FSharpApiSearchClient(info.Targets, database)
+    try
+      client.Search(info.Query, SearchOptions.parse info)
+      |> Seq.filter (fun x -> x.Distance < 3)
+      |> Choice1Of2
+    with e -> Choice2Of2 e

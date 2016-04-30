@@ -15,35 +15,27 @@ let validate (req: HttpRequest) key validate (f: string -> WebPart) : WebPart =
     )
     (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not exist." key)
 
-let search database logger req =
-  let inner query =
-    {
-      Database = database
-      Targets = FSharpApiSearch.FSharpApiSearchClient.DefaultTargets
-      Options = (FSharpApi.SearchOptions.parse req)
-      Query = query
-    }
-    |> FSharpApi.trySearch
-    |> function
-    | Choice1Of2 results ->
-      results
-      |> FSharpApi.toSerializable
-      |> Json.toJson
-      |> Suave.Successful.ok
-    | Choice2Of2 e ->
-      Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "search error"
-      RequestErrors.BAD_REQUEST e.Message
-  validate req "query"
-    (fun param ->
-      if String.IsNullOrEmpty(param) then Choice2Of2 "Search query require non empty string."
-      else Choice1Of2 param)
-    inner
+let search database logger (req: HttpRequest) =
+  req.rawForm
+  |> Json.fromJson<SearchInformation>
+  |> FSharpApi.trySearch database
+  |> function
+  | Choice1Of2 results ->
+    results
+    |> FSharpApi.toSerializable
+    |> Json.toJson
+    |> Suave.Successful.ok
+  | Choice2Of2 e ->
+    Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "search error"
+    RequestErrors.BAD_REQUEST e.Message
 
 let app database logger : WebPart =
   choose [
     GET >=> choose [
       path "/api/assemblies"
         >=> (Assemblies.all |> Json.toJson |> Suave.Successful.ok)
+    ]
+    POST >=> choose [
       path "/api/search" >=>
         request (search database logger)
     ]

@@ -4,6 +4,18 @@ import Vue = require("vue");
 import * as request from "superagent";
 import {baseUrl} from "./util";
 
+interface SearchOptions {
+  strict: string;
+  similarity: string;
+  ignore_arg_style: string;
+}
+
+interface SearchInformation {
+  query: string;
+  search_options: SearchOptions;
+  target_assemblies: string[];
+}
+
 function boolToStatus(value: boolean): string {
   return value ? "enabled" : "disabled";
 }
@@ -12,15 +24,10 @@ function validate(query: string): boolean {
   return Boolean(query);
 }
 
-function search(query: string, strict: boolean, similarity: boolean, ignore_arg_style: boolean) {
+function search(info: SearchInformation) {
   return request
-    .get(baseUrl + "/api/search")
-    .query({
-      query,
-      strict: boolToStatus(strict),
-      similarity: boolToStatus(similarity),
-      ignore_arg_style: boolToStatus(ignore_arg_style)
-    });
+    .post(baseUrl + "/api/search")
+    .send(info);
 }
 
 let app = new Vue({
@@ -30,6 +37,8 @@ let app = new Vue({
     strict: true,
     similarity: false,
     ignore_arg_style: true,
+    all_assemblies: [],
+    target_assemblies: [],
     hide_progress: true,
     search_results: undefined,
     error_message: undefined
@@ -52,7 +61,15 @@ let app = new Vue({
         return;
       } else if (validate(query)) {
         this.hide_progress = false;
-        search(query, this.strict, this.similarity, this.ignore_arg_style)
+        search({
+          query,
+          search_options: {
+            strict: boolToStatus(this.strict),
+            similarity: boolToStatus(this.similarity),
+            ignore_arg_style: boolToStatus(this.ignore_arg_style)
+          },
+          target_assemblies: this.target_assemblies
+        })
           .end((err, res) => {
             if (err || !res.ok) {
               this.error_message = res.text;
@@ -67,3 +84,14 @@ let app = new Vue({
     }
   }
 });
+
+request
+  .get(baseUrl + "/api/assemblies")
+  .end((err, res) => {
+    if (err || !res.ok) {
+      app.$set("error_message", res.text);
+    } else {
+      app.$set("error_message", undefined);
+      app.$set("all_assemblies", JSON.parse(res.text).values);
+    }
+  });

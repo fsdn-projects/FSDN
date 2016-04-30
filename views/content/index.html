@@ -1,6 +1,19 @@
 ﻿<div class="input-field col s10">
   <input placeholder="'a -> 'a" v-model="query" type="text" class="required" minlength="1">
 </div>
+<div class="col s12 m6">
+  <div class="card light-blue darken-2">
+    <div class="card-content white-text">
+      <span class="card-title">Target Assemblies</span>
+      <div class="collection">
+        <p class="collection-item" v-for="assembly in all_assemblies">
+          <input type="checkbox" class="filled-in" id="{{assembly.name}}" value="{{assembly.name}}" checked="checked" v-model="target_assemblies" />
+          <label for="{{assembly.name}}">{{assembly.name}}</label>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="row">
   <p class="col s4">
     <input type="checkbox" class="filled-in" v-model="strict" id="strict" />
