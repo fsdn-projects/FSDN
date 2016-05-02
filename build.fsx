@@ -1,7 +1,10 @@
 #r @"packages/build/FAKE/tools/FakeLib.dll"
+#r "System.Xml.Linq.dll"
 open Fake
 open System
 open System.IO
+open System.Xml.Linq
+open System.Xml.XPath
 
 let project = "FSDN"
 
@@ -113,7 +116,19 @@ Target "BuildFront" (fun _ ->
     })
 )
 
+let changeMonoAssemblyPath (es: XElement seq) =
+  es
+  |> Seq.iter (fun e ->
+    e.Attribute(XName.Get("value")).Value <- sprintf "%s/lib/mono/4.5/" (environVar "MONO_HOME")
+  )
+
 Target "GenerateApiDatabase" (fun _ ->
+  if isMono then
+    let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ "packages" @@ "build")
+    let doc = XDocument.Load(config)
+    doc.XPathSelectElements("/configuration/appSettings/add")
+    |> changeMonoAssemblyPath
+    doc.Save(config)
   let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ "packages" @@ "build")
   let exitCode = ExecProcess (fun info -> info.FileName <- exe) TimeSpan.MaxValue
   if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
