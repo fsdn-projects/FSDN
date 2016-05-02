@@ -27,7 +27,7 @@ let layoutRoots = [
 ]
 
 let info = [
-  "project-github", "https://github.com/pocketberserker/FSDN"
+  "project-github", "https://github.com/fsdn-projects/FSDN"
 ]
 
 let copyFiles () =
