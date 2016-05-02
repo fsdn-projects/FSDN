@@ -2,6 +2,7 @@
 
 open System.Collections.Generic
 open System.Runtime.Serialization
+open Microsoft.FSharp.Reflection
 open FSharpApiSearch
 
 [<DataContract>]
@@ -86,6 +87,20 @@ module FSharpApi =
         | _ -> opt
       info.RawOptions
       |> Seq.fold update SearchOptions.defaultOptions
+
+    let defaultRawOptions =
+      let toString (x: OptionStatus) =
+        match FSharpValue.GetUnionFields(x, typeof<OptionStatus>) with
+        | case, _ -> case.Name.ToLower()
+      Dictionary<string, string>(
+        [
+          (Strict, SearchOptions.defaultOptions.StrictQueryVariable)
+          (Similarity, SearchOptions.defaultOptions.SimilaritySearching)
+          (IgnoreArgStyle, SearchOptions.defaultOptions.IgnoreArgumentStyle)
+        ]
+        |> Seq.map (fun (name, x) -> (name, toString x))
+        |> dict
+      )
 
   let trySearch database info =
     let client = FSharpApiSearchClient(info.Targets, database)
