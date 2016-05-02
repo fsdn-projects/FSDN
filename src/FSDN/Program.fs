@@ -49,7 +49,7 @@ let app database homeDir logger : WebPart =
 
 let serverConfig port homeDir logger = {
   defaultConfig with
-    bindings = [ HttpBinding.mk HTTP IPAddress.Loopback port ]
+    bindings = [ HttpBinding.mk HTTP IPAddress.Any port ]
     homeFolder = Some homeDir
     logger = logger
 }
