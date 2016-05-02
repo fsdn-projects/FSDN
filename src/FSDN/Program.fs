@@ -23,51 +23,49 @@ with
       | Home_Directory _ -> "specify a home or root diretory."
       | Log_Level _ -> "specify log level."
 
-let configAndApp database homeDir (args: ParseResults<Args>) : (SuaveConfig * WebPart) =
+let logger (args: ParseResults<Args>) =
+  match args.TryPostProcessResult(<@ Log_Level @>, LogLevel.FromString) with
+  | Some l -> l
+  | None -> LogLevel.Warn
+  |> Loggers.ConsoleWindowLogger
 
-  let homeDir = DirectoryInfo(homeDir).FullName
-  let logger =
-    match args.TryPostProcessResult(<@ Log_Level @>, LogLevel.FromString) with
-    | Some l -> l
-    | None -> LogLevel.Warn
-    |> Loggers.ConsoleWindowLogger
- 
+let app database homeDir logger : WebPart =
+
   let notFound ctx = asyncOption {
     let! ctx = browseFile homeDir "404.html" ctx
     return { ctx with response = { ctx.response with status = HTTP_404 } }
   }
-  
-  let app =
-    choose [
-      log logger logFormat >=> never
-      GET >=> choose [
-        path "/" >=> browseFile homeDir "index.html"
-        pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
-        pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
-        pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
-      ]
-      Api.app database logger
+
+  choose [
+    log logger logFormat >=> never
+    GET >=> choose [
+      path "/" >=> browseFile homeDir "index.html"
+      pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
+      pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
+      pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
     ]
+    Api.app database logger
+  ]
 
-  let serverConfig = {
-    defaultConfig with
-      bindings = [ HttpBinding.mk HTTP IPAddress.Loopback (args.GetResult(<@ Port @>, 8083us)) ]
-      homeFolder =
-        args.TryGetResult(<@ Home_Directory @>)
-        |> Option.map (fun d -> DirectoryInfo(d).FullName)
-      logger = logger
-  }
-
-  (serverConfig, app)
+let serverConfig port homeDir logger = {
+  defaultConfig with
+    bindings = [ HttpBinding.mk HTTP IPAddress.Loopback port ]
+    homeFolder = Some homeDir
+    logger = logger
+}
 
 let parser = ArgumentParser.Create<Args>()
 
 [<EntryPoint>]
 let main args =
   let args = parser.Parse(args)
-  let homeDir = args.GetResult(<@ Home_Directory @>, ".")
+  let homeDir = DirectoryInfo(args.GetResult(<@ Home_Directory @>, ".")).FullName
+  let logger = logger args
+  let port = args.GetResult(<@ Port @>, 8083us)
+  let config = serverConfig port homeDir logger
   let database =
     Path.Combine(homeDir, ApiLoader.databaseName)
     |> ApiLoader.loadFromFile
-  startWebServer <|| configAndApp database homeDir args
+  let app = app database homeDir logger
+  startWebServer config app
   0
