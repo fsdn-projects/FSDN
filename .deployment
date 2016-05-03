@@ -1,2 +1,2 @@
 [config]
-command = build.cmd Deploy
+command = build.cmd DeployOnAzure

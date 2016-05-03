@@ -146,7 +146,7 @@ Target "GenerateViews" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Deploy
 
-Target "Deploy" (fun _ ->
+Target "DeployOnAzure" (fun _ ->
   let artifacts = currentDirectory @@ ".." @@ "artifacts"
   let kuduSync = findToolInSubPath "KuduSync.NET.exe" (currentDirectory @@ "packages")
   let deploymentSource =
@@ -189,7 +189,7 @@ Target "All" DoNothing
   ==> "All"
 
 "All"
-  ==> "Deploy"
+  ==> "DeployOnAzure"
 
 "BuildFront"
   ==> "All"
