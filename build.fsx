@@ -119,7 +119,7 @@ Target "BuildFront" (fun _ ->
 let changeMonoAssemblyPath (es: XElement seq) =
   es
   |> Seq.iter (fun e ->
-    e.Attribute(XName.Get("value")).Value <- sprintf "%s/lib/mono/4.5/" (environVar "MONO_HOME")
+    e.Attribute(XName.Get("value")).Value <- (environVar "MONO_HOME") @@ "/lib/mono/4.5/"
   )
 
 Target "GenerateApiDatabase" (fun _ ->
