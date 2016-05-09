@@ -1,37 +1,39 @@
-﻿<div class="input-field col s10">
-  <input placeholder="'a -> 'a" v-model="query" type="text" class="required" minlength="1">
-</div>
-<div class="col s12 m6">
-  <div class="card light-blue darken-2">
-    <div class="card-content white-text">
-      <span class="card-title">Target Assemblies</span>
-      <div class="collection">
-        <p class="collection-item" v-for="assembly in all_assemblies">
-          <input type="checkbox" class="filled-in" id="{{assembly.name}}" value="{{assembly.name}}" checked="checked" v-model="target_assemblies" />
-          <label for="{{assembly.name}}">{{assembly.name}}</label>
-        </p>
+﻿<form id="search" v-on:submit.prevent="search()">
+  <div class="input-field col s10">
+    <input placeholder="'a -> 'a" v-model="query" type="text" class="required" minlength="1">
+  </div>
+  <div class="col s12 m6">
+    <div class="card light-blue darken-2">
+      <div class="card-content white-text">
+        <span class="card-title">Target Assemblies</span>
+        <div class="collection">
+          <p class="collection-item" v-for="assembly in all_assemblies">
+            <input type="checkbox" class="filled-in" id="{{assembly.name}}" value="{{assembly.name}}" checked="checked" v-model="target_assemblies" />
+            <label for="{{assembly.name}}">{{assembly.name}}</label>
+          </p>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div class="row">
-  <p class="col s4">
-    <input type="checkbox" class="filled-in" v-model="strict" id="strict" />
-    <label for="strict">strict</label>
-  </p>
-  <p class="col s4">
-    <input type="checkbox" class="filled-in" v-model="similarity" id="similarity" />
-    <label for="similarity">similarity</label>
-  </p>
-  <p class="col s4">
-    <input type="checkbox" class="filled-in" v-model="ignore_arg_style" id="ignore_arg_style" />
-    <label for="ignore_arg_style">ignore-argstyle</label>
-  </p>
-</div>
-<button class="btn tooltipped" v-bind:class="{ 'disabled': ! valid, 'waves-effect': valid, 'waves-light': valid }" v-on:click="search()" data-position="bottom" data-delay="50" data-tooltip="search query requires non empty.">
-  <i class="fa fa-search fa-inversex left"></i>
-  Search
-</button>
+  <div class="row">
+    <p class="col s4">
+      <input type="checkbox" class="filled-in" v-model="strict" id="strict" />
+      <label for="strict">strict</label>
+    </p>
+    <p class="col s4">
+      <input type="checkbox" class="filled-in" v-model="similarity" id="similarity" />
+      <label for="similarity">similarity</label>
+    </p>
+    <p class="col s4">
+      <input type="checkbox" class="filled-in" v-model="ignore_arg_style" id="ignore_arg_style" />
+      <label for="ignore_arg_style">ignore-argstyle</label>
+    </p>
+  </div>
+  <button class="btn tooltipped" v-bind:class="{ 'disabled': ! valid, 'waves-effect': valid, 'waves-light': valid }" data-position="bottom" data-delay="50" data-tooltip="search query requires non empty.">
+    <i class="fa fa-search fa-inversex left"></i>
+    Search
+  </button>
+</form>
 <div class="preloader-wrapper small active">
   <div class="spinner-layer spinner-green-only" v-bind:class="{ 'hide': hide_progress }">
     <div class="circle-clipper left">
