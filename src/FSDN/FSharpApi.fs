@@ -5,6 +5,17 @@ open System.Runtime.Serialization
 open Microsoft.FSharp.Reflection
 open FSharpApiSearch
 
+module private SearchOptionLiteral =
+
+  [<Literal>]
+  let Strict = "strict"
+
+  [<Literal>]
+  let Similarity = "similarity"
+
+  [<Literal>]
+  let IgnoreArgStyle = "ignore_arg_style"
+
 [<DataContract>]
 type FSharpApi = {
   [<field: DataMember(Name = "name")>]
@@ -24,11 +35,21 @@ type SearchResult = {
 }
 
 [<DataContract>]
+type SearchOptions = {
+  [<field: DataMember(Name = SearchOptionLiteral.Strict)>]
+  Strict: string
+  [<field: DataMember(Name = SearchOptionLiteral.Similarity)>]
+  Similarity: string
+  [<field: DataMember(Name = SearchOptionLiteral.IgnoreArgStyle)>]
+  IgnoreArgStyle: string
+}
+
+[<DataContract>]
 type SearchInformation = {
   [<field: DataMember(Name = "target_assemblies")>]
   Targets: string []
   [<field: DataMember(Name = "search_options")>]
-  RawOptions: Dictionary<string, string>
+  RawOptions: SearchOptions
   [<field: DataMember(Name = "query")>]
   Query: string
 }
@@ -68,39 +89,29 @@ module FSharpApi =
   module SearchOptions =
 
     open Suave
-
-    [<Literal>]
-    let Strict = "strict"
-
-    [<Literal>]
-    let Similarity = "similarity"
-
-    [<Literal>]
-    let IgnoreArgStyle = "ignore_arg_style"
+    open SearchOptionLiteral
 
     let parse info =
-      let update opt (KeyValue(name, value)) =
-        match name with
-        | Strict -> { opt with StrictQueryVariable = OptionStatus.parseOrDefault SearchOptions.defaultOptions.StrictQueryVariable value }
-        | Similarity -> { opt with SimilaritySearching = OptionStatus.parseOrDefault SearchOptions.defaultOptions.SimilaritySearching value }
-        | IgnoreArgStyle -> { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault SearchOptions.defaultOptions.IgnoreArgumentStyle value }
-        | _ -> opt
-      info.RawOptions
-      |> Seq.fold update SearchOptions.defaultOptions
+      let updateStrict value opt =
+        { opt with StrictQueryVariable = OptionStatus.parseOrDefault SearchOptions.defaultOptions.StrictQueryVariable value }
+      let updateSimilarity value opt =
+        { opt with SimilaritySearching = OptionStatus.parseOrDefault SearchOptions.defaultOptions.SimilaritySearching value }
+      let updateIgnoreArgStyle value opt =
+        { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault SearchOptions.defaultOptions.IgnoreArgumentStyle value }
+      SearchOptions.defaultOptions
+      |> updateStrict info.RawOptions.Strict
+      |> updateSimilarity info.RawOptions.Similarity
+      |> updateIgnoreArgStyle info.RawOptions.IgnoreArgStyle
 
     let defaultRawOptions =
       let toString (x: OptionStatus) =
         match FSharpValue.GetUnionFields(x, typeof<OptionStatus>) with
         | case, _ -> case.Name.ToLower()
-      Dictionary<string, string>(
-        [
-          (Strict, SearchOptions.defaultOptions.StrictQueryVariable)
-          (Similarity, SearchOptions.defaultOptions.SimilaritySearching)
-          (IgnoreArgStyle, SearchOptions.defaultOptions.IgnoreArgumentStyle)
-        ]
-        |> Seq.map (fun (name, x) -> (name, toString x))
-        |> dict
-      )
+      {
+        Strict = toString SearchOptions.defaultOptions.StrictQueryVariable
+        Similarity = toString SearchOptions.defaultOptions.SimilaritySearching
+        IgnoreArgStyle = toString SearchOptions.defaultOptions.IgnoreArgumentStyle
+      }
 
   let trySearch database info =
     let client = FSharpApiSearchClient(info.Targets, database)
