@@ -4,15 +4,15 @@ GROUP App
 NUGET
   remote: http://api.nuget.org/v3/index.json
   specs:
-    Argu (2.1.0)
+    Argu (2.1)
     FParsec (1.0.2)
-    FSharp.Compiler.Service (3.0.0)
+    FSharp.Compiler.Service (3.0)
     FSharp.Core (4.0.0.1)
     FSharpApiSearch (0.2.0-beta)
       FParsec (>= 1.0.2)
-      FSharp.Compiler.Service (>= 3.0.0)
-      FsPickler (>= 2.1.0)
-    FsPickler (2.1.0)
+      FSharp.Compiler.Service (>= 3.0)
+      FsPickler (>= 2.1)
+    FsPickler (2.1)
     Suave (1.1.2)
       FSharp.Core (>= 3.1.2.5)
 
@@ -24,22 +24,26 @@ NUGET
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.2)
       FSharp.Compiler.Service (2.0.0.6)
-      FSharpVSPowerTools.Core (>= 2.3.0 < 2.4.0)
+      FSharpVSPowerTools.Core (>= 2.3 < 2.4)
     FSharpApiSearch.Console (0.2.0-beta)
-    FSharpVSPowerTools.Core (2.3.0)
+    FSharpVSPowerTools.Core (2.3)
       FSharp.Compiler.Service (>= 2.0.0.3)
-    KuduSync.NET (1.3.0)
-    Node.js (5.3.0)
+    KuduSync.NET (1.3)
+    Node.js (5.3)
     Npm.js (2.13.1)
       Node.js (>= 0.12.7)
-
+GITHUB
+  remote: fsdn-projects/fsdn-logo
+  specs:
+    favicon.ico (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
+    fsdn_mono.png (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
 GROUP Doc
 NUGET
   remote: http://api.nuget.org/v3/index.json
   specs:
     FParsec (1.0.2)
-    FSharp.Compiler.Service (3.0.0)
-    FsPickler (2.1.0)
+    FSharp.Compiler.Service (3.0)
+    FsPickler (2.1)
 GITHUB
   remote: hafuu/FSharpApiSearch
   specs:

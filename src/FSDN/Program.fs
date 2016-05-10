@@ -43,6 +43,8 @@ let app database homeDir logger : WebPart =
       pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
       pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
       pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
+      pathScan "/%s.png" (browseFile homeDir << sprintf "%s.png")
+      pathScan "/%s.ico" (browseFile homeDir << sprintf "%s.ico")
     ]
     Api.app database logger
   ]

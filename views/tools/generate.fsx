@@ -20,6 +20,9 @@ let root = "file://" + output
 
 let content = __SOURCE_DIRECTORY__ @@ "../content"
 let files = __SOURCE_DIRECTORY__ @@ "../files"
+let icons =
+  ["fsdn_mono.png"; "favicon.ico"]
+  |> List.map (fun x -> __SOURCE_DIRECTORY__ @@ "../../paket-files/build/fsdn-projects/fsdn-logo" @@ x)
 let templates = __SOURCE_DIRECTORY__ @@ "templates"
 let docTemplate = __SOURCE_DIRECTORY__ @@ "docpage.cshtml"
 let layoutRoots = [
@@ -32,6 +35,7 @@ let info = [
 
 let copyFiles () =
   CopyRecursive files output true |> Log "Copying file: "
+  CopyTo output icons
 
 let buildDocumentation () =
   for file in Directory.GetFiles(content, "*", SearchOption.TopDirectoryOnly) do

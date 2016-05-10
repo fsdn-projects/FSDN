@@ -16,6 +16,9 @@ group Build
   nuget FSharp.Formatting
   nuget FSharpApiSearch.Console
 
+  github fsdn-projects/fsdn-logo:master fsdn_mono.png
+  github fsdn-projects/fsdn-logo:master favicon.ico
+
 group Doc
   source https://api.nuget.org/v3/index.json
 
