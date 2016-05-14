@@ -10,6 +10,11 @@ interface SearchOptions {
   ignore_arg_style: string;
 }
 
+interface Assembly {
+  name: string;
+  checked: boolean
+}
+
 interface SearchInformation {
   query: string;
   search_options: SearchOptions;
@@ -37,8 +42,7 @@ let app = new Vue({
     strict: true,
     similarity: false,
     ignore_arg_style: true,
-    all_assemblies: [],
-    target_assemblies: [],
+    all_assemblies: <Assembly[]>[],
     hide_progress: true,
     search_results: undefined,
     error_message: undefined
@@ -68,7 +72,9 @@ let app = new Vue({
             similarity: boolToStatus(this.similarity),
             ignore_arg_style: boolToStatus(this.ignore_arg_style)
           },
-          target_assemblies: this.target_assemblies
+          target_assemblies:
+            this.all_assemblies.filter((a: Assembly) => a.checked)
+              .map((a: Assembly) => a.name)
         })
           .end((err, res) => {
             if (err || !res.ok) {
@@ -92,6 +98,12 @@ request
       app.$set("error_message", res.text);
     } else {
       app.$set("error_message", undefined);
-      app.$set("all_assemblies", JSON.parse(res.text).values);
+      app.$set(
+        "all_assemblies",
+        JSON.parse(res.text).values.map((a: any) => ({
+          name: a.name,
+          checked: a.checked
+        }))
+      );
     }
   });

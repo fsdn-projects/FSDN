@@ -23,3 +23,14 @@ group Doc
   source https://api.nuget.org/v3/index.json
 
   github hafuu/FSharpApiSearch:10ac7b11fd6e1391818bf80acf457ebe2477eb8d README.md
+
+group Database
+  source https://api.nuget.org/v3/index.json
+
+  nuget FSharp.Compiler.Service
+  nuget FSharp.Data
+  nuget FsUnit
+  nuget FsPickler
+  nuget FParsec
+  nuget Argu
+

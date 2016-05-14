@@ -7,14 +7,19 @@ open FSharpApiSearch
 type TargetAssembly = {
   [<field: DataMember(Name = "name")>]
   Name: string
+  [<field: DataMember(Name = "checked")>]
+  Standard: bool
 }
 
 module Assemblies =
 
-  let all =
+  let all asms =
     {
       Values =
-        FSharpApiSearchClient.DefaultTargets
-        |> List.map (fun x -> { Name = x })
-        |> List.toArray
+        asms
+        |> Array.map (fun x -> { Name = x; Standard = false })
+        |> Array.append (FSharpApiSearchClient.DefaultTargets
+          |> List.map (fun x -> { Name = x; Standard = true })
+          |> List.toArray)
+        |> Array.distinct
     }

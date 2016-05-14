@@ -117,6 +117,5 @@ module FSharpApi =
     let client = FSharpApiSearchClient(info.Targets, database)
     try
       client.Search(info.Query, SearchOptions.parse info)
-      |> Seq.filter (fun x -> x.Distance < 3)
       |> Choice1Of2
     with e -> Choice2Of2 e

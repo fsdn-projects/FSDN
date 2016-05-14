@@ -8,7 +8,7 @@ NUGET
     FParsec (1.0.2)
     FSharp.Compiler.Service (3.0)
     FSharp.Core (4.0.0.1)
-    FSharpApiSearch (0.2.0-beta)
+    FSharpApiSearch (0.2.1-beta)
       FParsec (>= 1.0.2)
       FSharp.Compiler.Service (>= 3.0)
       FsPickler (>= 2.1)
@@ -20,12 +20,12 @@ GROUP Build
 NUGET
   remote: http://api.nuget.org/v3/index.json
   specs:
-    FAKE (4.25.4)
+    FAKE (4.26)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.2)
       FSharp.Compiler.Service (2.0.0.6)
       FSharpVSPowerTools.Core (>= 2.3 < 2.4)
-    FSharpApiSearch.Console (0.2.0-beta)
+    FSharpApiSearch.Console (0.2.1-beta)
     FSharpVSPowerTools.Core (2.3)
       FSharp.Compiler.Service (>= 2.0.0.3)
     KuduSync.NET (1.3)
@@ -37,6 +37,23 @@ GITHUB
   specs:
     favicon.ico (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
     fsdn_mono.png (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
+GROUP Database
+NUGET
+  remote: http://api.nuget.org/v3/index.json
+  specs:
+    Argu (2.1)
+    FParsec (1.0.2)
+    FSharp.Compiler.Service (3.0)
+    FSharp.Core (4.0.0.1)
+    FSharp.Data (2.3)
+      Zlib.Portable (>= 1.11) - framework: >= net45, portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
+    FsPickler (2.1)
+    FsUnit (2.1)
+      FSharp.Core (>= 3.1.2.5)
+      NUnit (3.2)
+    NUnit (3.2)
+    Zlib.Portable (1.11) - framework: >= net45, portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
+
 GROUP Doc
 NUGET
   remote: http://api.nuget.org/v3/index.json

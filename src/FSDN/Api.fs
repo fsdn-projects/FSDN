@@ -15,10 +15,10 @@ let validate (req: HttpRequest) key validate (f: string -> WebPart) : WebPart =
     )
     (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not exist." key)
 
-let searchSimple database logger req =
+let searchSimple database (assemblies: TargetAssembly []) logger req =
   let inner query =
     {
-      Targets = Array.ofList FSharpApiSearch.FSharpApiSearchClient.DefaultTargets
+      Targets = assemblies |> Array.map (fun x -> x.Name)
       RawOptions = FSharpApi.SearchOptions.defaultRawOptions
       Query = query
     }
@@ -52,13 +52,14 @@ let search database logger (req: HttpRequest) =
     Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "search error"
     RequestErrors.BAD_REQUEST e.Message
 
-let app database logger : WebPart =
+let app database externalAssemblies logger : WebPart =
+  let assemblies = Assemblies.all externalAssemblies
   choose [
     GET >=> choose [
       path "/api/assemblies"
-        >=> (Assemblies.all |> Json.toJson |> Suave.Successful.ok)
+        >=> (assemblies |> Json.toJson |> Suave.Successful.ok)
       path "/api/search" >=>
-        request (searchSimple database logger)
+        request (searchSimple database assemblies.Values logger)
     ]
     POST >=> choose [
       path "/api/search" >=>

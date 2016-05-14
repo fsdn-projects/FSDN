@@ -8,7 +8,7 @@
         <span class="card-title">Target Assemblies</span>
         <div class="collection">
           <p class="collection-item" v-for="assembly in all_assemblies">
-            <input type="checkbox" class="filled-in" id="{{assembly.name}}" value="{{assembly.name}}" checked="checked" v-model="target_assemblies" />
+            <input type="checkbox" class="filled-in" id="{{assembly.name}}" value="{{assembly.name}}" v-model="assembly.checked" />
             <label for="{{assembly.name}}">{{assembly.name}}</label>
           </p>
         </div>

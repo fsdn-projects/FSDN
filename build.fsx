@@ -103,6 +103,53 @@ let changeMonoAssemblyPath (es: XElement seq) =
     e.Attribute(XName.Get("value")).Value <- (environVar "MONO_HOME") @@ "/lib/mono/4.5/"
   )
 
+let targetFrameworks = [|
+  "net45"
+  "net40"
+  "net4"
+  "net35"
+  "net20"
+|]
+
+let searchExternalAssemblies () =
+  "./packages/database/"
+  |> directoryInfo
+  |> subDirectories
+  |> Array.collect (fun d ->
+    subDirectories d
+    |> Array.find (fun d -> d.Name = "lib")
+    |> subDirectories
+    |> Array.rev
+    |> Array.find (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
+    |> filesInDir
+    |> Array.choose (fun f ->
+      if f.Extension = ".dll" then Some(f.FullName)
+      else None
+    )
+  )
+  |> Array.distinct
+  |> Array.append [|
+    "System.IO"
+    "System.Runtime"
+    "System.Diagnostics.Debug"
+    "System.Collections"
+    "System.Text.Encoding"
+    "System.Text.RegularExpressions"
+    "System.Threading"
+    "System.Threading.Tasks"
+    "System.Xml.ReaderWriter"
+    "System.Reflection"
+    "System.Globalization"
+    "System.Runtime.Extensions"
+    "System.Reflection.Primitives"
+    "System.Xml.Linq"
+    "System.Runtime.Serialization"
+    "System.Net"
+    "System.Numerics"
+    "System.Runtime.Numerics"
+  |]
+  |> Array.toList
+
 Target "GenerateApiDatabase" (fun _ ->
   if isMono then
     let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ "packages" @@ "build")
@@ -111,9 +158,30 @@ Target "GenerateApiDatabase" (fun _ ->
     |> changeMonoAssemblyPath
     doc.Save(config)
   let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ "packages" @@ "build")
-  let exitCode = ExecProcess (fun info -> info.FileName <- exe) TimeSpan.MaxValue
+  let args =
+    if isMono then ""
+    else
+      @"--lib:""C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5""" :: searchExternalAssemblies ()
+      |> String.concat " "
+  let exitCode =
+    ExecProcess (fun info ->
+      info.FileName <- exe
+      info.Arguments <- args)
+      TimeSpan.MaxValue
   if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
   MoveFile ("bin" @@ project) (currentDirectory @@ "database")
+)
+
+Target "GenerateTargetAssembliesFile" (fun _ ->
+  let targets = [|
+    "FSharp.Compiler.Service"
+    "FSharp.Data"
+    "FsUnit"
+    "FsPickler"
+    "FParsec"
+    "Argu"
+  |]
+  File.WriteAllLines("bin" @@ project @@ "assemblies", targets)
 )
 
 Target "GenerateViews" (fun _ ->
@@ -177,6 +245,9 @@ Target "All" DoNothing
 
 "GenerateApiDatabase"
   ==> "All"
+
+"GenerateApiDatabase"
+ <== ["GenerateTargetAssembliesFile"]
 
 "GenerateViews"
   ==> "All"

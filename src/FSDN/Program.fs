@@ -29,7 +29,7 @@ let logger (args: ParseResults<Args>) =
   | None -> LogLevel.Warn
   |> Loggers.ConsoleWindowLogger
 
-let app database homeDir logger : WebPart =
+let app database assemblies homeDir logger : WebPart =
 
   let notFound ctx = asyncOption {
     let! ctx = browseFile homeDir "404.html" ctx
@@ -46,7 +46,7 @@ let app database homeDir logger : WebPart =
       pathScan "/%s.png" (browseFile homeDir << sprintf "%s.png")
       pathScan "/%s.ico" (browseFile homeDir << sprintf "%s.ico")
     ]
-    Api.app database logger
+    Api.app database assemblies logger
   ]
 
 let serverConfig port homeDir logger = {
@@ -68,6 +68,7 @@ let main args =
   let database =
     Path.Combine(homeDir, ApiLoader.databaseName)
     |> ApiLoader.loadFromFile
-  let app = app database homeDir logger
+  let assemblies = File.ReadAllLines(Path.Combine(homeDir, "assemblies"))
+  let app = app database assemblies homeDir logger
   startWebServer config app
   0
