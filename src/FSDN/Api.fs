@@ -52,14 +52,13 @@ let search database logger (req: HttpRequest) =
     Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "search error"
     RequestErrors.BAD_REQUEST e.Message
 
-let app database externalAssemblies logger : WebPart =
-  let assemblies = Assemblies.all externalAssemblies
+let app database assemblies logger : WebPart =
   choose [
     GET >=> choose [
       path "/api/assemblies"
-        >=> (assemblies |> Json.toJson |> Suave.Successful.ok)
+        >=> ({ Values = assemblies } |> Json.toJson |> Suave.Successful.ok)
       path "/api/search" >=>
-        request (searchSimple database assemblies.Values logger)
+        request (searchSimple database assemblies logger)
     ]
     POST >=> choose [
       path "/api/search" >=>

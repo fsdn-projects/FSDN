@@ -14,12 +14,8 @@ type TargetAssembly = {
 module Assemblies =
 
   let all asms =
-    {
-      Values =
-        asms
-        |> Array.map (fun x -> { Name = x; Standard = false })
-        |> Array.append (FSharpApiSearchClient.DefaultTargets
-          |> List.map (fun x -> { Name = x; Standard = true })
-          |> List.toArray)
-        |> Array.distinct
-    }
+    asms
+    |> Array.append (FSharpApiSearchClient.DefaultTargets
+      |> List.map (fun x -> { Name = x; Standard = true })
+      |> List.toArray)
+    |> Array.distinct

@@ -159,7 +159,8 @@ Target "GenerateApiDatabase" (fun _ ->
     doc.Save(config)
   let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ "packages" @@ "build")
   let args =
-    if isMono then ""
+    // TODO: enable external assemblies
+    if isMono then "System.Xml.Linq System.Runtime.Serialization"
     else
       @"--lib:""C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5""" :: searchExternalAssemblies ()
       |> String.concat " "
@@ -173,14 +174,21 @@ Target "GenerateApiDatabase" (fun _ ->
 )
 
 Target "GenerateTargetAssembliesFile" (fun _ ->
-  let targets = [|
-    "FSharp.Compiler.Service"
-    "FSharp.Data"
-    "FsUnit"
-    "FsPickler"
-    "FParsec"
-    "Argu"
-  |]
+  let targets =
+    if isMono then [||]
+    else [|
+      ("FSharp.Compiler.Service", false)
+      ("FSharp.Data", false)
+      ("FsUnit", false)
+      ("FsPickler", false)
+      ("FParsec", false)
+      ("Argu", false)
+    |]
+    |> Array.append [|
+      ("System.Xml", true)
+      ("System.Xml.Linq", true)
+    |]
+    |> Array.map (fun (assembly, defaultCheck) -> sprintf "%s,%b" assembly defaultCheck)
   File.WriteAllLines("bin" @@ project @@ "assemblies", targets)
 )
 

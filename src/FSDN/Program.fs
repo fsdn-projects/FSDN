@@ -1,5 +1,6 @@
 ﻿module FSDN.Program
 
+open System
 open System.IO
 open System.Net
 open Suave
@@ -68,7 +69,21 @@ let main args =
   let database =
     Path.Combine(homeDir, ApiLoader.databaseName)
     |> ApiLoader.loadFromFile
-  let assemblies = File.ReadAllLines(Path.Combine(homeDir, "assemblies"))
+  let assemblies = 
+    File.ReadAllLines(Path.Combine(homeDir, "assemblies"))
+    |> Array.choose (fun s ->
+      match s.Split([|','|]) with
+      | [| assembly; defaultCheck |] ->
+        match Boolean.TryParse(defaultCheck) with
+        | true, defaultCheck ->
+          Some {
+            Name = assembly
+            Standard = defaultCheck
+          }
+        | false, _ -> None
+      | _ -> None
+    )
+    |> Assemblies.all
   let app = app database assemblies homeDir logger
   startWebServer config app
   0
