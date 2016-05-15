@@ -1,84 +1,85 @@
-﻿<form id="search" v-on:submit.prevent="search()">
-  <div class="input-field col s10">
-    <input placeholder="'a -> 'a" v-model="query" type="text" class="required" minlength="1">
-  </div>
-  <div class="col s12 m6">
-    <div class="card light-blue darken-2">
-      <div class="card-content white-text">
-        <span class="card-title">Target Assemblies</span>
-        <div class="collection">
-          <p class="collection-item" v-for="assembly in all_assemblies">
-            <input type="checkbox" class="filled-in" id="{{assembly.name}}" value="{{assembly.name}}" v-model="assembly.checked" />
-            <label for="{{assembly.name}}">{{assembly.name}}</label>
-          </p>
+﻿<div id="search" class="col s12 m8 l9">
+  <form v-on:submit.prevent="search()">
+    <div class="input-field col s12">
+      <input placeholder="'a -> 'a" id="search_query" v-model="query" type="text" class="required" minlength="1">
+      <label for="search_query">Query</label>
+    </div>
+    <button class="btn tooltipped" v-bind:class="{ 'disabled': ! valid, 'waves-effect': valid, 'waves-light': valid }" data-position="bottom" data-delay="50" data-tooltip="search query requires non empty.">
+      <i class="fa fa-search fa-inversex left"></i>
+      Search
+    </button>
+    <div class="preloader-wrapper small active">
+      <div class="spinner-layer spinner-green-only" v-bind:class="{ 'hide': hide_progress }">
+       <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+          <div class="circle"></div>
+        </div><div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="row" v-bind:class="{ 'hide': searched || raised_error }">
+    <div class="col s12 m6">
+      <div class="card light-blue darken-2">
+        <div class="card-content white-text">
+          <span class="card-title">Examples</span>
+          <div class="collection">
+            <a class="collection-item" v-on:click="search(&quot;id : 'a -&gt; 'a&quot;)">id : 'a -&gt; 'a</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="row">
-    <p class="col s4">
-      <input type="checkbox" class="filled-in" v-model="strict" id="strict" />
-      <label for="strict">strict</label>
-    </p>
-    <p class="col s4">
-      <input type="checkbox" class="filled-in" v-model="similarity" id="similarity" />
-      <label for="similarity">similarity</label>
-    </p>
-    <p class="col s4">
-      <input type="checkbox" class="filled-in" v-model="ignore_arg_style" id="ignore_arg_style" />
-      <label for="ignore_arg_style">ignore-argstyle</label>
-    </p>
-  </div>
-  <button class="btn tooltipped" v-bind:class="{ 'disabled': ! valid, 'waves-effect': valid, 'waves-light': valid }" data-position="bottom" data-delay="50" data-tooltip="search query requires non empty.">
-    <i class="fa fa-search fa-inversex left"></i>
-    Search
-  </button>
-</form>
-<div class="preloader-wrapper small active">
-  <div class="spinner-layer spinner-green-only" v-bind:class="{ 'hide': hide_progress }">
-    <div class="circle-clipper left">
-      <div class="circle"></div>
-    </div><div class="gap-patch">
-      <div class="circle"></div>
-    </div><div class="circle-clipper right">
-      <div class="circle"></div>
-    </div>
-  </div>
-</div>
-<div class="row" v-bind:class="{ 'hide': searched || raised_error }">
-  <div class="col s12 m6">
-    <div class="card light-blue darken-2">
-      <div class="card-content white-text">
-        <span class="card-title">Examples</span>
-        <div class="collection">
-          <a class="collection-item" v-on:click="search(&quot;id : 'a -&gt; 'a&quot;)">id : 'a -&gt; 'a</a>
+  <div class="row" v-bind:class="{ 'hide': ! raised_error }">
+    <div class="col s10 m8">
+      <div class="card red darken-2">
+        <div class="card-content white-text">
+          <span class="card-title">Error!</span>
+          <pre>{{error_message}}</pre>
+          <div class="card-action">
+            <a href="https://github.com/pocketberserker/FSDN/issues">
+              <span class="octicon octicon-issue-opened"></span>
+              Report Issue
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  <ul class="collapsible" data-collapsible="expandable" v-bind:class="{ 'hide': (! searched) || raised_error }">
+    <li v-for="result in search_results">
+      <div class="collapsible-header">{{ result.api.name }}: {{ result.api.signature }}</div>
+      <div class="collapsible-body">
+        <span>distance: {{ result.distance }}</span>
+        <span>kind: {{ result.api.kind }}</span>
+      </div>
+    </li>
+  </ul>
 </div>
-<div class="row" v-bind:class="{ 'hide': ! raised_error }">
-  <div class="col s10 m8">
-    <div class="card red darken-2">
-      <div class="card-content white-text">
-        <span class="card-title">Error!</span>
-        <pre>{{error_message}}</pre>
-        <div class="card-action">
-          <a href="https://github.com/pocketberserker/FSDN/issues">
-            <span class="octicon octicon-issue-opened"></span>
-            Report Issue
-          </a>
-        </div>
+<div id="search_options" class="col s12 m4 l3">
+  <p>
+    <input type="checkbox" class="filled-in" v-model="strict" id="strict" />
+    <label for="strict">strict</label>
+  </p>
+  <p>
+    <input type="checkbox" class="filled-in" v-model="similarity" id="similarity" />
+    <label for="similarity">similarity</label>
+  </p>
+  <p>
+    <input type="checkbox" class="filled-in" v-model="ignore_arg_style" id="ignore_arg_style" />
+    <label for="ignore_arg_style">ignore-argstyle</label>
+  </p>
+  <div class="card light-blue darken-2">
+    <div class="card-content white-text">
+      <span class="card-title">Target Assemblies</span>
+      <div class="collection">
+        <p class="collection-item" v-for="assembly in all_assemblies">
+          <input type="checkbox" class="filled-in" id="{{assembly.name}}" value="{{assembly.name}}" v-model="assembly.checked" />
+          <label for="{{assembly.name}}">{{assembly.name}}</label>
+        </p>
       </div>
     </div>
   </div>
 </div>
-<ul class="collapsible" data-collapsible="expandable" v-bind:class="{ 'hide': (! searched) || raised_error }">
-  <li v-for="result in search_results">
-    <div class="collapsible-header">{{ result.api.name }}: {{ result.api.signature }}</div>
-    <div class="collapsible-body">
-      <span>distance: {{ result.distance }}</span>
-      <span>kind: {{ result.api.kind }}</span>
-    </div>
-  </li>
-</ul>
