@@ -26,7 +26,12 @@
         <div class="card-content white-text">
           <span class="card-title">Examples</span>
           <div class="collection">
+            <a class="collection-item" v-on:click="search(&quot;'a -&gt; 'a&quot;)">'a -&gt; 'a</a>
+            <a class="collection-item" v-on:click="search(&quot;?a -&gt; ?a&quot;)">?a -&gt; ?a</a>
             <a class="collection-item" v-on:click="search(&quot;id : 'a -&gt; 'a&quot;)">id : 'a -&gt; 'a</a>
+            <a class="collection-item" v-on:click="search(&quot;map : _&quot;)">map : _</a>
+            <a class="collection-item" v-on:click="search(&quot;? -&gt; list&lt;?&gt; -&gt; ?&quot;)">? -&gt; list&lt;?&gt; -&gt; ?</a>
+            <a class="collection-item" v-on:click="search(&quot;string =&gt; int&quot;)">string =&gt; int</a>
           </div>
         </div>
       </div>
