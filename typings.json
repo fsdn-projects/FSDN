@@ -1,9 +1,10 @@
 {
   "name": "FSDN",
   "version": false,
-  "ambientDependencies": {
-    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#aee0039a2d6686ec78352125010ebb38a7a7d743",
-    "superagent": "github:DefinitelyTyped/DefinitelyTyped/superagent/superagent.d.ts#b30dbc4dd32b3237cd78e9139c3fc270caaacacb",
-    "vue": "github:DefinitelyTyped/DefinitelyTyped/vue/vue.d.ts#88a3ea263eba30418924f53331a00376c51c2f54"
+  "resolution": "typings",
+  "globalDependencies": {
+    "node": "registry:dt/node#6.0.0+20160514165920",
+    "superagent": "registry:dt/superagent#1.4.0+20160317120654",
+    "vue": "registry:dt/vue#1.0.21+20160423143248"
   }
 }

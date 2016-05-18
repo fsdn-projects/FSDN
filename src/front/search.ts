@@ -1,4 +1,4 @@
-/// <reference path="../../typings/main.d.ts" />
+/// <reference path="../../typings/index.d.ts" />
 "use strict";
 import Vue = require("vue");
 import * as request from "superagent";
