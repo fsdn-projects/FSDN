@@ -4,6 +4,7 @@
 open Fake
 open System
 open System.IO
+open System.Xml
 open System.Xml.Linq
 open System.Xml.XPath
 open Paket
@@ -203,7 +204,10 @@ let tryFindIconUrl name =
   "./packages/database/" @@ name
   |> FindFirstMatchingFile (name + ".nuspec")
   |> XDocument.Load
-  |> fun doc -> doc.XPathSelectElements("/package/metadata/iconUrl")
+  |> fun doc ->
+    let manager = XmlNamespaceManager(new NameTable())
+    manager.AddNamespace("x", "http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd")
+    doc.XPathSelectElements("/x:package/x:metadata/x:iconUrl", manager)
   |> Seq.tryPick (fun e -> Some e.Value)
 
 Target "GenerateTargetAssembliesFile" (fun _ ->
