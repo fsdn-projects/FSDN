@@ -24,6 +24,8 @@ type FSharpApi = {
   Kind: string
   [<field: DataMember(Name = "signature")>]
   Signature: string
+  [<field: DataMember(Name = "type_constraints")>]
+  TypeConstraints: string
 }
 
 [<DataContract>]
@@ -69,6 +71,9 @@ module FSharpApi =
                 Name = ReverseName.toString result.Api.Name
                 Kind = result.Api.Kind.Print()
                 Signature = result.Api.Signature.Print()
+                TypeConstraints =
+                  if not <| result.Api.TypeConstraints.IsEmpty then result.Api.PrintTypeConstraints()
+                  else ""
               }
           })
         |> Seq.toArray

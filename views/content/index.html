@@ -53,12 +53,18 @@
       </div>
     </div>
   </div>
-  <ul class="collapsible" data-collapsible="expandable" v-bind:class="{ 'hide': (! searched) || raised_error }">
+  <ul class="collapsible popout" data-collapsible="expandable" v-bind:class="{ 'hide': (! searched) || raised_error }">
     <li v-for="result in search_results">
-      <div class="collapsible-header">{{ result.api.name }}: {{ result.api.signature }}</div>
+      <div class="collapsible-header">
+        <span>{{ result.api.name }}: {{ result.api.signature }}</span>
+        <br>
+        <span id="type_constraints" v-if="result.api.type_constraints">{{ result.api.type_constraints }}</span>
+      </div>
       <div class="collapsible-body">
-        <span>distance: {{ result.distance }}</span>
-        <span>kind: {{ result.api.kind }}</span>
+        <ul class="collection" id="assembly_info">
+          <li class="collection-item" id="distance">distance: {{ result.distance }}</li>
+          <li class="collection-item" id="kind">kind: {{ result.api.kind }}</li>
+        </ul>
       </div>
     </li>
   </ul>
