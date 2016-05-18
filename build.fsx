@@ -222,7 +222,7 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
       "Argu"
     |]
     |> Array.map (fun name ->
-      let p = Map.find (PackageName(name)) packages
+      let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = name then Some v else None)
       {
         Name = name
         Standard = false
