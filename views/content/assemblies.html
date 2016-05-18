@@ -18,7 +18,7 @@
   </div>
   <ul class="collection" v-bind:class="{ 'hide': raised_error }">
     <li class="collection-item" v-for="assembly in assemblies">
-      <img src="{{ assembly.icon_url }}" alt="" width="32px" height="32px" v-if="! assembly.checked"></img>
+      <img v-bind:src="assembly.icon_url" alt="" width="32px" height="32px" v-if="assembly.icon_url"></img>
       {{ assembly.name }} {{ assembly.version }}
       <a href="https://www.nuget.org/packages/{{ assembly.name }}/{{ assembly.version }}" class="secondary-content" v-if="! assembly.checked"><i class="fa fa-arrow-circle-right"></i></a>
     </li>
