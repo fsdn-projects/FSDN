@@ -69,16 +69,18 @@ let main args =
   let database =
     Path.Combine(homeDir, ApiLoader.databaseName)
     |> ApiLoader.loadFromFile
-  let assemblies = 
+  let assemblies =
     File.ReadAllLines(Path.Combine(homeDir, "assemblies"))
     |> Array.choose (fun s ->
       match s.Split([|','|]) with
-      | [| assembly; defaultCheck |] ->
+      | [| assembly; defaultCheck; version; iconUrl |] ->
         match Boolean.TryParse(defaultCheck) with
         | true, defaultCheck ->
           Some {
             Name = assembly
             Standard = defaultCheck
+            Version = version
+            IconUrl = iconUrl
           }
         | false, _ -> None
       | _ -> None

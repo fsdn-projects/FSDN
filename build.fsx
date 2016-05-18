@@ -1,10 +1,13 @@
 #r @"packages/build/FAKE/tools/FakeLib.dll"
 #r "System.Xml.Linq.dll"
+#r ".paket/paket.exe"
 open Fake
 open System
 open System.IO
 open System.Xml.Linq
 open System.Xml.XPath
+open Paket
+open Paket.Domain
 
 let project = "FSDN"
 
@@ -173,22 +176,65 @@ Target "GenerateApiDatabase" (fun _ ->
   MoveFile ("bin" @@ project) (currentDirectory @@ "database")
 )
 
+type TargetAssemblyInfo = {
+  Name: string
+  Standard: bool
+  Version: SemVerInfo option
+  IconUrl: string option
+}
+with
+  override this.ToString() =
+    [
+      this.Name
+      string this.Standard
+      (match this.Version with | Some v -> v.AsString | None -> "")
+      (match this.IconUrl with | Some v -> v | None -> "")
+    ]
+    |> String.concat ","
+
+let standard name = {
+  Name = name
+  Standard = true
+  Version = None
+  IconUrl = None
+}
+
+let tryFindIconUrl name =
+  "./packages/database/" @@ name
+  |> FindFirstMatchingFile (name + ".nuspec")
+  |> XDocument.Load
+  |> fun doc -> doc.XPathSelectElements("/package/metadata/iconUrl")
+  |> Seq.tryPick (fun e -> Some e.Value)
+
 Target "GenerateTargetAssembliesFile" (fun _ ->
+  let packages =
+    LockFile.LoadFrom("./paket.lock")
+      .GetGroup(GroupName("Database"))
+      .Resolution
   let targets =
     if isMono then [||]
     else [|
-      ("FSharp.Compiler.Service", false)
-      ("FSharp.Data", false)
-      ("FsUnit", false)
-      ("FsPickler", false)
-      ("FParsec", false)
-      ("Argu", false)
+      "FSharp.Compiler.Service"
+      "FSharp.Data"
+      "FsUnit"
+      "FsPickler"
+      "FParsec"
+      "Argu"
     |]
+    |> Array.map (fun name ->
+      let p = Map.find (PackageName(name)) packages
+      {
+        Name = name
+        Standard = false
+        Version = Some p.Version
+        IconUrl = tryFindIconUrl name
+      }
+    )
     |> Array.append [|
-      ("System.Xml", true)
-      ("System.Xml.Linq", true)
+      standard "System.Xml"
+      standard "System.Xml.Linq"
     |]
-    |> Array.map (fun (assembly, defaultCheck) -> sprintf "%s,%b" assembly defaultCheck)
+    |> Array.map (sprintf "%O")
   File.WriteAllLines("bin" @@ project @@ "assemblies", targets)
 )
 
