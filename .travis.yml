@@ -7,7 +7,7 @@ solution: FSDN.sln
 
 before_install:
 - export CXX='g++-4.8'
-- nvm install 5.0.0 && nvm use 5.0.0
+- nvm install 6.0.0 && nvm use 6.0.0
 
 before_script:
  - chmod +x ./build.sh
