@@ -69,8 +69,8 @@ module FSharpApi =
             Api =
               {
                 Name = ReverseName.toString result.Api.Name
-                Kind = result.Api.Kind.Print()
-                Signature = result.Api.Signature.Print()
+                Kind = result.Api.PrintKind()
+                Signature = result.Api.PrintSignature()
                 TypeConstraints =
                   if not <| result.Api.TypeConstraints.IsEmpty then result.Api.PrintTypeConstraints()
                   else ""
