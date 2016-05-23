@@ -64,7 +64,7 @@ NUGET
 GITHUB
   remote: hafuu/FSharpApiSearch
   specs:
-    README.md (d5946fa3540c14793129508271b42d7366f674cb)
+    README.md (450fe8cd579fdd26916ee7a5bb68d6d8741b3280)
       FParsec
       FSharp.Compiler.Service
       FsPickler

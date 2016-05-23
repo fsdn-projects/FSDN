@@ -22,7 +22,7 @@ group Build
 group Doc
   source https://api.nuget.org/v3/index.json
 
-  github hafuu/FSharpApiSearch:d5946fa3540c14793129508271b42d7366f674cb README.md
+  github hafuu/FSharpApiSearch:450fe8cd579fdd26916ee7a5bb68d6d8741b3280 README.md
 
 group Database
   source https://api.nuget.org/v3/index.json
