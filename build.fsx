@@ -102,9 +102,10 @@ Target "BuildFront" (fun _ ->
 )
 
 let changeMonoAssemblyPath (es: XElement seq) =
+  let path = getBuildParamOrDefault "mono" "/usr"
   es
   |> Seq.iter (fun e ->
-    e.Attribute(XName.Get("value")).Value <- (environVar "MONO_HOME") @@ "/lib/mono/4.5/"
+    e.Attribute(XName.Get("value")).Value <- path @@ "lib/mono/4.5/"
   )
 
 let targetFrameworks = [|
