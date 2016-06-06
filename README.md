@@ -9,7 +9,7 @@
 
 ## Required Tools
 
-- Node.js >= 5.x
+- Node.js >= 6.x
 - F# 4.0
 - .NET Framework 4.6 or Mono >= 4.2.2
 
@@ -21,18 +21,22 @@
 ./build.cmd
 ```
 
-## Linux
+### Linux
 
 ```
-export MONO_HOME='/usr'
 ./build.sh
+```
+
+or
+
+```
+./build.sh mono='/path/to/mono/home'
 ```
 
 ### OS X with homebrew
 
 ```
-export MONO_HOME='/usr/local/Cellar/mono/4.2.3/'
-./build.sh
+./build.sh mono='/usr/local/Cellar/mono/4.2.3/'
 ```
 
 [license-url]: https://github.com/fsdn-projects/FSDN/blob/master/LICENSE
