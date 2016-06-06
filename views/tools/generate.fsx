@@ -47,7 +47,8 @@ let buildDocumentation () =
   for file in Directory.GetFiles(content, "*", SearchOption.TopDirectoryOnly) do
     let name = filename file
     let replacements =
-      if Path.GetFileNameWithoutExtension(name) = "index" then "search" else name
+      if Path.GetFileNameWithoutExtension(name) = "index" then "search"
+      else Path.GetFileNameWithoutExtension(name)
       |> configReplacements
     Literate.ProcessMarkdown(
       file,
