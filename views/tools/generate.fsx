@@ -9,14 +9,11 @@ open FSharp.Literate
 open FSharp.MetadataFormat
 open FSharp.Markdown
 
+let src = __SOURCE_DIRECTORY__ @@ "../../src"
 let bin = __SOURCE_DIRECTORY__ @@ "../../bin"
 let output = bin @@ "FSDN"
 
-#if RELEASE
 let root = ""
-#else
-let root = "file://" + output
-#endif
 
 let content = __SOURCE_DIRECTORY__ @@ "../content"
 let files = __SOURCE_DIRECTORY__ @@ "../files"
@@ -37,18 +34,27 @@ let copyFiles () =
   CopyRecursive files output true |> Log "Copying file: "
   CopyTo output icons
 
+let configReplacements name =
+  let exists = fileExists (src @@ "front" @@ sprintf "%s.ts" name) || fileExists (sprintf "../files/%s.js" name)
+  let script =
+    if exists then
+      Path.GetFileNameWithoutExtension(name) + ".js"
+      |> sprintf """<script src="%s%s"></script>""" root
+    else ""
+  ("root", root) :: ("script", script) :: info
+
 let buildDocumentation () =
   for file in Directory.GetFiles(content, "*", SearchOption.TopDirectoryOnly) do
     let name = filename file
-    let js =
-      let name = if Path.GetFileNameWithoutExtension(name) = "index" then "search" else name
-      Path.GetFileNameWithoutExtension(name) + ".js"
+    let replacements =
+      if Path.GetFileNameWithoutExtension(name) = "index" then "search" else name
+      |> configReplacements
     Literate.ProcessMarkdown(
       file,
       docTemplate,
       output @@ name,
       layoutRoots = layoutRoots,
-      replacements = ("root", root) :: ("script", js) :: info
+      replacements = replacements
     )
 
 let readme = "../../paket-files/doc/hafuu/FSharpApiSearch/README.md"
@@ -100,7 +106,7 @@ let generateQuerySpec () =
     docTemplate,
     lineNumbers = false,
     layoutRoots = layoutRoots,
-    replacements = ("root", root) :: ("script", "query_spec.js") :: info
+    replacements = ("root", root) :: ("script", "") :: info
   )
 
 copyFiles ()
