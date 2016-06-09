@@ -108,6 +108,12 @@ let changeMonoAssemblyPath (es: XElement seq) =
     e.Attribute(XName.Get("value")).Value <- path @@ "lib/mono/4.5/"
   )
 
+let changeAzureAssemblyPath (es: XElement seq) =
+  es
+  |> Seq.iter (fun e ->
+    e.Attribute(XName.Get("value")).Value <- e.Attribute(XName.Get("value")).Value.Replace(@"C:\", @"D:\")
+  )
+
 let targetFrameworks = [|
   "net45"
   "net40"
@@ -121,14 +127,21 @@ let searchExternalAssemblies () =
   |> directoryInfo
   |> subDirectories
   |> Array.collect (fun d ->
-    subDirectories d
-    |> Array.find (fun d -> d.Name = "lib")
-    |> subDirectories
-    |> Array.rev
-    |> Array.find (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
+    let libs =
+      subDirectories d
+      |> Array.find (fun d -> d.Name = "lib")
+      |> subDirectories
+      |> Array.rev
+    let withoutPortable = libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t) && not (d.Name.Contains("portable"))))
+    let target =
+      match withoutPortable with
+      | Some w -> w
+      | None -> libs |> Array.find (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
+    target
     |> filesInDir
     |> Array.choose (fun f ->
-      if f.Extension = ".dll" then Some(f.FullName)
+      if f.Name = "FSharp.Core.dll" then None
+      elif f.Extension = ".dll" then Some(f.FullName)
       else None
     )
   )
@@ -152,22 +165,34 @@ let searchExternalAssemblies () =
     "System.Net"
     "System.Numerics"
     "System.Runtime.Numerics"
+    "System.Web"
+    "System.Web.Services"
+    "System.Web.ApplicationServices"
+    "System.EnterpriseServices"
+    "System.ComponentModel.DataAnnotations"
+    "System.Drawing"
+    "System.Data"
+    "System.Transactions"
   |]
   |> Array.toList
 
 Target "GenerateApiDatabase" (fun _ ->
-  if isMono then
+  let isAzure =
+    CurrentTargetOrder
+    |> List.exists (List.contains "DeployOnAzure")
+  if isMono || isAzure then
+    let changeAssemblyPath = if isMono then changeMonoAssemblyPath else changeAzureAssemblyPath
     let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ "packages" @@ "build")
     let doc = XDocument.Load(config)
     doc.XPathSelectElements("/configuration/appSettings/add")
-    |> changeMonoAssemblyPath
+    |> changeAssemblyPath
     doc.Save(config)
   let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ "packages" @@ "build")
   let args =
     // TODO: enable external assemblies
     if isMono then "System.Xml.Linq System.Runtime.Serialization"
     else
-      @"--lib:""C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5""" :: searchExternalAssemblies ()
+      searchExternalAssemblies ()
       |> String.concat " "
   let exitCode =
     ExecProcess (fun info ->
