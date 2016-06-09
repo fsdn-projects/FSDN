@@ -127,14 +127,21 @@ let searchExternalAssemblies () =
   |> directoryInfo
   |> subDirectories
   |> Array.collect (fun d ->
-    subDirectories d
-    |> Array.find (fun d -> d.Name = "lib")
-    |> subDirectories
-    |> Array.rev
-    |> Array.find (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
+    let libs =
+      subDirectories d
+      |> Array.find (fun d -> d.Name = "lib")
+      |> subDirectories
+      |> Array.rev
+    let withoutPortable = libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t) && not (d.Name.Contains("portable"))))
+    let target =
+      match withoutPortable with
+      | Some w -> w
+      | None -> libs |> Array.find (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
+    target
     |> filesInDir
     |> Array.choose (fun f ->
-      if f.Extension = ".dll" then Some(f.FullName)
+      if f.Name = "FSharp.Core.dll" then None
+      elif f.Extension = ".dll" then Some(f.FullName)
       else None
     )
   )
@@ -158,6 +165,14 @@ let searchExternalAssemblies () =
     "System.Net"
     "System.Numerics"
     "System.Runtime.Numerics"
+    "System.Web"
+    "System.Web.Services"
+    "System.Web.ApplicationServices"
+    "System.EnterpriseServices"
+    "System.ComponentModel.DataAnnotations"
+    "System.Drawing"
+    "System.Data"
+    "System.Transactions"
   |]
   |> Array.toList
 
