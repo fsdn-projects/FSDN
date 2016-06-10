@@ -5,7 +5,7 @@ open System.Runtime.Serialization
 open Microsoft.FSharp.Reflection
 open FSharpApiSearch
 
-module private SearchOptionLiteral =
+module SearchOptionLiteral =
 
   [<Literal>]
   let Strict = "strict"
@@ -107,16 +107,6 @@ module FSharpApi =
       |> updateStrict info.RawOptions.Strict
       |> updateSimilarity info.RawOptions.Similarity
       |> updateIgnoreArgStyle info.RawOptions.IgnoreArgStyle
-
-    let defaultRawOptions =
-      let toString (x: OptionStatus) =
-        match FSharpValue.GetUnionFields(x, typeof<OptionStatus>) with
-        | case, _ -> case.Name.ToLower()
-      {
-        Strict = toString SearchOptions.defaultOptions.StrictQueryVariable
-        Similarity = toString SearchOptions.defaultOptions.SimilaritySearching
-        IgnoreArgStyle = toString SearchOptions.defaultOptions.IgnoreArgumentStyle
-      }
 
   let trySearch database info =
     let client = FSharpApiSearchClient(info.Targets, database)

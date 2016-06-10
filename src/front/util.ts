@@ -6,3 +6,6 @@ export const baseUrl =
     u.pop();
     return u.join("/");
   }();
+
+export const enabled = "enabled";
+export const disabled = "disabled";

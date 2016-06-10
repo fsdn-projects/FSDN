@@ -2,7 +2,8 @@
 "use strict";
 import Vue = require("vue");
 import * as request from "superagent";
-import {baseUrl} from "./util";
+import * as querystring from "querystring";
+import {baseUrl, enabled, disabled} from "./util";
 
 interface SearchOptions {
   strict: string;
@@ -18,21 +19,26 @@ interface Assembly {
 interface SearchInformation {
   query: string;
   search_options: SearchOptions;
-  target_assemblies: string[];
 }
 
 function boolToStatus(value: boolean): string {
-  return value ? "enabled" : "disabled";
+  return value ? enabled : disabled;
 }
 
 function validate(query: string): boolean {
   return Boolean(query);
 }
 
-function search(info: SearchInformation) {
+function buildQuery(query: string, assemblies: Assembly[]): string {
+  const space = "+";
+  const asms = assemblies.filter((a: Assembly) => !a.checked).map((a: Assembly) => "-" + a.name).join(space);
+  return asms ? query + space + asms : query;
+}
+
+function searchApis(info: SearchInformation) {
   return request
-    .post(baseUrl + "/api/search")
-    .send(info);
+    .get(baseUrl + "/api/search")
+    .query(info);
 }
 
 let app = new Vue({
@@ -59,37 +65,44 @@ let app = new Vue({
     }
   },
   methods: {
-    search: function(input?: string) {
-      const query = input ? input : this.query;
-      if (! this.hide_progress) {
-        return;
-      } else if (validate(query)) {
-        this.hide_progress = false;
-        search({
-          query,
-          search_options: {
-            strict: boolToStatus(this.strict),
-            similarity: boolToStatus(this.similarity),
-            ignore_arg_style: boolToStatus(this.ignore_arg_style)
-          },
-          target_assemblies:
-            this.all_assemblies.filter((a: Assembly) => a.checked)
-              .map((a: Assembly) => a.name)
-        })
-          .end((err, res) => {
-            if (err || !res.ok) {
-              this.error_message = res.text;
-              this.search_results = [];
-            } else {
-              this.error_message = undefined;
-              this.search_results = JSON.parse(res.text).values;
-            }
-            this.hide_progress = true;
-          });
-      }
-    }
+    search
   }
 });
+
+function search(input?: string) {
+  const query = input ? input : app.$get("query");
+  if (! app.$get("hide_progress")) {
+    return;
+  } else if (validate(query)) {
+    app.$set("hide_progress", false);
+    searchApis({
+      query: buildQuery(query, app.$get("all_assemblies")),
+      search_options: {
+        strict: boolToStatus(app.$get("strict")),
+        similarity: boolToStatus(app.$get("similarity")),
+        ignore_arg_style: boolToStatus(app.$get("ignore_arg_style"))
+      }
+    })
+      .end((err, res) => {
+        if (err || !res.ok) {
+          app.$set("error_message", res.text);
+          app.$set("search_results", []);
+        } else {
+          app.$set("error_message", undefined);
+          app.$set("search_results", JSON.parse(res.text).values);
+        }
+        app.$set("hide_progress", true);
+      });
+  }
+}
+
+function setStatus(name: string, status: string) {
+  if (status === enabled) {
+    app.$set(name, true);
+  } else if (status === disabled) {
+    app.$set(name, false);
+  }
+}
 
 request
   .get(baseUrl + "/api/assemblies")
@@ -105,5 +118,18 @@ request
           checked: a.checked
         }))
       );
+      if (window.location.search) {
+        const queries = querystring.parse(window.location.search.substring(1));
+        if (queries.strict) {
+          setStatus("strict", queries.strict);
+        }
+        if (queries.similarity) {
+          setStatus("similarity", queries.similarity);
+        }
+        if (queries.ignore_arg_style) {
+          setStatus("ignore_arg_style", queries.ignore_arg_style);
+        }
+        search(queries.query);
+      }
     }
   });
