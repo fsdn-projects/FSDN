@@ -1,6 +1,7 @@
 #r @"packages/build/FAKE/tools/FakeLib.dll"
 #r "System.Xml.Linq.dll"
 #r ".paket/paket.exe"
+#r @"packages/build/FAKE.Persimmon/lib/net451/FAKE.Persimmon.dll"
 open Fake
 open System
 open System.IO
@@ -68,6 +69,11 @@ Target "Build" (fun _ ->
     !! solutionFile
     |> MSBuild "" "Rebuild" [("Configuration", configuration)]
     |> ignore
+)
+
+Target "RunTests" (fun _ ->
+    !! testAssemblies
+    |> Persimmon id
 )
 
 open NpmHelper
@@ -318,6 +324,7 @@ Target "All" DoNothing
 "Clean"
   ==> "Build"
   ==> "CopyBinaries"
+  ==> "RunTests"
   ==> "CopyWebConfig"
   ==> "All"
 

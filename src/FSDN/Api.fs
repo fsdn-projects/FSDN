@@ -8,13 +8,15 @@ open Suave.Filters
 
 module Query =
 
+  let erroroMessage = "Search query requires non empty string."
+
   open FParsec
 
   let space = pstring "+"
 
-  let anyString = manySatisfy (fun x -> x <> '+')
+  let anyString = manySatisfy ((<>) '+')
 
-  let query = anyString
+  let query = notEmpty anyString <?> erroroMessage
 
   let parser = query .>>. (many (space >>. pstring "-" >>. anyString))
 
@@ -60,7 +62,7 @@ let search database (assemblies: TargetAssembly []) logger (req: HttpRequest) =
       RequestErrors.BAD_REQUEST e.Message
   validate req "query"
     (fun param ->
-      if String.IsNullOrEmpty(param) then Choice2Of2 "Search query requires non empty string."
+      if String.IsNullOrEmpty(param) then Choice2Of2 Query.erroroMessage
       else Query.parse param)
     inner
 

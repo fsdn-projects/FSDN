@@ -15,6 +15,7 @@ group Build
   nuget Npm.js
   nuget FSharp.Formatting
   nuget FSharpApiSearch.Console
+  nuget Fake.Persimmon
 
   github fsdn-projects/fsdn-logo:master fsdn_mono.png
   github fsdn-projects/fsdn-logo:master favicon.ico
@@ -33,4 +34,9 @@ group Database
   nuget FsPickler
   nuget FParsec
   nuget Argu
+
+group Test
+  source https://api.nuget.org/v3/index.json
+
+  nuget Persimmon
 

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSDN", "src\FSDN\FSDN.fsproj", "{F4DC2D27-5813-479A-A7CA-F1D8A6CF792D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSDN.Tests", "tests\FSDN.Tests\FSDN.Tests.fsproj", "{0EF378C3-28C6-45C3-9599-C748B906CA14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{F4DC2D27-5813-479A-A7CA-F1D8A6CF792D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4DC2D27-5813-479A-A7CA-F1D8A6CF792D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4DC2D27-5813-479A-A7CA-F1D8A6CF792D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EF378C3-28C6-45C3-9599-C748B906CA14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EF378C3-28C6-45C3-9599-C748B906CA14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EF378C3-28C6-45C3-9599-C748B906CA14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EF378C3-28C6-45C3-9599-C748B906CA14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

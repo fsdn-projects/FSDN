@@ -12,7 +12,7 @@ NUGET
       FParsec (>= 1.0.2)
       FSharp.Compiler.Service (>= 3.0)
       FsPickler (>= 2.1)
-    FsPickler (2.1)
+    FsPickler (2.3)
     Suave (1.1.2)
       FSharp.Core (>= 3.1.2.5)
 
@@ -21,6 +21,10 @@ NUGET
   remote: http://api.nuget.org/v3/index.json
   specs:
     FAKE (4.26)
+    FAKE.Lib (4.28)
+    FAKE.Persimmon (1.0.4)
+      FAKE.Lib (>= 4.1)
+      Persimmon.Console (>= 1.0.2)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.2)
       FSharp.Compiler.Service (2.0.0.6)
@@ -32,6 +36,7 @@ NUGET
     Node.js (5.3)
     Npm.js (2.13.1)
       Node.js (>= 0.12.7)
+    Persimmon.Console (1.1)
 GITHUB
   remote: fsdn-projects/fsdn-logo
   specs:
@@ -68,3 +73,8 @@ GITHUB
       FParsec
       FSharp.Compiler.Service
       FsPickler
+GROUP Test
+NUGET
+  remote: http://api.nuget.org/v3/index.json
+  specs:
+    Persimmon (1.1)
