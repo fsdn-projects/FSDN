@@ -14,7 +14,7 @@ module Query =
 
   let space = pstring "+"
 
-  let anyString = manySatisfy ((<>) '+')
+  let anyString = many1Chars (noneOf "+" <|> (attempt (pchar '+' .>> notFollowedBy (pchar '-'))))
 
   let query = notEmpty anyString <?> erroroMessage
 

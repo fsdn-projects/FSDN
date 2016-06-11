@@ -8,8 +8,10 @@ let ``parse query`` = parameterize {
   source [
     ("'a", ("'a", []))
     ("Name: _", ("Name: _", []))
+    ("(+): _", ("(+): _", []))
     ("Name: _+-mscorlib", ("Name: _", ["mscorlib"]))
     ("Name: _+-mscorlib+-FSharp.Core", ("Name: _", ["mscorlib"; "FSharp.Core"]))
+    ("(-): _+-mscorlib", ("(-): _", ["mscorlib"]))
   ]
   run (fun (query, expected) -> test {
     do! assertEquals (Choice1Of2(expected)) (Query.parse query) 
