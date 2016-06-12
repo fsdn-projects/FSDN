@@ -42,6 +42,8 @@ let app database assemblies homeDir logger : WebPart =
     GET >=> choose [
       path "/" >=> browseFile homeDir "index.html"
       pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
+      pathScan "/en/%s.html" (fun name -> tryThen (name |> sprintf "en/%s.html" |> browseFile homeDir) notFound)
+      pathScan "/ja/%s.html" (fun name -> tryThen (name |> sprintf "ja/%s.html" |> browseFile homeDir) notFound)
       pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
       pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
       pathScan "/%s.png" (browseFile homeDir << sprintf "%s.png")

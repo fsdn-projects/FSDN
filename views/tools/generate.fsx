@@ -15,6 +15,8 @@ let output = bin @@ "FSDN"
 
 let root = ""
 
+let specFileName = "query_spec"
+
 let content = __SOURCE_DIRECTORY__ @@ "../content"
 let files = __SOURCE_DIRECTORY__ @@ "../files"
 let icons =
@@ -39,7 +41,7 @@ let configReplacements name =
   let script =
     if exists then
       Path.GetFileNameWithoutExtension(name) + ".js"
-      |> sprintf """<script src="%s%s"></script>""" root
+      |> sprintf """<script src="%s%s"></script>""" (if name = specFileName then "../" else root)
     else ""
   ("root", root) :: ("script", script) :: info
 
@@ -57,8 +59,6 @@ let buildDocumentation () =
       layoutRoots = layoutRoots,
       replacements = replacements
     )
-
-let readme = "../../paket-files/doc/hafuu/FSharpApiSearch/README.md"
 
 module QuerySpec =
 
@@ -89,27 +89,51 @@ module QuerySpec =
     | _ -> embed
   | other -> other
 
-let generateQuerySpec () =
+type Language =
+  | English
+  | Japanese
+with
+  override this.ToString() =
+    match this with
+    | English -> "en"
+    | Japanese -> "ja"
+
+let (|Begin|_|) heading = function
+| Heading(2, [Literal ("Query format specifications" | "クエリ仕様")]) -> Some ()
+| _ -> None
+
+let (|End|_|) heading = function
+| Heading(2, [Literal ("Current Build Status" | "動作環境")]) -> Some ()
+| _ -> None
+
+let generateQuerySpec (language, readme) =
   let doc = Literate.ParseMarkdownFile(readme)
   let paragraphs =
     seq {
       yield Heading(3, [Literal "Search Engine"])
       yield ListBlock(Unordered, [[Span [DirectLink([Literal "FSharpApiSearch"], ("https://github.com/hafuu/FSharpApiSearch", None))]]])
       yield! doc.Paragraphs
-        |> Seq.skipWhile (function | Heading(2, [Literal "クエリ仕様"]) -> false | _ -> true)
-        |> Seq.takeWhile (function | Heading(2, [Literal "動作環境"]) -> false | _ -> true)
+        |> Seq.skipWhile (function | Begin () -> false | _ -> true)
+        |> Seq.takeWhile (function | End () -> false | _ -> true)
         |> Seq.map QuerySpec.format
     }
     |> Seq.toList
+  let outDir = output @@ language.ToString()
+  ensureDirectory outDir
   Literate.ProcessDocument(
     doc.With(paragraphs = paragraphs),
-    output @@ "query_spec.html",
+    outDir @@ sprintf "%s.html" specFileName,
     docTemplate,
     lineNumbers = false,
     layoutRoots = layoutRoots,
-    replacements = ("root", root) :: ("script", "") :: info
+    replacements = ("root", ".." @@ root) :: ("script", "") :: info
   )
 
 copyFiles ()
 buildDocumentation ()
-generateQuerySpec ()
+
+[
+  (English, "../../README.md")
+  (Japanese, "../../paket-files/doc/hafuu/FSharpApiSearch/README.md")
+]
+|> List.iter generateQuerySpec

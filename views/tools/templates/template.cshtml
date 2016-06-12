@@ -21,12 +21,45 @@ code {
     <nav class="light-blue darken-2">
       <div class="nav-wrapper">
         <a href="@Root/" class="brand-logo">
-          <img src="./fsdn_mono.png" width="85px" height="64px"></img>
+          <img src="@Root/fsdn_mono.png" width="85px" height="64px"></img>
         </a>
         <ul class="right hide-on-med-and-down">
           <li><a href="@Root/" class="collection-item">Search</a></li>
           <li><a href="@Root/assemblies.html" class="collection-item">Target Assemblies</a></li>
-          <li><a href="@Root/query_spec.html" class="collection-item">Query Spec</a></li>
+          <li><a class="dropdown-button" data-activates="query_spec">Query Spec</a></li>
+          <ul id="query_spec" class="dropdown-content">
+            <li><a href="@Root/en/query_spec.html">English</a></li>
+            <li><a href="@Root/ja/query_spec.html">Japanese</a></li>
+          </ul>
+          <li>
+            <a href='@Properties["project-github"]/issues'>
+              <span class="octicon octicon-issue-opened"></span>
+              Issue
+            </a>
+          </li>
+          <li>
+            <a href='@Properties["project-github"]'>
+              <span class="octicon octicon-repo-forked"></span>
+              Fork
+            </a>
+          </li>
+        </ul>
+        <ul id="nav-mobile" class="side-nav">
+          <li><a href="@Root/" class="collection-item">Search</a></li>
+          <li><a href="@Root/assemblies.html" class="collection-item">Target Assemblies</a></li>
+          <li class="no-padding">
+            <ul class="collapsible collapsible-accordion">
+              <li>
+                <a class="collapsible-header">Query Spec</a>
+                <div class="collapsible-body">
+                  <ul>
+                    <li><a href="@Root/en/query_spec.html">English</a></li>
+                    <li><a href="@Root/ja/query_spec.html">Japanese</a></li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </li>
           <li>
             <a href='@Properties["project-github"]/issues'>
               <span class="octicon octicon-issue-opened"></span>
@@ -41,23 +74,6 @@ code {
           </li>
         </ul>
         <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
-        <ul id="nav-mobile" class="side-nav">
-          <li><a href="@Root/" class="collection-item">Search</a></li>
-          <li><a href="@Root/assemblies.html" class="collection-item">Target Assemblies</a></li>
-          <li><a href="@Root/query_spec.html" class="collection-item">Query Spec</a></li>
-          <li>
-            <a href='@Properties["project-github"]/issues'>
-              <span class="octicon octicon-issue-opened"></span>
-              Issue
-            </a>
-          </li>
-          <li>
-            <a href='@Properties["project-github"]'>
-              <span class="octicon octicon-repo-forked"></span>
-              Fork
-            </a>
-          </li>
-        </ul>
       </div>
     </nav>
     <div id="app" class="row">
@@ -68,6 +84,7 @@ code {
 hljs.initHighlighting();
 $(document).ready(function(){
   $(".button-collapse").sideNav();
+  $(".dropdown-button").dropdown();
 });
     </script>
     <footer class="page-footer light-blue darken-2">
