@@ -29,7 +29,8 @@ let layoutRoots = [
 ]
 
 let info = [
-  "project-github", "https://github.com/fsdn-projects/FSDN"
+  "project-github", "https://github.com/fsdn-projects/FSDN" ;
+  "tweet", "https://twitter.com/intent/tweet?text=FSDN%20is%20awesome%21%21&url=http%3A%2F%2Ffsdn.azurewebsites.net%2F&hashtags=fsdn%2Cfsharp"
 ]
 
 let copyFiles () =
