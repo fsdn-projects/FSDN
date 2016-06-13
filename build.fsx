@@ -252,7 +252,6 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
     else [|
       "FSharp.Compiler.Service"
       "FSharp.Data"
-      "FsUnit"
       "FsPickler"
       "FParsec"
       "Argu"

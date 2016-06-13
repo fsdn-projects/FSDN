@@ -30,7 +30,6 @@ group Database
 
   nuget FSharp.Compiler.Service
   nuget FSharp.Data
-  nuget FsUnit
   nuget FsPickler
   nuget FParsec
   nuget Argu
