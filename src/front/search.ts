@@ -5,12 +5,6 @@ import * as request from "superagent";
 import * as querystring from "querystring";
 import {baseUrl, enabled, disabled} from "./util";
 
-interface SearchOptions {
-  strict: string;
-  similarity: string;
-  ignore_arg_style: string;
-}
-
 interface Assembly {
   name: string;
   checked: boolean
@@ -18,7 +12,9 @@ interface Assembly {
 
 interface SearchInformation {
   query: string;
-  search_options: SearchOptions;
+  strict: string;
+  similarity: string;
+  ignore_arg_style: string;
 }
 
 function boolToStatus(value: boolean): string {
@@ -77,11 +73,9 @@ function search(input?: string) {
     app.$set("hide_progress", false);
     searchApis({
       query: buildQuery(query, app.$get("all_assemblies")),
-      search_options: {
-        strict: boolToStatus(app.$get("strict")),
-        similarity: boolToStatus(app.$get("similarity")),
-        ignore_arg_style: boolToStatus(app.$get("ignore_arg_style"))
-      }
+      strict: boolToStatus(app.$get("strict")),
+      similarity: boolToStatus(app.$get("similarity")),
+      ignore_arg_style: boolToStatus(app.$get("ignore_arg_style"))
     })
       .end((err, res) => {
         if (err || !res.ok) {
