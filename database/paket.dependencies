@@ -5,4 +5,5 @@ nuget FSharp.Data
 nuget FsPickler
 nuget FParsec
 nuget Argu
+nuget FsUnit
 

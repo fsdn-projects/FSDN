@@ -8,3 +8,5 @@
   Assemblies: [FParsec]
 - Name: Argu
   Assemblies: [Argu]
+- Name: FsUnit
+  Assemblies: [FsUnit.NUnit]
