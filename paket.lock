@@ -7,14 +7,19 @@ NUGET
     Argu (2.1)
     FParsec (1.0.2)
     FSharp.Compiler.Service (3.0)
+    FSharp.Configuration (0.6.1)
     FSharp.Core (4.0.0.1)
     FSharpApiSearch (0.3.0-beta)
       FParsec (>= 1.0.2)
       FSharp.Compiler.Service (>= 3.0)
       FsPickler (>= 2.1)
     FsPickler (2.3)
+    FsYaml (2.1)
+      FSharp.Configuration (>= 0.4.10)
+      YamlDotNet (>= 3.8)
     Suave (1.1.2)
       FSharp.Core (>= 3.1.2.5)
+    YamlDotNet (3.9)
 
 GROUP Build
 NUGET
@@ -42,18 +47,6 @@ GITHUB
   specs:
     favicon.ico (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
     fsdn_mono.png (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
-GROUP Database
-NUGET
-  remote: http://api.nuget.org/v3/index.json
-  specs:
-    Argu (2.1)
-    FParsec (1.0.2)
-    FSharp.Compiler.Service (3.0)
-    FSharp.Data (2.3)
-      Zlib.Portable (>= 1.11) - framework: >= net45, portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
-    FsPickler (2.1)
-    Zlib.Portable (1.11) - framework: >= net45, portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
-
 GROUP Doc
 NUGET
   remote: http://api.nuget.org/v3/index.json

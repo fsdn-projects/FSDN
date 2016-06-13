@@ -1,0 +1,10 @@
+NUGET
+  remote: http://api.nuget.org/v3/index.json
+  specs:
+    Argu (2.1)
+    FParsec (1.0.2)
+    FSharp.Compiler.Service (3.0)
+    FSharp.Data (2.3)
+      Zlib.Portable (>= 1.11) - framework: >= net45, portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
+    FsPickler (2.3)
+    Zlib.Portable (1.11) - framework: >= net45, portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81

@@ -1,15 +1,8 @@
 #r @"packages/build/FAKE/tools/FakeLib.dll"
-#r "System.Xml.Linq.dll"
-#r ".paket/paket.exe"
 #r @"packages/build/FAKE.Persimmon/lib/net451/FAKE.Persimmon.dll"
 open Fake
 open System
 open System.IO
-open System.Xml
-open System.Xml.Linq
-open System.Xml.XPath
-open Paket
-open Paket.Domain
 
 let project = "FSDN"
 
@@ -107,170 +100,22 @@ Target "BuildFront" (fun _ ->
     })
 )
 
-let changeMonoAssemblyPath (es: XElement seq) =
-  let path = getBuildParamOrDefault "mono" "/usr"
-  es
-  |> Seq.iter (fun e ->
-    e.Attribute(XName.Get("value")).Value <- path @@ "lib/mono/4.5/"
-  )
-
-let changeAzureAssemblyPath (es: XElement seq) =
-  es
-  |> Seq.iter (fun e ->
-    e.Attribute(XName.Get("value")).Value <- e.Attribute(XName.Get("value")).Value.Replace(@"C:\", @"D:\")
-  )
-
-let targetFrameworks = [|
-  "net45"
-  "net40"
-  "net4"
-  "net35"
-  "net20"
-|]
-
-let searchExternalAssemblies () =
-  "./packages/database/"
-  |> directoryInfo
-  |> subDirectories
-  |> Array.collect (fun d ->
-    let libs =
-      subDirectories d
-      |> Array.find (fun d -> d.Name = "lib")
-      |> subDirectories
-      |> Array.rev
-    let withoutPortable = libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t) && not (d.Name.Contains("portable"))))
-    let target =
-      match withoutPortable with
-      | Some w -> w
-      | None -> libs |> Array.find (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
-    target
-    |> filesInDir
-    |> Array.choose (fun f ->
-      if f.Name = "FSharp.Core.dll" then None
-      elif f.Extension = ".dll" then Some(f.FullName)
-      else None
-    )
-  )
-  |> Array.distinct
-  |> Array.append [|
-    "System.IO"
-    "System.Runtime"
-    "System.Diagnostics.Debug"
-    "System.Collections"
-    "System.Text.Encoding"
-    "System.Text.RegularExpressions"
-    "System.Threading"
-    "System.Threading.Tasks"
-    "System.Xml.ReaderWriter"
-    "System.Reflection"
-    "System.Globalization"
-    "System.Runtime.Extensions"
-    "System.Reflection.Primitives"
-    "System.Xml.Linq"
-    "System.Runtime.Serialization"
-    "System.Net"
-    "System.Numerics"
-    "System.Runtime.Numerics"
-    "System.Web"
-    "System.Web.Services"
-    "System.Web.ApplicationServices"
-    "System.EnterpriseServices"
-    "System.ComponentModel.DataAnnotations"
-    "System.Drawing"
-    "System.Data"
-    "System.Transactions"
-  |]
-  |> Array.toList
-
 Target "GenerateApiDatabase" (fun _ ->
+  FileUtils.cd "./database"
   let isAzure =
     CurrentTargetOrder
     |> List.exists (List.contains "DeployOnAzure")
-  if isMono || isAzure then
-    let changeAssemblyPath = if isMono then changeMonoAssemblyPath else changeAzureAssemblyPath
-    let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ "packages" @@ "build")
-    let doc = XDocument.Load(config)
-    doc.XPathSelectElements("/configuration/appSettings/add")
-    |> changeAssemblyPath
-    doc.Save(config)
-  let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ "packages" @@ "build")
   let args =
-    // TODO: enable external assemblies
-    if isMono then "System.Xml.Linq System.Runtime.Serialization"
-    else
-      searchExternalAssemblies ()
-      |> String.concat " "
+    if isAzure then " target=Azure"
+    else ""
+    |> sprintf "./generate.fsx Generate%s"
   let exitCode =
     ExecProcess (fun info ->
-      info.FileName <- exe
+      info.FileName <- "../packages/build/FAKE/tools/FAKE.exe"
       info.Arguments <- args)
       TimeSpan.MaxValue
-  if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
-  MoveFile ("bin" @@ project) (currentDirectory @@ "database")
-)
-
-type TargetAssemblyInfo = {
-  Name: string
-  Standard: bool
-  Version: SemVerInfo option
-  IconUrl: string option
-}
-with
-  override this.ToString() =
-    [
-      this.Name
-      string this.Standard
-      (match this.Version with | Some v -> v.AsString | None -> "")
-      (match this.IconUrl with | Some v -> v | None -> "")
-    ]
-    |> String.concat ","
-
-let standard name = {
-  Name = name
-  Standard = true
-  Version = None
-  IconUrl = None
-}
-
-let tryFindIconUrl name =
-  "./packages/database/" @@ name
-  |> FindFirstMatchingFile (name + ".nuspec")
-  |> XDocument.Load
-  |> fun doc ->
-    let manager = XmlNamespaceManager(new NameTable())
-    manager.AddNamespace("x", "http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd")
-    doc.XPathSelectElements("/x:package/x:metadata/x:iconUrl", manager)
-  |> Seq.tryPick (fun e -> Some e.Value)
-
-Target "GenerateTargetAssembliesFile" (fun _ ->
-  let packages =
-    LockFile.LoadFrom("./paket.lock")
-      .GetGroup(GroupName("Database"))
-      .Resolution
-  let targets =
-    if isMono then [||]
-    else [|
-      "FSharp.Compiler.Service"
-      "FSharp.Data"
-      "FsPickler"
-      "FParsec"
-      "Argu"
-    |]
-    |> Array.map (fun name ->
-      let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = name then Some v else None)
-      {
-        Name = name
-        Standard = false
-        Version = Some p.Version
-        IconUrl = tryFindIconUrl name
-      }
-    )
-    |> Array.append [|
-      standard "System.Xml"
-      standard "System.Xml.Linq"
-    |]
-    |> Array.map (sprintf "%O")
-  File.WriteAllLines("bin" @@ project @@ "assemblies", targets)
+  if exitCode <> 0 then failwithf "Failed to generate database: %s" args
+  FileUtils.cd ".."
 )
 
 Target "GenerateViews" (fun _ ->
@@ -335,9 +180,6 @@ Target "All" DoNothing
 
 "GenerateApiDatabase"
   ==> "All"
-
-"GenerateApiDatabase"
- <== ["GenerateTargetAssembliesFile"]
 
 "GenerateViews"
   ==> "All"

@@ -6,6 +6,7 @@ group App
   nuget Suave
   nuget Argu
   nuget FSharpApiSearch
+  nuget FsYaml
 
 group Build
   source https://api.nuget.org/v3/index.json
@@ -24,15 +25,6 @@ group Doc
   source https://api.nuget.org/v3/index.json
 
   github hafuu/FSharpApiSearch:450fe8cd579fdd26916ee7a5bb68d6d8741b3280 README.md
-
-group Database
-  source https://api.nuget.org/v3/index.json
-
-  nuget FSharp.Compiler.Service
-  nuget FSharp.Data
-  nuget FsPickler
-  nuget FParsec
-  nuget Argu
 
 group Test
   source https://api.nuget.org/v3/index.json

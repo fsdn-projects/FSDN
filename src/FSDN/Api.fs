@@ -34,14 +34,14 @@ let validate (req: HttpRequest) key (validate: string -> Choice<'T, string>) (f:
     )
     (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not exist." key)
 
-let search database (assemblies: TargetAssembly []) logger (req: HttpRequest) =
+let search database (packages: NuGetPackage []) logger (req: HttpRequest) =
   let getOrEmpty name =
     match req.queryParam name with
     | Choice1Of2 param -> param
     | Choice2Of2 _ -> ""
   let inner (query, excluded) =
     {
-      Targets = assemblies |> Array.choose (fun x -> if List.exists ((=) x.Name) excluded then None else Some x.Name)
+      Targets = packages |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
       RawOptions =
         {
           Strict = getOrEmpty SearchOptionLiteral.Strict
@@ -66,12 +66,12 @@ let search database (assemblies: TargetAssembly []) logger (req: HttpRequest) =
       else Query.parse param)
     inner
 
-let app database assemblies logger : WebPart =
+let app database packages logger : WebPart =
   choose [
     GET >=> choose [
       path "/api/assemblies"
-        >=> ({ Values = assemblies } |> Json.toJson |> Suave.Successful.ok)
+        >=> ({ Values = packages } |> Json.toJson |> Suave.Successful.ok)
       path "/api/search" >=>
-        request (search database assemblies logger)
+        request (search database packages logger)
     ]
   ]

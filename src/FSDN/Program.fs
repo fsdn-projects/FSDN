@@ -30,7 +30,7 @@ let logger (args: ParseResults<Args>) =
   | None -> LogLevel.Warn
   |> Loggers.ConsoleWindowLogger
 
-let app database assemblies homeDir logger : WebPart =
+let app database packages homeDir logger : WebPart =
 
   let notFound ctx = asyncOption {
     let! ctx = browseFile homeDir "404.html" ctx
@@ -49,7 +49,7 @@ let app database assemblies homeDir logger : WebPart =
       pathScan "/%s.png" (browseFile homeDir << sprintf "%s.png")
       pathScan "/%s.ico" (browseFile homeDir << sprintf "%s.ico")
     ]
-    Api.app database assemblies logger
+    Api.app database packages logger
   ]
 
 let serverConfig port homeDir logger = {
@@ -71,23 +71,13 @@ let main args =
   let database =
     Path.Combine(homeDir, ApiLoader.databaseName)
     |> ApiLoader.loadFromFile
-  let assemblies =
-    File.ReadAllLines(Path.Combine(homeDir, "assemblies"))
-    |> Array.choose (fun s ->
-      match s.Split([|','|]) with
-      | [| assembly; defaultCheck; version; iconUrl |] ->
-        match Boolean.TryParse(defaultCheck) with
-        | true, defaultCheck ->
-          Some {
-            Name = assembly
-            Standard = defaultCheck
-            Version = version
-            IconUrl = iconUrl
-          }
-        | false, _ -> None
-      | _ -> None
-    )
-    |> Assemblies.all
-  let app = app database assemblies homeDir logger
+  let packages =
+    Path.Combine(homeDir, "packages.yml")
+    |> Package.load
+    |> function
+    | Some xs -> xs
+    | None -> [||]
+    |> Package.all
+  let app = app database packages homeDir logger
   startWebServer config app
   0

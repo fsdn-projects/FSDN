@@ -1,0 +1,10 @@
+- Name: FSharp.Compiler.Service
+  Assemblies: [FSharp.Compiler.Service]
+- Name: FSharp.Data
+  Assemblies: [FSharp.Data]
+- Name: FsPickler
+  Assemblies: [FsPickler]
+- Name: FParsec
+  Assemblies: [FParsec]
+- Name: Argu
+  Assemblies: [Argu]

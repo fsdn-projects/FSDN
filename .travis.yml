@@ -19,6 +19,7 @@ cache:
     - paket-files
     - packages
     - node_modules
+    - database/packages
 
 addons:
   apt:
