@@ -106,7 +106,7 @@ Target "GenerateApiDatabase" (fun _ ->
     CurrentTargetOrder
     |> List.exists (List.contains "DeployOnAzure")
   let args =
-    if isAzure then " target=Azure"
+    if isAzure then " platform=Azure"
     else ""
     |> sprintf "./generate.fsx Generate%s"
   let exitCode =

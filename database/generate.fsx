@@ -100,7 +100,7 @@ let searchExternalAssemblies () =
   |> Array.toList
 
 Target "Generate" (fun _ ->
-  let isAzure = getBuildParamOrDefault "target" "" = "Azure"
+  let isAzure = getBuildParamOrDefault "platform" "" = "Azure"
   if isMono || isAzure then
     let changeAssemblyPath = if isMono then changeMonoAssemblyPath else changeAzureAssemblyPath
     let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ ".." @@ "packages" @@ "build")
