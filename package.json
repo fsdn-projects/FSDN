@@ -25,7 +25,7 @@
     "vinyl-source-stream": "1.1.0",
     "vinyl-buffer": "1.0.0",
     "glob": "7.0.3",
-    "licensify": "3.1.1",
-    "typings": "1.0.4"
+    "licensify": "3.1.2",
+    "typings": "1.1.0"
   }
 }
