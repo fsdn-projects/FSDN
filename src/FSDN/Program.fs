@@ -49,6 +49,7 @@ let app database packages homeDir logger : WebPart =
       pathScan "/%s.ico" (browseFile homeDir << sprintf "%s.ico")
     ]
     Api.app database packages logger
+    notFound
   ]
   >=> log logger logFormat
 
