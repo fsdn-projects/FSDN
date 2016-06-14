@@ -38,7 +38,6 @@ let app database packages homeDir logger : WebPart =
   }
 
   choose [
-    log logger logFormat >=> never
     GET >=> choose [
       path "/" >=> browseFile homeDir "index.html"
       pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
@@ -51,6 +50,7 @@ let app database packages homeDir logger : WebPart =
     ]
     Api.app database packages logger
   ]
+  >=> log logger logFormat
 
 let serverConfig port homeDir logger = {
   defaultConfig with
