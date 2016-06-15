@@ -30,26 +30,30 @@ let logger (args: ParseResults<Args>) =
   | None -> LogLevel.Warn
   |> Loggers.ConsoleWindowLogger
 
-let app database packages homeDir logger : WebPart =
+let notFound homeDir ctx = asyncOption {
+  let! ctx = browseFile homeDir "404.html" ctx
+  return { ctx with response = { ctx.response with status = HTTP_404 } }
+}
 
-  let notFound ctx = asyncOption {
-    let! ctx = browseFile homeDir "404.html" ctx
-    return { ctx with response = { ctx.response with status = HTTP_404 } }
-  }
-
+let fileRequest homeDir =
+  let notFound = notFound homeDir
   choose [
-    GET >=> choose [
-      path "/" >=> browseFile homeDir "index.html"
-      pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
-      pathScan "/en/%s.html" (fun name -> tryThen (name |> sprintf "en/%s.html" |> browseFile homeDir) notFound)
-      pathScan "/ja/%s.html" (fun name -> tryThen (name |> sprintf "ja/%s.html" |> browseFile homeDir) notFound)
-      pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
-      pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
-      pathScan "/%s.png" (browseFile homeDir << sprintf "%s.png")
-      pathScan "/%s.ico" (browseFile homeDir << sprintf "%s.ico")
-    ]
+    path "/" >=> browseFile homeDir "index.html"
+    pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
+    pathScan "/en/%s.html" (fun name -> tryThen (name |> sprintf "en/%s.html" |> browseFile homeDir) notFound)
+    pathScan "/ja/%s.html" (fun name -> tryThen (name |> sprintf "ja/%s.html" |> browseFile homeDir) notFound)
+    pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
+    pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
+    pathScan "/%s.png" (browseFile homeDir << sprintf "%s.png")
+    pathScan "/%s.ico" (browseFile homeDir << sprintf "%s.ico")
+  ]
+
+let app database packages homeDir logger : WebPart =
+  choose [
+    GET >=> fileRequest homeDir
+    HEAD >=> fileRequest homeDir
     Api.app database packages logger
-    notFound
+    notFound homeDir
   ]
   >=> log logger logFormat
 
