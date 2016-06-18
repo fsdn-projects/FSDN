@@ -39,13 +39,7 @@ let fileRequest homeDir =
   let notFound = notFound homeDir
   choose [
     path "/" >=> browseFile homeDir "index.html"
-    pathScan "/%s.html" (fun name -> tryThen (name |> sprintf "%s.html" |> browseFile homeDir) notFound)
-    pathScan "/en/%s.html" (fun name -> tryThen (name |> sprintf "en/%s.html" |> browseFile homeDir) notFound)
-    pathScan "/ja/%s.html" (fun name -> tryThen (name |> sprintf "ja/%s.html" |> browseFile homeDir) notFound)
-    pathScan "/%s.js" (browseFile homeDir << sprintf "%s.js")
-    pathScan "/%s.js.map" (browseFile homeDir << sprintf "%s.js.map")
-    pathScan "/%s.png" (browseFile homeDir << sprintf "%s.png")
-    pathScan "/%s.ico" (browseFile homeDir << sprintf "%s.ico")
+    browseHome
   ]
 
 let app database packages homeDir logger : WebPart =
