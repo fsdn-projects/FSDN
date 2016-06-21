@@ -6,12 +6,6 @@ open System.IO
 
 let project = "FSDN"
 
-// List of author names (for NuGet package)
-let authors = [ "pocketberserker" ]
-
-// Tags for your project (for NuGet package)
-let tags = "fsharp F#"
-
 // File system information
 let solutionFile  = "FSDN.sln"
 
@@ -19,17 +13,6 @@ let configuration = environVarOrDefault "configuration" "Release"
 
 // Pattern specifying assemblies to be tested using NUnit
 let testAssemblies = "tests/**/bin" @@ configuration @@ "*Tests*.dll"
-
-// Git configuration (used for publishing documentation in gh-pages branch)
-// The profile where the project is posted
-let gitOwner = "pocketberserker"
-let gitHome = "https://github.com/" + gitOwner
-
-// The name of the project on GitHub
-let gitName = "FSDN"
-
-// The url for the raw files hosted
-let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/pocketberserker"
 
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
@@ -129,6 +112,13 @@ Target "GenerateViews" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Deploy
 
+Target "Pack" (fun _ ->
+  let appDir = "./bin" @@ project
+  !! (appDir + "/**/*.*")
+  -- "*.zip"
+  |> Zip appDir ("./bin" @@ sprintf "%s.zip" project)
+)
+
 Target "DeployOnAzure" (fun _ ->
   let artifacts = currentDirectory @@ ".." @@ "artifacts"
   let kuduSync = findToolInSubPath "KuduSync.NET.exe" (currentDirectory @@ "packages")
@@ -172,9 +162,6 @@ Target "All" DoNothing
   ==> "CopyWebConfig"
   ==> "All"
 
-"All"
-  ==> "DeployOnAzure"
-
 "BuildFront"
   ==> "All"
 
@@ -183,5 +170,11 @@ Target "All" DoNothing
 
 "GenerateViews"
   ==> "All"
+
+"All"
+  ==> "Pack"
+
+"All"
+  ==> "DeployOnAzure"
 
 RunTargetOrDefault "All"

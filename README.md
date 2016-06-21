@@ -3,7 +3,7 @@
 [![License][license-image]][license-url]
 
 FSDN is a web application that uses [F# API Search](https://github.com/hafuu/FSharpApiSearch) library.
-F# API Search library supports the standard signature of F# with some extentions as its criteria. 
+F# API Search library supports the standard signature of F# with some extentions as its criteria.
 This document describes the F# API Search library specific formats.
 
 ## Query format specifications
@@ -33,7 +33,7 @@ id : 'a -> 'a
 shows the following result:
 
 ````
-Microsoft.FSharp.Core.Operators.id: 'T -> 'T 
+Microsoft.FSharp.Core.Operators.id: 'T -> 'T
 ````
 
 And the following query:
@@ -45,13 +45,13 @@ choose : _
 shows the followings:
 
 ````
-Microsoft.FSharp.Collections.Array.choose: ('T -> option<'U>) -> 'T[] -> 'U[] 
-Microsoft.FSharp.Collections.ArrayModule.Parallel.choose: ('T -> option<'U>) -> 'T[] -> 'U[] 
-Microsoft.FSharp.Collections.List.choose: ('T -> option<'U>) -> list<'T> -> list<'U> 
-Microsoft.FSharp.Collections.Seq.choose: ('T -> option<'U>) -> seq<'T> -> seq<'U> 
-Microsoft.FSharp.Control.Event.choose: ('T -> option<'U>) -> IEvent<'Del, 'T> -> IEvent<'U> 
+Microsoft.FSharp.Collections.Array.choose: ('T -> option<'U>) -> 'T[] -> 'U[]
+Microsoft.FSharp.Collections.ArrayModule.Parallel.choose: ('T -> option<'U>) -> 'T[] -> 'U[]
+Microsoft.FSharp.Collections.List.choose: ('T -> option<'U>) -> list<'T> -> list<'U>
+Microsoft.FSharp.Collections.Seq.choose: ('T -> option<'U>) -> seq<'T> -> seq<'U>
+Microsoft.FSharp.Control.Event.choose: ('T -> option<'U>) -> IEvent<'Del, 'T> -> IEvent<'U>
 when 'Del : delegate and 'Del :> Delegate
-Microsoft.FSharp.Control.Observable.choose: ('T -> option<'U>) -> IObservable<'T> -> IObservable<'U> 
+Microsoft.FSharp.Control.Observable.choose: ('T -> option<'U>) -> IObservable<'T> -> IObservable<'U>
 ````
 
 ### Wildcard
@@ -66,17 +66,17 @@ To find them, use wildcard: `?`.
 This query shows the following results:
 
 ````
-Microsoft.FSharp.Collections.List.append: list<'T> -> list<'T> -> list<'T> 
-Microsoft.FSharp.Collections.List.averageBy: ('T -> 'U) -> list<'T> -> 'U 
+Microsoft.FSharp.Collections.List.append: list<'T> -> list<'T> -> list<'T>
+Microsoft.FSharp.Collections.List.averageBy: ('T -> 'U) -> list<'T> -> 'U
 when 'U : (static member op_Addition : 'U * 'U -> 'U) and 'U : (static member DivideByInt : 'U * int -> 'U) and 'U : (static member get_Zero : unit -> 'U)
-Microsoft.FSharp.Collections.List.choose: ('T -> option<'U>) -> list<'T> -> list<'U> 
-Microsoft.FSharp.Collections.List.chunkBySize: int -> list<'T> -> list<list<'T>> 
-Microsoft.FSharp.Collections.List.collect: ('T -> list<'U>) -> list<'T> -> list<'U> 
-Microsoft.FSharp.Collections.List.contains: 'T -> list<'T> -> bool 
+Microsoft.FSharp.Collections.List.choose: ('T -> option<'U>) -> list<'T> -> list<'U>
+Microsoft.FSharp.Collections.List.chunkBySize: int -> list<'T> -> list<list<'T>>
+Microsoft.FSharp.Collections.List.collect: ('T -> list<'U>) -> list<'T> -> list<'U>
+Microsoft.FSharp.Collections.List.contains: 'T -> list<'T> -> bool
 when 'T : equality
-Microsoft.FSharp.Collections.List.countBy: ('T -> 'Key) -> list<'T> -> list<'Key * int> 
+Microsoft.FSharp.Collections.List.countBy: ('T -> 'Key) -> list<'T> -> list<'Key * int>
 when 'Key : equality
-Microsoft.FSharp.Collections.List.distinctBy: ('T -> 'Key) -> list<'T> -> list<'T> 
+Microsoft.FSharp.Collections.List.distinctBy: ('T -> 'Key) -> list<'T> -> list<'T>
 when 'Key : equality
 (snip)
 ````
@@ -111,7 +111,7 @@ this doesn't match either `'a -> int` or `int -> string`.
 
 A criteria of search instance members is formatted as `receiver => signature`.
 
-To find methods that accept one argument, use `receiver => arg -> returnType` format. 
+To find methods that accept one argument, use `receiver => arg -> returnType` format.
 
 To find methods that accept multiple arguments, use `receiver => arg1 -> arg2 -> returnType` or `receiver => arg1 * arg2 -> returnType`.
 By default, tuple style method arguments (`arg1 * arg2`) and curried style (`arg1 -> arg2`) are treated as identical.
@@ -135,20 +135,20 @@ illustrates an example of these special rules.
 This query matches the following methods and functions:
 
 ````
-System.String.Length: int 
-Microsoft.FSharp.Core.String.length: string -> int 
-System.String.GetHashCode: unit -> int 
+System.String.Length: int
+Microsoft.FSharp.Core.String.length: string -> int
+System.String.GetHashCode: unit -> int
 ````
 
 The first result `System.String.Length` matches exactly.
-In addition, `Microsoft.FSharp.Core.String.length` and `System.String.GetHashCode` are also retuned 
+In addition, `Microsoft.FSharp.Core.String.length` and `System.String.GetHashCode` are also retuned
 because the 1st and 2nd special rules are applied respectively.
 
 #### Static members
 
 Static members can be found by using the same query for functions and values in modules.
 As the same with instance methods, both `arg1 -> arg2 -> returnType` and `arg1 * arg2 -> returnType`
-can be used to find static methods that accepts multiple arguments. 
+can be used to find static methods that accepts multiple arguments.
 
 ### Active patterns
 
@@ -167,7 +167,7 @@ To find active patterns that accepts zero or more arguments, use `...` keyword a
 `returnType` indicates a return type of an active pattern.
 This must be different between active patterns each of which supports one case, multiple cases, and is partial active pattern,
 and `option<_>` or `Choice<_,...,_>` must be specified.
-Usually a wildcard (`?`) is recommended for `returnType`. 
+Usually a wildcard (`?`) is recommended for `returnType`.
 
 ## Search Options
 
@@ -177,7 +177,7 @@ When this option is enabled and when performing wildcard search,
 each of the wildcards are distinguished by its name.
 For instance, `?a -> ?a` matches `int -> int`,
 but `?a -> ?b` doesn't match `int -> int`.
-If this option is disabled, `?a -> ?b` matches `int -> int`.  
+If this option is disabled, `?a -> ?b` matches `int -> int`.
 
 ### `similarity` option
 
@@ -226,6 +226,32 @@ or
 
 ```
 ./build.sh mono='/usr/local/Cellar/mono/4.2.3/'
+```
+
+### Docker
+
+```
+./build-in-docker.sh
+```
+
+## How to run
+
+### Windows
+
+```
+./bin/FSDN/FSDN.exe --home-directory ./bin/FSDN
+```
+
+### Mono
+
+```
+mono ./bin/FSDN/FSDN.exe --home-directory ./bin/FSDN
+```
+
+### Docker
+
+```
+docker run -d -p 8083:8083 --name=fsdn fsdn mono /app/FSDN/FSDN.exe --home-directory /app/FSDN/
 ```
 
 [license-url]: https://github.com/fsdn-projects/FSDN/blob/master/LICENSE
