@@ -96,6 +96,7 @@ let searchExternalAssemblies () =
     "System.Drawing"
     "System.Data"
     "System.Transactions"
+    "System.ServiceModel.Internals"
   |]
   |> Array.toList
 
@@ -111,7 +112,14 @@ Target "Generate" (fun _ ->
   let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ ".." @@ "packages" @@ "build")
   let args =
     // TODO: enable external assemblies
-    if isMono then "System.Xml.Linq System.Runtime.Serialization"
+    if isMono then
+      [|
+        "System.Xml.Linq"
+        "System.Runtime.Serialization"
+        "System.ServiceModel.Internals"
+        "Mono.Security"
+      |]
+      |> String.concat " "
     else
       searchExternalAssemblies ()
       |> String.concat " "

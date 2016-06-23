@@ -68,7 +68,7 @@ module FSharpApi =
             Distance = result.Distance
             Api =
               {
-                Name = ReverseName.toString result.Api.Name
+                Name = result.Api.Name.Print()
                 Kind = result.Api.PrintKind()
                 Signature = result.Api.PrintSignature()
                 TypeConstraints =
