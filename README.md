@@ -123,7 +123,7 @@ To find indexed properties, use `receiver -> index -> propertyType`.
 `receiver -> signature` searches both instance members and functions.
 However, when you use `=>` instead of `->`, it searches instance members only.
 
-For instance members, the specified query matches the following special cases:
+Only for the query contains `=>`, the following special rules are applied:
 
 1. it matches `arg -> receiver -> returnType`.
 2. a query to search parameterless members (`receiver => propertyType`) also matches instance methods which signature is `receiver => unit -> propertyType`.
