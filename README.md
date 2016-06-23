@@ -3,7 +3,7 @@
 [![License][license-image]][license-url]
 
 FSDN is a web application that uses [F# API Search](https://github.com/hafuu/FSharpApiSearch) library.
-F# API Search library supports the standard signature of F# with some extentions as its criteria.
+F# API Search library supports the standard signature of F# with some extentions.
 This document describes the F# API Search library specific formats.
 
 ## Query format specifications
@@ -14,14 +14,14 @@ This document describes the F# API Search library specific formats.
 |:--------------|:--------------|
 | Functions and values in modules | `int -> string` |
 | Fields of records and structs | `Ref<'a> => 'a` |
-| Methods and properties | `'a list => int` |
+| Methods and properties | `'a list -> int` <br> or <br> `'a list => int` |
 | Constructors | `string -> Uri` |
 | Names (function and method names) | `head : 'a list -> 'a` |
 | Active patterns | <code>(&#124;&#124;) : ... -> Expr -> ?</code> |
 
 ### Search by name
 
-A criteria of search by name is formatted as `name : signature`.
+To search by name, the query should be formatted as `name : signature`.
 If you don't want to specify the signature explicitly, use `_`, instead.
 
 The following query:
@@ -109,18 +109,21 @@ this doesn't match either `'a -> int` or `int -> string`.
 
 #### Instance members
 
-A criteria of search instance members is formatted as `receiver => signature`.
+To search instance members, the query should be formatted as `receiver -> signature`.
 
-To find methods that accept one argument, use `receiver => arg -> returnType` format.
+To find methods that accept one argument, use `receiver -> arg -> returnType` format.
 
-To find methods that accept multiple arguments, use `receiver => arg1 -> arg2 -> returnType` or `receiver => arg1 * arg2 -> returnType`.
+To find methods that accept multiple arguments, use `receiver -> arg1 -> arg2 -> returnType` or `receiver -> arg1 * arg2 -> returnType`.
 By default, tuple style method arguments (`arg1 * arg2`) and curried style (`arg1 -> arg2`) are treated as identical.
 If you want to distinguish between them, uncheck `ignore-argstyle` option.
 
-To find properties, use `receiver => propertyType`.
-To find indexed properties, use `receiver => index -> propertyType`.
+To find properties, use `receiver -> propertyType`.
+To find indexed properties, use `receiver -> index -> propertyType`.
 
-For instance members, the specified query matches the following special cases:
+`receiver -> signature` searches both instance members and functions.
+However, when you use `=>` instead of `->`, it searches instance members only.
+
+Only for the query contains `=>`, the following special rules are applied:
 
 1. it matches `arg -> receiver -> returnType`.
 2. a query to search parameterless members (`receiver => propertyType`) also matches instance methods which signature is `receiver => unit -> propertyType`.
@@ -152,7 +155,7 @@ can be used to find static methods that accepts multiple arguments.
 
 ### Active patterns
 
-A criteria of search active patterns is formatted as `(||) : (args ->) inputType -> returnType`.
+To search active patterns, the query should be formatted as `(||) : (args ->) inputType -> returnType`.
 
 To find partial active patterns, use `(|_|) : (args ->) inputType -> returnType` format.
 
@@ -256,4 +259,3 @@ docker run -d -p 8083:8083 --name=fsdn fsdn mono /app/FSDN/FSDN.exe --home-direc
 
 [license-url]: https://github.com/fsdn-projects/FSDN/blob/master/LICENSE
 [license-image]: https://img.shields.io/github/license/fsdn-projects/FSDN.svg
-
