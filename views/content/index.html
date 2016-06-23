@@ -65,6 +65,7 @@
         <ul class="collection" id="assembly_info">
           <li class="collection-item" id="distance">distance: {{ result.distance }}</li>
           <li class="collection-item" id="kind">kind: {{ result.api.kind }}</li>
+          <li class="collection-item" id="xml_doc" v-if="result.api.xml_doc">{{ result.api.xml_doc }}</li>
         </ul>
       </div>
     </li>
