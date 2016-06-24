@@ -123,11 +123,20 @@ Target "Generate" (fun _ ->
     else
       searchExternalAssemblies ()
       |> String.concat " "
+  
   let exitCode =
-    ExecProcess (fun info ->
-      info.FileName <- exe
-      info.Arguments <- args)
-      TimeSpan.MaxValue
+    use timer = new System.Timers.Timer(1000.0)
+    do timer.Elapsed |> Event.add (fun _ -> printf ".")
+    timer.Start()
+    let exitCode =
+      ExecProcess (fun info ->
+        info.FileName <- exe
+        info.Arguments <- args)
+        TimeSpan.MaxValue
+    timer.Stop()
+    printfn ""
+    exitCode
+
   if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
   MoveFile "../bin/FSDN" (currentDirectory @@ "database")
 )
