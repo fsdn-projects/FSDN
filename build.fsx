@@ -90,9 +90,12 @@ Target "RevReplace" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Database
 
+let databasePackage = "FSDN.Database.zip"
+
 Target "CopyApiDatabase" (fun _ ->
-  let dir = "./paket-files/build/github.com"
-  CopyFile ("./bin" @@ project @@ "database") (dir @@ "database.fs")
+  let dir = "./paket-files/build/github.com/"
+  Unzip dir (dir @@ databasePackage)
+  CopyFile ("./bin" @@ project) (dir @@ "database")
   CopyFile ("./bin" @@ project) (dir @@ "packages.yml")
 )
 
@@ -114,6 +117,15 @@ Target "GenerateApiDatabase" (fun _ ->
   FileUtils.cd ".."
 )
 
+let databaseDir = "./bin/FSDN.Database"
+let databasePackagePath = "./bin/" @@ databasePackage
+
+Target "PackApiDatabase" (fun _ ->
+  !! (databaseDir @@ "/**/*")
+  -- "*.zip"
+  |> Zip databaseDir databasePackagePath
+)
+
 #load "paket-files/build/fsharp/FAKE/modules/Octokit/Octokit.fsx"
 open Octokit
 
@@ -122,7 +134,7 @@ Target "PublishApiDatabase" (fun _ ->
   | Some token -> createClientWithToken token
   | None -> createClient (getBuildParamOrDefault "github-user" "") (getBuildParamOrDefault "github-pw" "")
   |> createDraft "fsdn-projects" "FSDN.Database" (DateTime.UtcNow.ToString("yyyy/MM/dd-HHmmss")) false Seq.empty
-  |> uploadFiles (directoryInfo "./bin/FSDN.Database/" |> filesInDir |> Array.map (fun x -> x.FullName))
+  |> uploadFile databasePackagePath
   |> releaseDraft
   |> Async.RunSynchronously
 )
@@ -185,6 +197,7 @@ Target "All" DoNothing
 
 "RunTests"
   ==> "GenerateApiDatabase"
+  ==> "PackApiDatabase"
   ==> "PublishApiDatabase"
 
 "BuildFront"
