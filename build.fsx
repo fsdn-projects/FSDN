@@ -39,12 +39,13 @@ Target "RunTests" (fun _ ->
 
 open NpmHelper
 
+let npm =
+  let target = if isUnix then"npm" else "npm.cmd"
+  match tryFindFileOnPath target with
+  | Some npm -> npm
+  | None -> findToolInSubPath target (currentDirectory @@ "packages/build")
+
 Target "BuildFront" (fun _ ->
-  let npm =
-    let target = if isUnix then"npm" else "npm.cmd"
-    match tryFindFileOnPath target with
-    | Some npm -> npm
-    | None -> findToolInSubPath target (currentDirectory @@ "packages/build")
   Npm (fun p ->
     {
       p with
@@ -74,6 +75,16 @@ Target "GenerateViews" (fun _ ->
     else []
   if not <| executeFSIWithArgs "views/tools" "generate.fsx" definitions [] then
     failwith "Failed: generating views"
+)
+
+Target "RevReplace" (fun _ ->
+  Npm (fun p ->
+    {
+      p with
+        Command = Run "replace"
+        WorkingDirectory = currentDirectory
+        NpmFilePath = npm
+    })
 )
 
 // --------------------------------------------------------------------------------------
@@ -176,7 +187,11 @@ Target "All" DoNothing
   ==> "GenerateApiDatabase"
   ==> "PublishApiDatabase"
 
+"BuildFront"
+  ==> "RevReplace"
+
 "GenerateViews"
+  ==> "RevReplace"
   ==> "All"
 
 "CopyApiDatabase"
