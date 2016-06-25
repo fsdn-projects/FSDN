@@ -6,21 +6,12 @@ open System.IO
 
 let project = "FSDN"
 
-// File system information
 let solutionFile  = "FSDN.sln"
 
 let configuration = environVarOrDefault "configuration" "Release"
 
-// Pattern specifying assemblies to be tested using NUnit
 let testAssemblies = "tests/**/bin" @@ configuration @@ "*Tests*.dll"
 
-// --------------------------------------------------------------------------------------
-// END TODO: The rest of the file includes standard build steps
-// --------------------------------------------------------------------------------------
-
-// Copies binaries from default VS location to exepcted bin folder
-// But keeps a subdirectory structure for each project in the
-// src folder to support multiple project outputs
 Target "CopyBinaries" (fun _ ->
     !! "src/**/*.??proj"
     |>  Seq.map (fun f -> ((System.IO.Path.GetDirectoryName f) @@ "bin" @@ configuration, "bin" @@ (System.IO.Path.GetFileNameWithoutExtension f)))
@@ -31,15 +22,9 @@ Target "CopyWebConfig" (fun _ ->
   CopyFile ("bin" @@ project @@ "Web.config") ("config" @@ sprintf "Web.%s.config" configuration)
 )
 
-// --------------------------------------------------------------------------------------
-// Clean build results
-
 Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp"]
 )
-
-// --------------------------------------------------------------------------------------
-// Build library & test project
 
 Target "Build" (fun _ ->
     !! solutionFile
@@ -83,6 +68,23 @@ Target "BuildFront" (fun _ ->
     })
 )
 
+Target "GenerateViews" (fun _ ->
+  let definitions =
+    if configuration = "Release" then ["--define:RELEASE"]
+    else []
+  if not <| executeFSIWithArgs "views/tools" "generate.fsx" definitions [] then
+    failwith "Failed: generating views"
+)
+
+// --------------------------------------------------------------------------------------
+// Database
+
+Target "CopyApiDatabase" (fun _ ->
+  let dir = "./paket-files/build/github.com"
+  CopyFile ("./bin" @@ project @@ "database") (dir @@ "database.fs")
+  CopyFile ("./bin" @@ project) (dir @@ "packages.yml")
+)
+
 Target "GenerateApiDatabase" (fun _ ->
   FileUtils.cd "./database"
   let isAzure =
@@ -101,12 +103,17 @@ Target "GenerateApiDatabase" (fun _ ->
   FileUtils.cd ".."
 )
 
-Target "GenerateViews" (fun _ ->
-  let definitions =
-    if configuration = "Release" then ["--define:RELEASE"]
-    else []
-  if not <| executeFSIWithArgs "views/tools" "generate.fsx" definitions [] then
-    failwith "Failed: generating views"
+#load "paket-files/build/fsharp/FAKE/modules/Octokit/Octokit.fsx"
+open Octokit
+
+Target "PublishApiDatabase" (fun _ ->
+  match environVarOrNone "GITHUB_TOKEN" with
+  | Some token -> createClientWithToken token
+  | None -> createClient (getBuildParamOrDefault "github-user" "") (getBuildParamOrDefault "github-pw" "")
+  |> createDraft "fsdn-projects" "FSDN.Database" (DateTime.UtcNow.ToString("yyyy/MM/dd-HHmmss")) false Seq.empty
+  |> uploadFiles (directoryInfo "./bin/FSDN.Database/" |> filesInDir |> Array.map (fun x -> x.FullName))
+  |> releaseDraft
+  |> Async.RunSynchronously
 )
 
 // --------------------------------------------------------------------------------------
@@ -165,10 +172,14 @@ Target "All" DoNothing
 "BuildFront"
   ==> "All"
 
-"GenerateApiDatabase"
-  ==> "All"
+"RunTests"
+  ==> "GenerateApiDatabase"
+  ==> "PublishApiDatabase"
 
 "GenerateViews"
+  ==> "All"
+
+"CopyApiDatabase"
   ==> "All"
 
 "All"

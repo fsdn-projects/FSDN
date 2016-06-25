@@ -15,6 +15,8 @@ open Paket
 open Paket.Domain
 open FSDN
 
+let out = "../bin/FSDN.Database/"
+
 Target "PaketRestore" (fun _ ->
   let exitCode =
     ExecProcess (fun info ->
@@ -123,7 +125,7 @@ Target "Generate" (fun _ ->
     else
       searchExternalAssemblies ()
       |> String.concat " "
-  
+
   let exitCode =
     use timer = new System.Timers.Timer(1000.0)
     do timer.Elapsed |> Event.add (fun _ -> printf ".")
@@ -138,7 +140,7 @@ Target "Generate" (fun _ ->
     exitCode
 
   if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
-  MoveFile "../bin/FSDN" (currentDirectory @@ "database")
+  MoveFile out (currentDirectory @@ "database")
 )
 
 type PackageInfo = {
@@ -177,6 +179,7 @@ let tryFindIconUrl name =
   |> Seq.tryPick (fun e -> Some e.Value)
 
 Target "GenerateTargetAssembliesFile" (fun _ ->
+  ensureDirectory out
   let packages =
     LockFile.LoadFrom("./paket.lock")
       .GetGroup(GroupName("Main"))
@@ -198,7 +201,7 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
     standard "System.Xml.Linq"
   |]
   |> Array.map (fun x -> x.ToSerializablePackage)
-  |> Package.dump "../bin/FSDN/packages.yml"
+  |> Package.dump (out @@ "packages.yml")
 )
 
 "PaketRestore"
