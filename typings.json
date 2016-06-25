@@ -3,7 +3,7 @@
   "version": false,
   "resolution": "typings",
   "globalDependencies": {
-    "node": "registry:dt/node#6.0.0+20160602155235",
+    "node": "registry:env/node#6.0.0+20160622202520",
     "superagent": "registry:dt/superagent#1.4.0+20160317120654",
     "vue": "registry:dt/vue#1.0.21+20160423143248"
   }
