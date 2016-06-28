@@ -17,9 +17,19 @@ module SearchOptionLiteral =
   let IgnoreArgStyle = "ignore_arg_style"
 
 [<DataContract>]
+type ApiName = {
+  [<field: DataMember(Name = "id")>]
+  Id: string
+  [<field: DataMember(Name = "class_name")>]
+  Class: string
+  [<field: DataMember(Name = "namespace")>]
+  Namespace: string
+}
+
+[<DataContract>]
 type FSharpApi = {
   [<field: DataMember(Name = "name")>]
-  Name: string
+  Name: ApiName
   [<field: DataMember(Name = "kind")>]
   Kind: string
   [<field: DataMember(Name = "signature")>]
@@ -61,6 +71,33 @@ type SearchInformation = {
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module FSharpApi =
 
+  [<RequireQualifiedAccess>]
+  module Name =
+
+    let private printDisplayName = function
+    | [] -> "<empty>"
+    | ns ->
+      let print (x: NameItem) =
+        match x.GenericParametersForDisplay with
+        | [] -> x.FSharpName
+        | args -> sprintf "%s<%s>" x.FSharpName (args |> List.map (sprintf "'%s") |> String.concat ", ")
+      ns |> Seq.map print |> Seq.rev |> String.concat "."
+
+    let id (name: Name) =
+      match name with
+      | LoadingName _ -> failwith "LoadingName only use to generate database."
+      | DisplayName xs -> printDisplayName (List.truncate 1 xs)
+
+    let ``namespace`` (name: Name) =
+      match name with
+      | LoadingName _ -> failwith "LoadingName only use to generate database."
+      | DisplayName xs -> printDisplayName (List.skip 2 xs)
+
+    let className (name: Name) =
+      match name with
+      | LoadingName _ -> failwith "LoadingName only use to generate database."
+      | DisplayName xs -> printDisplayName (xs |> List.skip 1 |> List.truncate 1)
+
   let toSerializable (results: FSharpApiSearch.Result seq) =
     {
       Values =
@@ -70,7 +107,12 @@ module FSharpApi =
             Distance = result.Distance
             Api =
               {
-                Name = result.Api.Name.Print()
+                Name =
+                  {
+                    Id = Name.id result.Api.Name
+                    Namespace = Name.``namespace`` result.Api.Name
+                    Class = Name.className result.Api.Name
+                  }
                 Kind = result.Api.PrintKind()
                 Signature = result.Api.PrintSignature()
                 TypeConstraints =
@@ -118,5 +160,6 @@ module FSharpApi =
     let client = FSharpApiSearchClient(info.Targets, database)
     try
       client.Search(info.Query, SearchOptions.parse info)
+      |> Seq.sortBy (fun x -> (x.Distance, x.Api.Name.Print()))
       |> Choice1Of2
     with e -> Choice2Of2 e
