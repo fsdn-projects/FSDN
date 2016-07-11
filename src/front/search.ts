@@ -85,6 +85,7 @@ function search(input?: string) {
           app.$set("error_message", undefined);
           app.$set("search_results", JSON.parse(res.text).values);
         }
+        app.$set("query", query);
         app.$set("progress", false);
       });
   }
