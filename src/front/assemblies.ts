@@ -17,13 +17,15 @@ let app = new Vue({
   }
 });
 
+const errorMessage = "error_message";
+
 request
   .get(baseUrl + "/api/assemblies")
   .end((err, res) => {
     if (err || !res.ok) {
-      app.$set("error_message", res.text);
+      app.$set(errorMessage, res.text);
     } else {
-      app.$set("error_message", undefined);
+      app.$set(errorMessage, undefined);
       app.$set("assemblies", JSON.parse(res.text).values);
     }
   });

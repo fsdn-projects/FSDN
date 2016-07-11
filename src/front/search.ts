@@ -65,28 +65,37 @@ let app = new Vue({
   }
 });
 
+const queryLiteral = "query";
+const progress = "progress";
+const errorMessage = "error_message";
+const searchResults = "search_results";
+const allAssemblies = "all_assemblies";
+const strictLiteral = "strict";
+const similarity = "similarity";
+const ignoreArgStyle = "ignore_arg_style";
+
 function search(input?: string) {
-  const query = input ? input : app.$get("query");
-  if (app.$get("progress")) {
+  const query = input ? input : app.$get(queryLiteral);
+  if (app.$get(progress)) {
     return;
   } else if (validate(query)) {
-    app.$set("progress", true);
+    app.$set(progress, true);
     searchApis({
-      query: buildQuery(query, app.$get("all_assemblies")),
-      strict: boolToStatus(app.$get("strict")),
-      similarity: boolToStatus(app.$get("similarity")),
-      ignore_arg_style: boolToStatus(app.$get("ignore_arg_style"))
+      query: buildQuery(query, app.$get(allAssemblies)),
+      strict: boolToStatus(app.$get(strictLiteral)),
+      similarity: boolToStatus(app.$get(similarity)),
+      ignore_arg_style: boolToStatus(app.$get(ignoreArgStyle))
     })
       .end((err, res) => {
         if (err || !res.ok) {
-          app.$set("error_message", res.text);
-          app.$set("search_results", []);
+          app.$set(errorMessage, res.text);
+          app.$set(searchResults, []);
         } else {
-          app.$set("error_message", undefined);
-          app.$set("search_results", JSON.parse(res.text).values);
+          app.$set(errorMessage, undefined);
+          app.$set(searchResults, JSON.parse(res.text).values);
         }
-        app.$set("query", query);
-        app.$set("progress", false);
+        app.$set(queryLiteral, query);
+        app.$set(progress, false);
       });
   }
 }
@@ -103,11 +112,11 @@ request
   .get(baseUrl + "/api/assemblies")
   .end((err, res) => {
     if (err || !res.ok) {
-      app.$set("error_message", res.text);
+      app.$set(errorMessage, res.text);
     } else {
-      app.$set("error_message", undefined);
+      app.$set(errorMessage, undefined);
       app.$set(
-        "all_assemblies",
+        allAssemblies,
         JSON.parse(res.text).values.map((a: any) => ({
           name: a.name,
           checked: a.checked
@@ -116,13 +125,13 @@ request
       if (window.location.search) {
         const queries = querystring.parse(window.location.search.substring(1));
         if (queries.strict) {
-          setStatus("strict", queries.strict);
+          setStatus(strictLiteral, queries.strict);
         }
         if (queries.similarity) {
-          setStatus("similarity", queries.similarity);
+          setStatus(similarity, queries.similarity);
         }
         if (queries.ignore_arg_style) {
-          setStatus("ignore_arg_style", queries.ignore_arg_style);
+          setStatus(ignoreArgStyle, queries.ignore_arg_style);
         }
         search(queries.query);
       }
