@@ -1,6 +1,6 @@
 ﻿<div class="col s8">
   <h2>Target Assemblies</h2>
-  <div class="row" v-bind:class="{ 'hide': ! raised_error }">
+  <div class="row" v-cloak v-show="raised_error">
     <div class="col s8 m6">
       <div class="card red darken-2">
         <div class="card-content white-text">
@@ -16,7 +16,7 @@
       </div>
     </div>
   </div>
-  <ul class="collection" v-bind:class="{ 'hide': raised_error }">
+  <ul class="collection" v-cloak v-show="! raised_error">
     <li class="collection-item" v-for="assembly in assemblies">
       <img v-bind:src="assembly.icon_url" alt="" width="32px" height="32px" v-if="assembly.icon_url"></img>
       {{ assembly.name }} {{ assembly.version }}

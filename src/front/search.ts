@@ -45,7 +45,7 @@ let app = new Vue({
     similarity: false,
     ignore_arg_style: true,
     all_assemblies: <Assembly[]>[],
-    hide_progress: true,
+    progress: false,
     search_results: undefined,
     error_message: undefined
   },
@@ -67,10 +67,10 @@ let app = new Vue({
 
 function search(input?: string) {
   const query = input ? input : app.$get("query");
-  if (! app.$get("hide_progress")) {
+  if (app.$get("progress")) {
     return;
   } else if (validate(query)) {
-    app.$set("hide_progress", false);
+    app.$set("progress", true);
     searchApis({
       query: buildQuery(query, app.$get("all_assemblies")),
       strict: boolToStatus(app.$get("strict")),
@@ -85,7 +85,7 @@ function search(input?: string) {
           app.$set("error_message", undefined);
           app.$set("search_results", JSON.parse(res.text).values);
         }
-        app.$set("hide_progress", true);
+        app.$set("progress", false);
       });
   }
 }
