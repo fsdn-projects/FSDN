@@ -36,6 +36,8 @@ type FSharpApi = {
   Signature: string
   [<field: DataMember(Name = "type_constraints")>]
   TypeConstraints: string
+  [<field: DataMember(Name = "assembly")>]
+  Assembly: string
   [<field: DataMember(Name = "xml_doc")>]
   XmlDoc: string
 }
@@ -118,6 +120,7 @@ module FSharpApi =
                 TypeConstraints =
                   if not <| result.Api.TypeConstraints.IsEmpty then result.Api.PrintTypeConstraints()
                   else ""
+                Assembly = result.AssemblyName
                 XmlDoc =
                   match result.Api.Document with
                   | Some doc -> doc
