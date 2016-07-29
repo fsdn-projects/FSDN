@@ -44,9 +44,9 @@ let search database (packages: NuGetPackage []) logger (req: HttpRequest) =
       Targets = packages |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
       RawOptions =
         {
-          Strict = getOrEmpty SearchOptionLiteral.Strict
-          Similarity = getOrEmpty SearchOptionLiteral.Similarity
-          IgnoreArgStyle = getOrEmpty SearchOptionLiteral.IgnoreArgStyle
+          RespectNameDifference = getOrEmpty SearchOptionLiteral.RespectNameDifference
+          GreedyMatching = getOrEmpty SearchOptionLiteral.GreedyMatching
+          IgnoreParamStyle = getOrEmpty SearchOptionLiteral.IgnoreParamStyle
         }
       Query = query
     }

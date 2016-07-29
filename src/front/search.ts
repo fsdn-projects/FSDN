@@ -12,9 +12,9 @@ interface Assembly {
 
 interface SearchInformation {
   query: string;
-  strict: string;
-  similarity: string;
-  ignore_arg_style: string;
+  respect_name_difference: string;
+  greedy_matching: string;
+  ignore_param_style: string;
 }
 
 function boolToStatus(value: boolean): string {
@@ -41,9 +41,9 @@ let app = new Vue({
   el: "#app",
   data: {
     query: undefined,
-    strict: true,
-    similarity: false,
-    ignore_arg_style: true,
+    respect_name_difference: true,
+    greedy_matching: false,
+    ignore_param_style: true,
     all_assemblies: <Assembly[]>[],
     progress: false,
     search_results: undefined,
@@ -70,9 +70,9 @@ const progress = "progress";
 const errorMessage = "error_message";
 const searchResults = "search_results";
 const allAssemblies = "all_assemblies";
-const strictLiteral = "strict";
-const similarity = "similarity";
-const ignoreArgStyle = "ignore_arg_style";
+const respectNameDifference = "respect_name_difference";
+const greedyMatching = "greedy_matching";
+const ignoreParamStyle = "ignore_param_style";
 
 function search(input?: string) {
   const query = input ? input : app.$get(queryLiteral);
@@ -82,9 +82,9 @@ function search(input?: string) {
     app.$set(progress, true);
     searchApis({
       query: buildQuery(query, app.$get(allAssemblies)),
-      strict: boolToStatus(app.$get(strictLiteral)),
-      similarity: boolToStatus(app.$get(similarity)),
-      ignore_arg_style: boolToStatus(app.$get(ignoreArgStyle))
+      respect_name_difference: boolToStatus(app.$get(respectNameDifference)),
+      greedy_matching: boolToStatus(app.$get(greedyMatching)),
+      ignore_param_style: boolToStatus(app.$get(ignoreParamStyle))
     })
       .end((err, res) => {
         if (err || !res.ok) {
@@ -124,14 +124,14 @@ request
       );
       if (window.location.search) {
         const queries = querystring.parse(window.location.search.substring(1));
-        if (queries.strict) {
-          setStatus(strictLiteral, queries.strict);
+        if (queries.respect_name_difference) {
+          setStatus(respectNameDifference, queries.respect_name_difference);
         }
-        if (queries.similarity) {
-          setStatus(similarity, queries.similarity);
+        if (queries.greedy_matching) {
+          setStatus(greedyMatching, queries.greedy_matching);
         }
-        if (queries.ignore_arg_style) {
-          setStatus(ignoreArgStyle, queries.ignore_arg_style);
+        if (queries.ignore_param_style) {
+          setStatus(ignoreParamStyle, queries.ignore_param_style);
         }
         search(queries.query);
       }

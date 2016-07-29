@@ -8,13 +8,13 @@ open FSharpApiSearch
 module SearchOptionLiteral =
 
   [<Literal>]
-  let Strict = "strict"
+  let RespectNameDifference = "respect_name_difference"
 
   [<Literal>]
-  let Similarity = "similarity"
+  let GreedyMatching = "greedy_matching"
 
   [<Literal>]
-  let IgnoreArgStyle = "ignore_arg_style"
+  let IgnoreParamStyle = "ignore_param_style"
 
 [<DataContract>]
 type ApiName = {
@@ -50,12 +50,12 @@ type SearchResult = {
 
 [<DataContract>]
 type SearchOptions = {
-  [<field: DataMember(Name = SearchOptionLiteral.Strict)>]
-  Strict: string
-  [<field: DataMember(Name = SearchOptionLiteral.Similarity)>]
-  Similarity: string
-  [<field: DataMember(Name = SearchOptionLiteral.IgnoreArgStyle)>]
-  IgnoreArgStyle: string
+  [<field: DataMember(Name = SearchOptionLiteral.RespectNameDifference)>]
+  RespectNameDifference: string
+  [<field: DataMember(Name = SearchOptionLiteral.GreedyMatching)>]
+  GreedyMatching: string
+  [<field: DataMember(Name = SearchOptionLiteral.IgnoreParamStyle)>]
+  IgnoreParamStyle: string
 }
 
 [<DataContract>]
@@ -145,16 +145,16 @@ module FSharpApi =
     open SearchOptionLiteral
 
     let parse info =
-      let updateStrict value opt =
+      let updateRespectNameDifference value (opt: FSharpApiSearch.SearchOptions) =
         { opt with RespectNameDifference = OptionStatus.parseOrDefault SearchOptions.defaultOptions.RespectNameDifference value }
-      let updateSimilarity value opt =
+      let updateGreedyMatching value (opt: FSharpApiSearch.SearchOptions) =
         { opt with GreedyMatching = OptionStatus.parseOrDefault SearchOptions.defaultOptions.GreedyMatching value }
-      let updateIgnoreArgStyle value opt =
+      let updateIgnoreParamStyle value (opt: FSharpApiSearch.SearchOptions) =
         { opt with IgnoreParameterStyle = OptionStatus.parseOrDefault SearchOptions.defaultOptions.IgnoreParameterStyle value }
       SearchOptions.defaultOptions
-      |> updateStrict info.RawOptions.Strict
-      |> updateSimilarity info.RawOptions.Similarity
-      |> updateIgnoreArgStyle info.RawOptions.IgnoreArgStyle
+      |> updateRespectNameDifference info.RawOptions.RespectNameDifference
+      |> updateGreedyMatching info.RawOptions.GreedyMatching
+      |> updateIgnoreParamStyle info.RawOptions.IgnoreParamStyle
 
   let trySearch database info =
     let client = FSharpApiSearchClient(info.Targets, database)
