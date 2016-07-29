@@ -146,11 +146,11 @@ module FSharpApi =
 
     let parse info =
       let updateStrict value opt =
-        { opt with StrictQueryVariable = OptionStatus.parseOrDefault SearchOptions.defaultOptions.StrictQueryVariable value }
+        { opt with RespectNameDifference = OptionStatus.parseOrDefault SearchOptions.defaultOptions.RespectNameDifference value }
       let updateSimilarity value opt =
-        { opt with SimilaritySearching = OptionStatus.parseOrDefault SearchOptions.defaultOptions.SimilaritySearching value }
+        { opt with GreedyMatching = OptionStatus.parseOrDefault SearchOptions.defaultOptions.GreedyMatching value }
       let updateIgnoreArgStyle value opt =
-        { opt with IgnoreArgumentStyle = OptionStatus.parseOrDefault SearchOptions.defaultOptions.IgnoreArgumentStyle value }
+        { opt with IgnoreParameterStyle = OptionStatus.parseOrDefault SearchOptions.defaultOptions.IgnoreParameterStyle value }
       SearchOptions.defaultOptions
       |> updateStrict info.RawOptions.Strict
       |> updateSimilarity info.RawOptions.Similarity
