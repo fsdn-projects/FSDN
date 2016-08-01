@@ -174,7 +174,7 @@ Usually a wildcard (`?`) is recommended for `returnType`.
 
 ## Search Options
 
-### `strict` option
+### `respect-name-difference` option
 
 When this option is enabled and when performing wildcard search,
 each of the wildcards are distinguished by its name.
@@ -182,13 +182,13 @@ For instance, `?a -> ?a` matches `int -> int`,
 but `?a -> ?b` doesn't match `int -> int`.
 If this option is disabled, `?a -> ?b` matches `int -> int`.
 
-### `similarity` option
+### `greedy-matching` option
 
 When this option is enabled, type parameters match concrete type names, and vice-versa.
 The results will be ordered by its similarity.
 In addition, type constraint will be considered significant.
 
-### `ignore-argstyle` option
+### `ignore-param-style` option
 
 When this option is enabled, the difference between curried style parameter signature (`arg1 -> arg2 -> returnType`)
 and tuple style (`arg1 * arg2 -> returnType`) are ignored.

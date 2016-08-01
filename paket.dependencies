@@ -26,7 +26,7 @@ group Build
 group Doc
   source https://api.nuget.org/v3/index.json
 
-  github hafuu/FSharpApiSearch:450fe8cd579fdd26916ee7a5bb68d6d8741b3280 README.md
+  github hafuu/FSharpApiSearch:fd2f73b508dbc1cb8d93ab491289eb03f4b63e0d README.md
 
 group Test
   source https://api.nuget.org/v3/index.json

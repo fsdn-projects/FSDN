@@ -175,7 +175,7 @@ NUGET
     FsPickler (2.1)
 GITHUB
   remote: hafuu/FSharpApiSearch
-    README.md (b940352eee83f2d82a460c458bcde44b33e728bd)
+    README.md (fd2f73b508dbc1cb8d93ab491289eb03f4b63e0d)
       FParsec
       FSharp.Compiler.Service
       FsPickler
