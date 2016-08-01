@@ -45,7 +45,16 @@ let npm =
   | Some npm -> npm
   | None -> findToolInSubPath target (currentDirectory @@ "packages/build")
 
+[<Literal>]
+let NodeEnv = "NODE_ENV"
+
 Target "BuildFront" (fun _ ->
+  let isProduction =
+    CurrentTargetOrder
+    |> List.exists (List.exists (fun x -> x.StartsWith("Deploy")))
+  let nodeEnv = environVar NodeEnv
+  if isProduction then
+    setEnvironVar NodeEnv "production"
   Npm (fun p ->
     {
       p with
@@ -67,6 +76,7 @@ Target "BuildFront" (fun _ ->
         WorkingDirectory = currentDirectory
         NpmFilePath = npm
     })
+  setEnvironVar NodeEnv nodeEnv
 )
 
 Target "GenerateViews" (fun _ ->
