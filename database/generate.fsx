@@ -51,6 +51,7 @@ let searchExternalAssemblies () =
   "./packages/"
   |> directoryInfo
   |> subDirectories
+  |> Array.filter (fun d -> d.Name.StartsWith("System.") = false)
   |> Array.collect (fun d ->
     let libs =
       subDirectories d
@@ -60,15 +61,18 @@ let searchExternalAssemblies () =
     let withoutPortable = libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t) && not (d.Name.Contains("portable"))))
     let target =
       match withoutPortable with
-      | Some w -> w
-      | None -> libs |> Array.find (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
-    target
-    |> filesInDir
-    |> Array.choose (fun f ->
-      if f.Name = "FSharp.Core.dll" then None
-      elif f.Extension = ".dll" then Some(f.FullName)
-      else None
-    )
+      | Some w -> Some w
+      | None -> libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
+    match target with
+    | Some target ->
+      target
+      |> filesInDir
+      |> Array.choose (fun f ->
+          if f.Name = "FSharp.Core.dll" then None
+          elif f.Extension = ".dll" then Some(f.FullName)
+          else None
+      )
+    | None -> [||]
   )
   |> Array.distinct
   |> Array.append [|
