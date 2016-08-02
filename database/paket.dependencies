@@ -6,4 +6,4 @@ nuget FsPickler
 nuget FParsec
 nuget Argu
 nuget FsUnit
-
+nuget Suave

@@ -177,8 +177,9 @@ let tryFindIconUrl name =
   |> FindFirstMatchingFile (name + ".nuspec")
   |> XDocument.Load
   |> fun doc ->
+    let ns = doc.Root.Attribute(XName.Get("xmlns")).Value
     let manager = XmlNamespaceManager(new NameTable())
-    manager.AddNamespace("x", "http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd")
+    manager.AddNamespace("x", ns)
     doc.XPathSelectElements("/x:package/x:metadata/x:iconUrl", manager)
   |> Seq.tryPick (fun e -> Some e.Value)
 

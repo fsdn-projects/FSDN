@@ -10,3 +10,5 @@
   Assemblies: [Argu]
 - Name: FsUnit
   Assemblies: [FsUnit.NUnit]
+- Name: Suave
+  Assemblies: [Suave]
