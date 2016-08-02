@@ -6,6 +6,8 @@
   Assemblies: [FParsec]
 - Name: FSharp.Compiler.Service
   Assemblies: [FSharp.Compiler.Service]
+- Name: FSharp.Control.AsyncSeq
+  Assemblies: [FSharp.Control.AsyncSeq]
 - Name: FSharp.Data
   Assemblies: [FSharp.Data]
 - Name: FsPickler
