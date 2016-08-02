@@ -1,12 +1,20 @@
-- Name: FSharp.Compiler.Service
-  Assemblies: [FSharp.Compiler.Service]
-- Name: FSharp.Data
-  Assemblies: [FSharp.Data]
-- Name: FsPickler
-  Assemblies: [FsPickler]
-- Name: FParsec
-  Assemblies: [FParsec]
 - Name: Argu
   Assemblies: [Argu]
+- Name: Newtonsoft.Json
+  Assemblies: [Newtonsoft.Json]
+- Name: FParsec
+  Assemblies: [FParsec]
+- Name: FSharp.Compiler.Service
+  Assemblies: [FSharp.Compiler.Service]
+- Name: FSharp.Control.AsyncSeq
+  Assemblies: [FSharp.Control.AsyncSeq]
+- Name: FSharp.Data
+  Assemblies: [FSharp.Data]
+- Name: FSharp.ViewModule.Core
+  Assemblies: [FSharp.ViewModule]
+- Name: FsPickler
+  Assemblies: [FsPickler]
 - Name: FsUnit
   Assemblies: [FsUnit.NUnit]
+- Name: Suave
+  Assemblies: [Suave]

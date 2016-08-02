@@ -51,6 +51,7 @@ let searchExternalAssemblies () =
   "./packages/"
   |> directoryInfo
   |> subDirectories
+  |> Array.filter (fun d -> d.Name.StartsWith("System.") = false)
   |> Array.collect (fun d ->
     let libs =
       subDirectories d
@@ -60,45 +61,50 @@ let searchExternalAssemblies () =
     let withoutPortable = libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t) && not (d.Name.Contains("portable"))))
     let target =
       match withoutPortable with
-      | Some w -> w
-      | None -> libs |> Array.find (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
-    target
-    |> filesInDir
-    |> Array.choose (fun f ->
-      if f.Name = "FSharp.Core.dll" then None
-      elif f.Extension = ".dll" then Some(f.FullName)
-      else None
-    )
+      | Some w -> Some w
+      | None -> libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
+    match target with
+    | Some target ->
+      target
+      |> filesInDir
+      |> Array.choose (fun f ->
+          if f.Name = "FSharp.Core.dll" then None
+          elif f.Extension = ".dll" then Some(f.FullName)
+          else None
+      )
+    | None -> [||]
   )
   |> Array.distinct
   |> Array.append [|
-    "System.IO"
-    "System.Runtime"
-    "System.Diagnostics.Debug"
     "System.Collections"
+    "System.ComponentModel.DataAnnotations"
+    "System.Data"
+    "System.Diagnostics.Debug"
+    "System.Drawing"
+    "System.EnterpriseServices"
+    "System.Globalization"
+    "System.IO"
+    "System.Net"
+    "System.Net.Http"
+    "System.Numerics"
+    "System.ObjectModel"
+    "System.Reflection"
+    "System.Reflection.Primitives"
+    "System.Runtime"
+    "System.Runtime.Extensions"
+    "System.Runtime.Numerics"
+    "System.Runtime.Serialization"
+    "System.ServiceModel.Internals"
     "System.Text.Encoding"
     "System.Text.RegularExpressions"
     "System.Threading"
     "System.Threading.Tasks"
-    "System.Xml.ReaderWriter"
-    "System.Reflection"
-    "System.Globalization"
-    "System.Runtime.Extensions"
-    "System.Reflection.Primitives"
-    "System.Xml.Linq"
-    "System.Runtime.Serialization"
-    "System.Net"
-    "System.Numerics"
-    "System.Runtime.Numerics"
-    "System.Web"
-    "System.Web.Services"
-    "System.Web.ApplicationServices"
-    "System.EnterpriseServices"
-    "System.ComponentModel.DataAnnotations"
-    "System.Drawing"
-    "System.Data"
     "System.Transactions"
-    "System.ServiceModel.Internals"
+    "System.Web"
+    "System.Web.ApplicationServices"
+    "System.Web.Services"
+    "System.Xml.Linq"
+    "System.Xml.ReaderWriter"
   |]
   |> Array.toList
 
@@ -173,8 +179,9 @@ let tryFindIconUrl name =
   |> FindFirstMatchingFile (name + ".nuspec")
   |> XDocument.Load
   |> fun doc ->
+    let ns = doc.Root.Attribute(XName.Get("xmlns")).Value
     let manager = XmlNamespaceManager(new NameTable())
-    manager.AddNamespace("x", "http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd")
+    manager.AddNamespace("x", ns)
     doc.XPathSelectElements("/x:package/x:metadata/x:iconUrl", manager)
   |> Seq.tryPick (fun e -> Some e.Value)
 
@@ -197,6 +204,7 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
     }
   )
   |> Array.append [|
+    standard "System.Net.Http"
     standard "System.Xml"
     standard "System.Xml.Linq"
   |]
