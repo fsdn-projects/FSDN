@@ -92,6 +92,7 @@ let searchExternalAssemblies () =
     "System.Xml.Linq"
     "System.Runtime.Serialization"
     "System.Net"
+    "System.Net.Http"
     "System.Numerics"
     "System.Runtime.Numerics"
     "System.Web"
@@ -202,6 +203,7 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
     }
   )
   |> Array.append [|
+    standard "System.Net.Http"
     standard "System.Xml"
     standard "System.Xml.Linq"
   |]
