@@ -10,6 +10,8 @@
   Assemblies: [FSharp.Control.AsyncSeq]
 - Name: FSharp.Data
   Assemblies: [FSharp.Data]
+- Name: FSharp.ViewModule.Core
+  Assemblies: [FSharp.ViewModule]
 - Name: FsPickler
   Assemblies: [FsPickler]
 - Name: FsUnit
