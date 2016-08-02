@@ -12,3 +12,5 @@
   Assemblies: [FsUnit.NUnit]
 - Name: Suave
   Assemblies: [Suave]
+- Name: Newtonsoft.Json
+  Assemblies: [Newtonsoft.Json]

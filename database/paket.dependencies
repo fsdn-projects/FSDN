@@ -7,3 +7,4 @@ nuget FParsec
 nuget Argu
 nuget FsUnit
 nuget Suave
+nuget Newtonsoft.Json
