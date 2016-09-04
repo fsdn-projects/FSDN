@@ -166,7 +166,7 @@ GITHUB
       Octokit (>= 0.20)
 HTTP
   remote: https://github.com
-    FSDN.Database.zip (/fsdn-projects/FSDN.Database/releases/download/2016%2F08%2F01-003346/FSDN.Database.zip)
+    FSDN.Database.zip (/fsdn-projects/FSDN.Database/releases/download/2016%2F09%2F04-215157/FSDN.Database.zip)
 GROUP Doc
 NUGET
   remote: http://api.nuget.org/v3/index.json
