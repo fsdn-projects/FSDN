@@ -192,3 +192,4 @@ paket-files
 typings/*
 !typings/browser.d.ts
 !typings/main.d.ts
+temp/

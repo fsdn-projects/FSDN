@@ -1,6 +1,7 @@
 #r @"packages/build/FAKE/tools/FakeLib.dll"
 #r @"packages/build/FAKE.Persimmon/lib/net451/FAKE.Persimmon.dll"
 open Fake
+open Fake.Git
 open System
 open System.IO
 
@@ -140,10 +141,23 @@ Target "PackApiDatabase" (fun _ ->
 open Octokit
 
 Target "PublishApiDatabase" (fun _ ->
+
+  let now = DateTime.UtcNow.ToString("yyyy/MM/dd-HHmmss")
+
+  // push empty commit
+  let tempDatabaseDir = "temp/database"
+  CleanDir tempDatabaseDir
+  Repository.cloneSingleBranch "" ("https://github.com/fsdn-projects/FSDN.Database.git") "master" tempDatabaseDir
+  sprintf "commit --allow-empty -m \"update database %s\"" now
+  |> runSimpleGitCommand tempDatabaseDir
+  |> trace
+  Branches.push tempDatabaseDir
+
+  // upload database file
   match environVarOrNone "GITHUB_TOKEN" with
   | Some token -> createClientWithToken token
   | None -> createClient (getBuildParamOrDefault "github-user" "") (getBuildParamOrDefault "github-pw" "")
-  |> createDraft "fsdn-projects" "FSDN.Database" (DateTime.UtcNow.ToString("yyyy/MM/dd-HHmmss")) false Seq.empty
+  |> createDraft "fsdn-projects" "FSDN.Database" now false Seq.empty
   |> uploadFile databasePackagePath
   |> releaseDraft
   |> Async.RunSynchronously
