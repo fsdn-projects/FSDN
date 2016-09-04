@@ -7,11 +7,11 @@
     "pack": "gulp pack",
     "replace": "gulp replace"
   },
-  "homepage": "https://github.com/pocketberserker/FSDN",
+  "homepage": "https://github.com/fsdn-projects/FSDN",
   "license": "Unlicense",
   "repository" : {
     "type" : "git",
-    "url" : "https://github.com/pocketberserker/FSDN"
+    "url" : "https://github.com/fsdn-projects/FSDN"
   },
   "dependencies": {
     "vue": "1.0.26",
