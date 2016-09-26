@@ -10,7 +10,7 @@ NUGET
       System.Reflection.Metadata (>= 1.4.1-beta-24227-04)
     FSharp.Configuration (0.6.2)
     FSharp.Core (4.0.0.1)
-    FSharpApiSearch (1.0)
+    FSharpApiSearch (1.0.1)
       FParsec (>= 1.0.2)
       FSharp.Compiler.Service (>= 6.0)
       FsPickler (>= 3.0)
@@ -141,7 +141,7 @@ NUGET
     FSharp.Formatting (2.14.4)
       FSharp.Compiler.Service (2.0.0.6)
       FSharpVSPowerTools.Core (>= 2.3 < 2.4)
-    FSharpApiSearch.Console (1.0)
+    FSharpApiSearch.Console (1.0.1)
     FSharpVSPowerTools.Core (2.3)
       FSharp.Compiler.Service (>= 2.0.0.3)
     KuduSync.NET (1.3)
@@ -162,7 +162,7 @@ GITHUB
     favicon.ico (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
     fsdn_mono.png (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (e5870cb85f9b500246e02c6daa94e5131dad7a6e)
+    modules/Octokit/Octokit.fsx (dab7b5aea40c0855cf35fc7d6e67fa4f411fb24b)
       Octokit (>= 0.20)
 HTTP
   remote: https://github.com
