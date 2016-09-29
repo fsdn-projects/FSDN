@@ -44,6 +44,8 @@ type FSharpApi = {
   Assembly: string
   [<field: DataMember(Name = "xml_doc")>]
   XmlDoc: string
+  [<field: DataMember(Name = "link")>]
+  Link: string
 }
 
 [<DataContract>]
@@ -110,7 +112,12 @@ module FSharpApi =
       | LoadingName _ -> failwith "LoadingName only use to generate database."
       | DisplayName xs -> printDisplayName (xs |> List.skip 1 |> List.truncate 1)
 
-  let toSerializable (results: FSharpApiSearch.Result seq) =
+  let private getOrEmpty value =
+    match value with
+    | Some value -> value
+    | None -> ""
+
+  let toSerializable (generator: ApiLinkGenerator) (results: FSharpApiSearch.Result seq) =
     {
       Values =
         results
@@ -131,10 +138,8 @@ module FSharpApi =
                   if not <| result.Api.TypeConstraints.IsEmpty then result.Api.PrintTypeConstraints()
                   else ""
                 Assembly = result.AssemblyName
-                XmlDoc =
-                  match result.Api.Document with
-                  | Some doc -> doc
-                  | None -> ""
+                XmlDoc = getOrEmpty result.Api.Document
+                Link = ApiLinkGenerator.generate result generator |> getOrEmpty
               }
           })
         |> Seq.toArray

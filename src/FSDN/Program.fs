@@ -16,6 +16,8 @@ type Args =
   | Port of Sockets.Port
   | Home_Directory of string
   | Log_Level of string
+  | FSharp_Link of string
+  | MSDN_Link of string
 with
   interface IArgParserTemplate with
     member this.Usage =
@@ -23,6 +25,8 @@ with
       | Port _ -> "specify a primary port."
       | Home_Directory _ -> "specify a home or root diretory."
       | Log_Level _ -> "specify log level."
+      | FSharp_Link _ -> "specify official F# library document link."
+      | MSDN_Link _ -> "specify MSDN link."
 
 let logger (args: ParseResults<Args>) =
   match args.TryPostProcessResult(<@ Log_Level @>, LogLevel.FromString) with
@@ -42,11 +46,11 @@ let fileRequest homeDir =
     browseHome
   ]
 
-let app database packages homeDir logger : WebPart =
+let app database generator homeDir logger : WebPart =
   choose [
     GET >=> fileRequest homeDir
     HEAD >=> fileRequest homeDir
-    Api.app database packages logger
+    Api.app database generator logger
     notFound homeDir
   ]
   >=> log logger logFormat
@@ -77,6 +81,15 @@ let main args =
     | Some xs -> xs
     | None -> [||]
     |> Package.all
-  let app = app database packages homeDir logger
+  let generator = {
+    FSharp =
+      args.GetResult(<@ FSharp_Link @>, "https://msdn.microsoft.com/visualfsharpdocs/conceptual/")
+      |> FSharpApiSearch.LinkGenerator.fsharp
+    MSDN =
+      args.GetResult(<@ MSDN_Link @>, "https://msdn.microsoft.com/en-us/library/")
+      |> FSharpApiSearch.LinkGenerator.msdn
+    Packages = packages
+  }
+  let app = app database generator homeDir logger
   startWebServer config app
   0

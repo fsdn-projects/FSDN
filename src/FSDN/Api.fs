@@ -34,14 +34,16 @@ let validate (req: HttpRequest) key (validate: string -> Choice<'T, string>) (f:
     )
     (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not exist." key)
 
-let search database (packages: NuGetPackage []) logger (req: HttpRequest) =
+let search database generator logger (req: HttpRequest) =
   let getOrEmpty name =
     match req.queryParam name with
     | Choice1Of2 param -> param
     | Choice2Of2 _ -> ""
   let inner (query, excluded) =
     {
-      Targets = packages |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
+      Targets =
+        generator.Packages
+        |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
       RawOptions =
         {
           RespectNameDifference = getOrEmpty SearchOptionLiteral.RespectNameDifference
@@ -55,7 +57,7 @@ let search database (packages: NuGetPackage []) logger (req: HttpRequest) =
     |> function
     | Choice1Of2 results ->
       results
-      |> FSharpApi.toSerializable
+      |> FSharpApi.toSerializable generator
       |> Json.toJson
       |> Suave.Successful.ok
     | Choice2Of2 e ->
@@ -67,12 +69,12 @@ let search database (packages: NuGetPackage []) logger (req: HttpRequest) =
       else Query.parse param)
     inner
 
-let app database packages logger : WebPart =
+let app database generator logger : WebPart =
   choose [
     GET >=> choose [
       path "/api/assemblies"
-        >=> ({ Values = packages } |> Json.toJson |> Suave.Successful.ok)
+        >=> ({ Values = generator.Packages } |> Json.toJson |> Suave.Successful.ok)
       path "/api/search" >=>
-        request (search database packages logger)
+        request (search database generator logger)
     ]
   ]
