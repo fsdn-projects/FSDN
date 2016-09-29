@@ -14,7 +14,7 @@ interface SearchInformation {
   query: string;
   respect_name_difference: string;
   greedy_matching: string;
-  ignore_param_style: string;
+  ignore_parameter_style: string;
 }
 
 function boolToStatus(value: boolean): string {
@@ -43,7 +43,7 @@ let app = new Vue({
     query: undefined,
     respect_name_difference: true,
     greedy_matching: false,
-    ignore_param_style: true,
+    ignore_parameter_style: true,
     all_assemblies: <Assembly[]>[],
     progress: false,
     search_results: undefined,
@@ -72,7 +72,7 @@ const searchResults = "search_results";
 const allAssemblies = "all_assemblies";
 const respectNameDifference = "respect_name_difference";
 const greedyMatching = "greedy_matching";
-const ignoreParamStyle = "ignore_param_style";
+const ignoreParameterStyle = "ignore_parameter_style";
 
 function search(input?: string) {
   const query = input ? input : app.$get(queryLiteral);
@@ -84,7 +84,7 @@ function search(input?: string) {
       query: buildQuery(query, app.$get(allAssemblies)),
       respect_name_difference: boolToStatus(app.$get(respectNameDifference)),
       greedy_matching: boolToStatus(app.$get(greedyMatching)),
-      ignore_param_style: boolToStatus(app.$get(ignoreParamStyle))
+      ignore_parameter_style: boolToStatus(app.$get(ignoreParameterStyle))
     })
       .end((err, res) => {
         if (err || !res.ok) {
@@ -130,8 +130,8 @@ request
         if (queries.greedy_matching) {
           setStatus(greedyMatching, queries.greedy_matching);
         }
-        if (queries.ignore_param_style) {
-          setStatus(ignoreParamStyle, queries.ignore_param_style);
+        if (queries.ignore_parameter_style) {
+          setStatus(ignoreParameterStyle, queries.ignore_parameter_style);
         }
         search(queries.query);
       }

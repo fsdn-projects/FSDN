@@ -46,7 +46,8 @@ let search database (packages: NuGetPackage []) logger (req: HttpRequest) =
         {
           RespectNameDifference = getOrEmpty SearchOptionLiteral.RespectNameDifference
           GreedyMatching = getOrEmpty SearchOptionLiteral.GreedyMatching
-          IgnoreParamStyle = getOrEmpty SearchOptionLiteral.IgnoreParamStyle
+          IgnoreParameterStyle = getOrEmpty SearchOptionLiteral.IgnoreParameterStyle
+          IgnoreCase = getOrEmpty SearchOptionLiteral.IgnoreCase
         }
       Query = query
     }

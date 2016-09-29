@@ -4,6 +4,7 @@ open System.Collections.Generic
 open System.Runtime.Serialization
 open Microsoft.FSharp.Reflection
 open FSharpApiSearch
+module ApiSearchOptions = FSharpApiSearch.SearchOptions
 
 module SearchOptionLiteral =
 
@@ -14,7 +15,10 @@ module SearchOptionLiteral =
   let GreedyMatching = "greedy_matching"
 
   [<Literal>]
-  let IgnoreParamStyle = "ignore_param_style"
+  let IgnoreParameterStyle = "ignore_parameter_style"
+
+  [<Literal>]
+  let IgnoreCase = "ignore_case"
 
 [<DataContract>]
 type ApiName = {
@@ -56,8 +60,10 @@ type SearchOptions = {
   RespectNameDifference: string
   [<field: DataMember(Name = SearchOptionLiteral.GreedyMatching)>]
   GreedyMatching: string
-  [<field: DataMember(Name = SearchOptionLiteral.IgnoreParamStyle)>]
-  IgnoreParamStyle: string
+  [<field: DataMember(Name = SearchOptionLiteral.IgnoreParameterStyle)>]
+  IgnoreParameterStyle: string
+  [<field: DataMember(Name = SearchOptionLiteral.IgnoreCase)>]
+  IgnoreCase: string
 }
 
 [<DataContract>]
@@ -82,7 +88,11 @@ module FSharpApi =
       let print (x: NameItem) =
         match x.GenericParametersForDisplay with
         | [] -> x.FSharpName
-        | args -> sprintf "%s<%s>" x.FSharpName (args |> List.map (sprintf "'%s") |> String.concat ", ")
+        | args ->
+          args
+          |> List.map (fun t -> sprintf "%s%s" (if t.IsSolveAtCompileTime then "^" else "'") t.Name)
+          |> String.concat ", "
+          |> sprintf "%s<%s>" x.FSharpName
       ns |> Seq.map print |> Seq.rev |> String.concat "."
 
     let id (name: Name) =
@@ -137,32 +147,27 @@ module FSharpApi =
     | "disabled" -> Some Disabled
     | _ -> None
 
-    let parseOrDefault defaultValue value =
-      match tryParse value with
-      | Some value -> value
-      | None -> defaultValue
-
   module SearchOptions =
 
     open Suave
     open SearchOptionLiteral
 
-    let parse info =
-      let updateRespectNameDifference value (opt: FSharpApiSearch.SearchOptions) =
-        { opt with RespectNameDifference = OptionStatus.parseOrDefault SearchOptions.defaultOptions.RespectNameDifference value }
-      let updateGreedyMatching value (opt: FSharpApiSearch.SearchOptions) =
-        { opt with GreedyMatching = OptionStatus.parseOrDefault SearchOptions.defaultOptions.GreedyMatching value }
-      let updateIgnoreParamStyle value (opt: FSharpApiSearch.SearchOptions) =
-        { opt with IgnoreParameterStyle = OptionStatus.parseOrDefault SearchOptions.defaultOptions.IgnoreParameterStyle value }
+    let private applyOrDefault (lens: FSharpApiSearch.Lens<_, _>) value =
+      match OptionStatus.tryParse value with
+      | Some value -> lens.Set value
+      | None -> id
+
+    let apply info =
       SearchOptions.defaultOptions
-      |> updateRespectNameDifference info.RawOptions.RespectNameDifference
-      |> updateGreedyMatching info.RawOptions.GreedyMatching
-      |> updateIgnoreParamStyle info.RawOptions.IgnoreParamStyle
+      |> applyOrDefault ApiSearchOptions.RespectNameDifference info.RawOptions.RespectNameDifference
+      |> applyOrDefault ApiSearchOptions.GreedyMatching info.RawOptions.GreedyMatching
+      |> applyOrDefault ApiSearchOptions.IgnoreParameterStyle info.RawOptions.IgnoreParameterStyle
+      |> applyOrDefault ApiSearchOptions.IgnoreCase info.RawOptions.IgnoreCase
 
   let trySearch database info =
     let client = FSharpApiSearchClient(info.Targets, database)
     try
-      client.Search(info.Query, SearchOptions.parse info)
-      |> Seq.sortBy (fun x -> (x.Distance, x.Api.Name.Print()))
+      client.Search(info.Query, SearchOptions.apply info)
+      |> client.Sort
       |> Choice1Of2
     with e -> Choice2Of2 e

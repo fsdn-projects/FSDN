@@ -36,6 +36,8 @@
             <a class="collection-item" v-on:click="search(&quot;string =&gt; int&quot;)">string =&gt; int</a>
             <a class="collection-item" v-on:click="search(&quot;(|_|) : Expr -&gt; ?&quot;)">(|_|) : Expr -&gt; ?</a>
             <a class="collection-item" v-on:click="search(&quot;List.* : _&quot;)">List.* : _</a>
+            <a class="collection-item" v-on:click="search(&quot;new : string -&gt; Uri&quot;)">new : string -&gt; Uri</a>
+            <a class="collection-item" v-on:click="search(&quot;'a -&gt; Option&lt;'a&gt;&quot;)">'a -&gt; Option&lt;'a&gt;</a>
           </div>
         </div>
       </div>
@@ -85,8 +87,12 @@
     <label for="greedy_matching">greedy-matching</label>
   </p>
   <p>
-    <input type="checkbox" class="filled-in" v-model="ignore_param_style" id="ignore_param_style" />
-    <label for="ignore_param_style">ignore-param-style</label>
+    <input type="checkbox" class="filled-in" v-model="ignore_parameter_style" id="ignore_parameter_style" />
+    <label for="ignore_parameter_style">ignore-parameter-style</label>
+  </p>
+  <p>
+    <input type="checkbox" class="filled-in" v-model="ignore_case" id="ignore_case" />
+    <label for="ignore_case">ignore-case</label>
   </p>
   <div class="card light-blue darken-2">
     <div class="card-content white-text">

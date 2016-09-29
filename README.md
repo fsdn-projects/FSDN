@@ -14,8 +14,9 @@ This document describes the F# API Search library specific formats.
 |:--------------|:--------------|
 | Functions and values in modules | `int -> string` |
 | Fields of records and structs | `Ref<'a> => 'a` |
+| Descriminated Union | `'a -> Option<'a>` |
 | Methods and properties | `'a list -> int` <br> or <br> `'a list => int` |
-| Constructors | `string -> Uri` |
+| Constructors | `new : string -> Uri` |
 | Names (function and method names) | `head : 'a list -> 'a` |
 | Active patterns | <code>(&#124;&#124;) : ... -> Expr -> ?</code> |
 
@@ -188,11 +189,15 @@ When this option is enabled, type parameters match concrete type names, and vice
 The results will be ordered by its similarity.
 In addition, type constraint will be considered significant.
 
-### `ignore-param-style` option
+### `ignore-parameter-style` option
 
 When this option is enabled, the difference between curried style parameter signature (`arg1 -> arg2 -> returnType`)
 and tuple style (`arg1 * arg2 -> returnType`) are ignored.
 These styles are considered as identical.
+
+### `ignore-case` option
+
+When this option is enabled, API name and type name matching are case-insensitive.
 
 ## Current Build Status
 
