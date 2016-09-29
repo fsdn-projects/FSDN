@@ -3,6 +3,7 @@ sudo: false
 
 mono:
   - 4.2.2
+  - 4.6.0
 solution: FSDN.sln
 
 before_install:
