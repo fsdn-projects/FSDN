@@ -2,8 +2,9 @@
 "use strict";
 import Vue = require("vue");
 import * as request from "superagent";
-import * as querystring from "querystring";
+import * as querystring from "query-string";
 import {baseUrl, enabled, disabled} from "./util";
+let tweet = require("./tweet");
 
 interface Assembly {
   name: string;
@@ -100,7 +101,9 @@ function search(input?: string) {
           app.$set(searchResults, []);
         } else {
           app.$set(errorMessage, undefined);
-          app.$set(searchResults, JSON.parse(res.text).values);
+          const result = JSON.parse(res.text);
+          app.$set(searchResults, result.values);
+          tweet.link(result.path);
         }
         app.$set(queryLiteral, query);
         app.$set(progress, false);

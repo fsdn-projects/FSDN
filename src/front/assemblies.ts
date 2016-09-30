@@ -3,6 +3,10 @@
 import Vue = require("vue");
 import * as request from "superagent";
 import {baseUrl} from "./util";
+import {tweet, sideTweet} from "./tweet";
+
+let tw = tweet;
+let side = sideTweet;
 
 let app = new Vue({
   el: "#app",

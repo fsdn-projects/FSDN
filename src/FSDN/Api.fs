@@ -94,7 +94,7 @@ module Search =
       let! result = FSharpApi.trySearch database info
       return
         result
-        |> FSharpApi.toSerializable generator
+        |> FSharpApi.toSerializable generator req.rawQuery
         |> Json.toJson
     }
 
@@ -102,7 +102,7 @@ let app database generator logger : WebPart =
   choose [
     GET >=> choose [
       path "/api/assemblies"
-        >=> ({ Values = generator.Packages } |> Json.toJson |> Suave.Successful.ok)
+        >=> ({ Paging.Values = generator.Packages } |> Json.toJson |> Suave.Successful.ok)
       path Search.Path >=>
         request (Search.apply database generator logger)
     ]

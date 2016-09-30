@@ -29,8 +29,7 @@ let layoutRoots = [
 ]
 
 let info = [
-  "project-github", "https://github.com/fsdn-projects/FSDN" ;
-  "tweet", "https://twitter.com/intent/tweet?text=FSDN%20is%20awesome%21%21&url=http%3A%2F%2Ffsdn.azurewebsites.net%2F&hashtags=fsdn%2Cfsharp"
+  "project-github", "https://github.com/fsdn-projects/FSDN"
 ]
 
 let copyFiles () =
@@ -42,8 +41,8 @@ let configReplacements name =
   let script =
     if exists then
       Path.GetFileNameWithoutExtension(name) + ".js"
-      |> sprintf """<script src="%s%s"></script>""" (if name = specFileName then "../" else root)
-    else ""
+    else "default.js"
+    |> sprintf """<script src="%s%s"></script>""" (if name = specFileName then "../" else root)
   ("root", root) :: ("script", script) :: info
 
 let buildDocumentation () =
@@ -127,7 +126,7 @@ let generateQuerySpec (language, readme) =
     docTemplate,
     lineNumbers = false,
     layoutRoots = layoutRoots,
-    replacements = ("root", ".." @@ root) :: ("script", "") :: info
+    replacements = configReplacements specFileName
   )
 
 copyFiles ()

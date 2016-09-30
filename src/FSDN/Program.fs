@@ -39,17 +39,20 @@ let notFound homeDir ctx = asyncOption {
   return { ctx with response = { ctx.response with status = HTTP_404 } }
 }
 
-let fileRequest homeDir =
+let fileRequest homeDir logger =
   let notFound = notFound homeDir
   choose [
     path "/" >=> browseFile homeDir "index.html"
     browseHome
+    pathScan "/search/%s" (fun query ->
+      sprintf "/?%s" query |> Redirection.redirect
+    )
   ]
 
 let app database generator homeDir logger : WebPart =
   choose [
-    GET >=> fileRequest homeDir
-    HEAD >=> fileRequest homeDir
+    GET >=> fileRequest homeDir logger
+    HEAD >=> fileRequest homeDir logger
     Api.app database generator logger
     notFound homeDir
   ]

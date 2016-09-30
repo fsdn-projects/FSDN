@@ -54,7 +54,7 @@ gulp.task("replace", function () {
     gulp.src(scriptDir + "rev-*-manifest.json")
       .pipe(extend("manifest.json"))
       .pipe(gulp.dest(scriptDir));
-  return gulp.src(outDir + "*.html")
+  return gulp.src(outDir + "/**/*.html")
     .pipe(revReplace({ manifest: manifest }))
     .pipe(gulp.dest(outDir));
 });

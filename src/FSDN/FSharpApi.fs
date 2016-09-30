@@ -123,7 +123,7 @@ module FSharpApi =
     | Some value -> value
     | None -> ""
 
-  let toSerializable (generator: ApiLinkGenerator) (results: FSharpApiSearch.Result seq) =
+  let toSerializable (generator: ApiLinkGenerator) path (results: FSharpApiSearch.Result seq) =
     {
       Values =
         results
@@ -149,6 +149,7 @@ module FSharpApi =
               }
           })
         |> Seq.toArray
+      Path = path
     }
 
   module OptionStatus =
