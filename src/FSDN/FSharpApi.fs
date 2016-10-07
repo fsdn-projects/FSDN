@@ -164,6 +164,7 @@ module FSharpApi =
 
     let apply info =
       SearchOptions.defaultOptions
+      |> SearchOptions.Parallel.Set Enabled
       |> applyOrDefault ApiSearchOptions.RespectNameDifference info.RawOptions.RespectNameDifference
       |> applyOrDefault ApiSearchOptions.GreedyMatching info.RawOptions.GreedyMatching
       |> applyOrDefault ApiSearchOptions.IgnoreParameterStyle info.RawOptions.IgnoreParameterStyle
