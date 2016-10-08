@@ -17,6 +17,7 @@ interface SearchInformation {
   greedy_matching: string;
   ignore_parameter_style: string;
   ignore_case: string;
+  limit: number;
 }
 
 function boolToStatus(value: boolean): string {
@@ -90,7 +91,8 @@ function search(input?: string) {
       respect_name_difference: boolToStatus(app.$get(respectNameDifference)),
       greedy_matching: boolToStatus(app.$get(greedyMatching)),
       ignore_parameter_style: boolToStatus(app.$get(ignoreParameterStyle)),
-      ignore_case: boolToStatus(app.$get(ignoreCase))
+      ignore_case: boolToStatus(app.$get(ignoreCase)),
+      limit: 500
     })
       .end((err, res) => {
         if (err || !res.ok) {

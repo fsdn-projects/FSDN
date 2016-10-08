@@ -72,6 +72,11 @@ module Search =
       let! greedyMatching = validate SearchOptionLiteral.GreedyMatching validation.Return
       let! ignoreParameterStyle = validate SearchOptionLiteral.IgnoreParameterStyle validation.Return
       let! ignoreCase = validate SearchOptionLiteral.IgnoreCase validation.Return
+      let! limit = validate "limit" (fun x ->
+        match Int32.TryParse(x) with
+        | true, v -> Choice1Of2 v
+        | false, _ -> Choice2Of2 """Query parameter "limit" should require int vaue."""
+      )
       let info = {
         Targets =
           generator.Packages
@@ -84,6 +89,7 @@ module Search =
             IgnoreCase = ignoreCase
           }
         Query = query
+        Limit = limit
       }
       let! result = FSharpApi.trySearch database info
       return

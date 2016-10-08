@@ -76,6 +76,8 @@ type SearchInformation = {
   RawOptions: SearchOptions
   [<field: DataMember(Name = "query")>]
   Query: string
+  [<field: DataMember(Name = "limit")>]
+  Limit: int
 }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -175,5 +177,6 @@ module FSharpApi =
     try
       client.Search(info.Query, SearchOptions.apply info)
       |> client.Sort
+      |> Seq.truncate info.Limit
       |> Choice1Of2
     with e -> Choice2Of2 e
