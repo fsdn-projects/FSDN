@@ -6,22 +6,7 @@ open Suave
 open Suave.Operators
 open Suave.Filters
 
-module Exclusion =
-
-  open FParsec
-
-  let space = pstring "+"
-
-  let anyString = many1Chars (noneOf "+")
-
-  let parser = (eof |>> fun _ -> []) <|> sepBy1 anyString space
-
-  let parse str =
-    match run parser str with
-    | Success(result, _, _) -> Choice1Of2 result
-    | Failure(msg, _, _) -> Choice2Of2 msg
-
-type ValidationBuilder(logger) =
+type ValidationBuilder(path, logger) =
   member __.Bind(x, f) =
     match x with
     | Choice1Of2 x -> f x
@@ -37,30 +22,57 @@ type ValidationBuilder(logger) =
     match f () with
     | Choice1Of2 result -> Suave.Successful.ok result
     | Choice2Of2 e ->
-      Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "failed to search"
+      Log.infoe logger path (Logging.TraceHeader.mk None None) e "validation error"
       RequestErrors.BAD_REQUEST e.Message
 
-let search database generator logger (req: HttpRequest) =
-  let validate key (f: string -> Choice<'T, string>) =
-    match req.queryParam key with
-    | Choice1Of2 param when String.IsNullOrEmpty(param) ->
-      Choice2Of2 (sprintf """Query parameter: "%s" requires non empty string.""" key)
-    | Choice1Of2 param -> f param
-    | Choice2Of2 _ -> Choice2Of2 (sprintf """Query parameter: "%s" does not exist.""" key)
-  let validateOpt key (f: string -> Choice<'T, string>) =
-    match req.queryParam key with
-    | Choice1Of2 param -> f param
-    | Choice2Of2 _ -> Choice2Of2 (sprintf """Query parameter: "%s" does not exist.""" key)
-  let validation = ValidationBuilder(logger)
-  validation {
-    let! query = validate "query" validation.Return
-    let! excluded = validateOpt "exclusion" Exclusion.parse
-    let! respectNameDifference = validate SearchOptionLiteral.RespectNameDifference validation.Return
-    let! greedyMatching = validate SearchOptionLiteral.GreedyMatching validation.Return
-    let! ignoreParameterStyle = validate SearchOptionLiteral.IgnoreParameterStyle validation.Return
-    let! ignoreCase = validate SearchOptionLiteral.IgnoreCase validation.Return
-    let info =
-      {
+module Search =
+
+  [<Literal>]
+  let Path = "/api/search"
+
+  module Exclusion =
+
+    open FParsec
+
+    let space = pstring "+"
+
+    let anyString = many1Chars (noneOf "+")
+
+    let parser = (eof |>> fun _ -> []) <|> sepBy1 anyString space
+
+    let parse str =
+      match run parser str with
+      | Success(result, _, _) -> Choice1Of2 result
+      | Failure(msg, _, _) -> Choice2Of2 msg
+
+    [<Literal>]
+    let Literal = "exclusion"
+
+  module Query =
+
+    [<Literal>]
+    let Literal = "query"
+
+  let apply database generator logger (req: HttpRequest) =
+    let validate key (f: string -> Choice<'T, string>) =
+      match req.queryParam key with
+      | Choice1Of2 param when String.IsNullOrEmpty(param) ->
+        Choice2Of2 (sprintf """Query parameter: "%s" requires non empty string.""" key)
+      | Choice1Of2 param -> f param
+      | Choice2Of2 _ -> Choice2Of2 (sprintf """Query parameter: "%s" does not exist.""" key)
+    let validateOpt key (f: string -> Choice<'T, string>) =
+      match req.queryParam key with
+      | Choice1Of2 param -> f param
+      | Choice2Of2 _ -> Choice2Of2 (sprintf """Query parameter: "%s" does not exist.""" key)
+    let validation = ValidationBuilder(Path, logger)
+    validation {
+      let! query = validate Query.Literal validation.Return
+      let! excluded = validateOpt Exclusion.Literal Exclusion.parse
+      let! respectNameDifference = validate SearchOptionLiteral.RespectNameDifference validation.Return
+      let! greedyMatching = validate SearchOptionLiteral.GreedyMatching validation.Return
+      let! ignoreParameterStyle = validate SearchOptionLiteral.IgnoreParameterStyle validation.Return
+      let! ignoreCase = validate SearchOptionLiteral.IgnoreCase validation.Return
+      let info = {
         Targets =
           generator.Packages
           |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
@@ -73,19 +85,19 @@ let search database generator logger (req: HttpRequest) =
           }
         Query = query
       }
-    let! result = FSharpApi.trySearch database info
-    return
-      result
-      |> FSharpApi.toSerializable generator
-      |> Json.toJson
-  }
+      let! result = FSharpApi.trySearch database info
+      return
+        result
+        |> FSharpApi.toSerializable generator
+        |> Json.toJson
+    }
 
 let app database generator logger : WebPart =
   choose [
     GET >=> choose [
       path "/api/assemblies"
         >=> ({ Values = generator.Packages } |> Json.toJson |> Suave.Successful.ok)
-      path "/api/search" >=>
-        request (search database generator logger)
+      path Search.Path >=>
+        request (Search.apply database generator logger)
     ]
   ]

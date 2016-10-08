@@ -1,8 +1,8 @@
-﻿module FSDN.Tests.Api.ExclusionTest
+﻿module FSDN.Tests.Api.Search.ExclusionTest
 
 open Persimmon
 open UseTestNameByReflection
-open FSDN.Api
+open FSDN.Api.Search
 
 let ``parse query`` = parameterize {
   source [
