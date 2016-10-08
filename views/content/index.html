@@ -62,12 +62,12 @@
   <ul class="collapsible popout" data-collapsible="expandable" v-show="searched && (! raised_error)">
     <li v-for="result in search_results">
       <div class="collapsible-header">
-        <span><font color="#BDBDBD">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}: {{ result.api.signature }}</span>
+        <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}: {{ result.api.signature }}</span>
       </div>
       <div class="collapsible-body">
         <ul class="collection" id="assembly_info">
           <li class="collection-item" id="type_constraints" v-if="result.api.type_constraints">{{ result.api.type_constraints }}</span>
-          <li class="collection-item" id="namespace">namespace: {{ result.api.name.namespace }}</li>
+          <li class="collection-item" id="namespace" v-if="result.api.name.namespace">namespace: {{ result.api.name.namespace }}</li>
           <li class="collection-item" id="distance">distance: {{ result.distance }}</li>
           <li class="collection-item" id="kind">kind: {{ result.api.kind }}</li>
           <li class="collection-item" id="assembly">assembly: {{ result.api.assembly }}</li>

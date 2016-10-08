@@ -87,7 +87,7 @@ module FSharpApi =
   module Name =
 
     let private printDisplayName = function
-    | [] -> "<empty>"
+    | [] -> ""
     | ns ->
       let print (x: NameItem) =
         match x.GenericParametersForDisplay with
@@ -107,7 +107,11 @@ module FSharpApi =
     let ``namespace`` (name: Name) =
       match name with
       | LoadingName _ -> failwith "LoadingName only use to generate database."
-      | DisplayName xs -> printDisplayName (List.skip 2 xs)
+      | DisplayName xs ->
+        match xs with
+        | [] | [_] -> []
+        | _ :: _  :: xs -> xs
+        |> printDisplayName
 
     let className (name: Name) =
       match name with
