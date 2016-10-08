@@ -58,7 +58,7 @@
   -->
   <ItemGroup>
     <None Include="paket.references" />
-    <Compile Include="QueryTest.fs" />
+    <Compile Include="ExclusionTest.fs" />
     <Compile Include="ViewTemplateTest.fs" />
     <Compile Include="PackageTest.fs" />
   </ItemGroup>

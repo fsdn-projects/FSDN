@@ -6,68 +6,79 @@ open Suave
 open Suave.Operators
 open Suave.Filters
 
-module Query =
-
-  let erroroMessage = "Search query requires non empty string."
+module Exclusion =
 
   open FParsec
 
   let space = pstring "+"
 
-  let anyString = many1Chars (noneOf "+" <|> (attempt (pchar '+' .>> notFollowedBy (pchar '-'))))
+  let anyString = many1Chars (noneOf "+")
 
-  let query = notEmpty anyString <?> erroroMessage
-
-  let parser = query .>>. (many (space >>. pstring "-" >>. anyString))
+  let parser = (eof |>> fun _ -> []) <|> sepBy1 anyString space
 
   let parse str =
     match run parser str with
     | Success(result, _, _) -> Choice1Of2 result
     | Failure(msg, _, _) -> Choice2Of2 msg
 
-let validate (req: HttpRequest) key (validate: string -> Choice<'T, string>) (f: 'T -> WebPart) : WebPart =
-  cond (req.queryParam key)
-    (fun param ->
-      match validate param with
-      | Choice1Of2 param -> f param
-      | Choice2Of2 msg -> Suave.RequestErrors.BAD_REQUEST msg
-    )
-    (Suave.RequestErrors.BAD_REQUEST <| sprintf "Query parameter \"%s\" does not exist." key)
+type ValidationBuilder(logger) =
+  member __.Bind(x, f) =
+    match x with
+    | Choice1Of2 x -> f x
+    | Choice2Of2 e -> Choice2Of2 e
+  member __.Return(x) = Choice1Of2 x
+  member __.Source(x: Choice<_, exn>) = x
+  member __.Source(x: Choice<_, string>) =
+    match x with
+    | Choice1Of2 x -> Choice1Of2 x
+    | Choice2Of2 msg -> ArgumentException(msg) :> exn |> Choice2Of2
+  member __.Delay(f) = f
+  member __.Run(f) =
+    match f () with
+    | Choice1Of2 result -> Suave.Successful.ok result
+    | Choice2Of2 e ->
+      Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "failed to search"
+      RequestErrors.BAD_REQUEST e.Message
 
 let search database generator logger (req: HttpRequest) =
-  let getOrEmpty name =
-    match req.queryParam name with
-    | Choice1Of2 param -> param
-    | Choice2Of2 _ -> ""
-  let inner (query, excluded) =
-    {
-      Targets =
-        generator.Packages
-        |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
-      RawOptions =
-        {
-          RespectNameDifference = getOrEmpty SearchOptionLiteral.RespectNameDifference
-          GreedyMatching = getOrEmpty SearchOptionLiteral.GreedyMatching
-          IgnoreParameterStyle = getOrEmpty SearchOptionLiteral.IgnoreParameterStyle
-          IgnoreCase = getOrEmpty SearchOptionLiteral.IgnoreCase
-        }
-      Query = query
-    }
-    |> FSharpApi.trySearch database
-    |> function
-    | Choice1Of2 results ->
-      results
+  let validate key (f: string -> Choice<'T, string>) =
+    match req.queryParam key with
+    | Choice1Of2 param when String.IsNullOrEmpty(param) ->
+      Choice2Of2 (sprintf """Query parameter: "%s" requires non empty string.""" key)
+    | Choice1Of2 param -> f param
+    | Choice2Of2 _ -> Choice2Of2 (sprintf """Query parameter: "%s" does not exist.""" key)
+  let validateOpt key (f: string -> Choice<'T, string>) =
+    match req.queryParam key with
+    | Choice1Of2 param -> f param
+    | Choice2Of2 _ -> Choice2Of2 (sprintf """Query parameter: "%s" does not exist.""" key)
+  let validation = ValidationBuilder(logger)
+  validation {
+    let! query = validate "query" validation.Return
+    let! excluded = validateOpt "exclusion" Exclusion.parse
+    let! respectNameDifference = validate SearchOptionLiteral.RespectNameDifference validation.Return
+    let! greedyMatching = validate SearchOptionLiteral.GreedyMatching validation.Return
+    let! ignoreParameterStyle = validate SearchOptionLiteral.IgnoreParameterStyle validation.Return
+    let! ignoreCase = validate SearchOptionLiteral.IgnoreCase validation.Return
+    let info =
+      {
+        Targets =
+          generator.Packages
+          |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
+        RawOptions =
+          {
+            RespectNameDifference = respectNameDifference
+            GreedyMatching = greedyMatching
+            IgnoreParameterStyle = ignoreParameterStyle
+            IgnoreCase = ignoreCase
+          }
+        Query = query
+      }
+    let! result = FSharpApi.trySearch database info
+    return
+      result
       |> FSharpApi.toSerializable generator
       |> Json.toJson
-      |> Suave.Successful.ok
-    | Choice2Of2 e ->
-      Log.infoe logger "/api/search" (Logging.TraceHeader.mk None None) e "search error"
-      RequestErrors.BAD_REQUEST e.Message
-  validate req "query"
-    (fun param ->
-      if String.IsNullOrEmpty(param) then Choice2Of2 Query.erroroMessage
-      else Query.parse param)
-    inner
+  }
 
 let app database generator logger : WebPart =
   choose [

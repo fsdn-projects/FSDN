@@ -12,6 +12,7 @@ interface Assembly {
 
 interface SearchInformation {
   query: string;
+  exclusion: string;
   respect_name_difference: string;
   greedy_matching: string;
   ignore_parameter_style: string;
@@ -26,10 +27,10 @@ function validate(query: string): boolean {
   return Boolean(query);
 }
 
-function buildQuery(query: string, assemblies: Assembly[]): string {
-  const space = "+";
-  const asms = assemblies.filter((a: Assembly) => !a.checked).map((a: Assembly) => "-" + a.name).join(space);
-  return asms ? query + space + asms : query;
+const space = "+";
+
+function buildExclusion(assemblies: Assembly[]): string {
+  return assemblies.filter((a: Assembly) => !a.checked).map((a: Assembly) => a.name).join(space);
 }
 
 function searchApis(info: SearchInformation) {
@@ -84,7 +85,8 @@ function search(input?: string) {
   } else if (validate(query)) {
     app.$set(progress, true);
     searchApis({
-      query: buildQuery(query, app.$get(allAssemblies)),
+      query,
+      exclusion: buildExclusion(app.$get(allAssemblies)),
       respect_name_difference: boolToStatus(app.$get(respectNameDifference)),
       greedy_matching: boolToStatus(app.$get(greedyMatching)),
       ignore_parameter_style: boolToStatus(app.$get(ignoreParameterStyle)),
@@ -128,6 +130,18 @@ request
       );
       if (window.location.search) {
         const queries = querystring.parse(window.location.search.substring(1));
+        if (queries.exclusion) {
+          const exclusion = queries.exclusion.split("+");
+          app.$get(allAssemblies).forEach((asm: any) => {
+            if (exclusion.indexOf(asm.name) == -1) {
+              asm.checked = true;
+            }
+          });
+        } else {
+          app.$get(allAssemblies).forEach((asm: any) => {
+            asm.checked = true;
+          });
+        }
         if (queries.respect_name_difference) {
           setStatus(respectNameDifference, queries.respect_name_difference);
         }
