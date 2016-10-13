@@ -5,7 +5,7 @@ group App
 
   nuget Suave
   nuget Argu
-  nuget FSharpApiSearch >= 2.0.0-beta1
+  nuget FSharpApiSearch >= 2.0.0-beta2
   nuget FsYaml
 
 group Build
@@ -15,18 +15,18 @@ group Build
   nuget KuduSync.NET
   nuget Npm.js
   nuget FSharp.Formatting
-  nuget FSharpApiSearch.Console >= 2.0.0-beta1
+  nuget FSharpApiSearch.Console >= 2.0.0-beta2
   nuget Fake.Persimmon
 
   github fsdn-projects/fsdn-logo:master fsdn_mono.png
   github fsdn-projects/fsdn-logo:master favicon.ico
   github fsharp/FAKE modules/Octokit/Octokit.fsx
-  http https://github.com/fsdn-projects/FSDN.Database/releases/download/2016%2F09%2F29-232351/FSDN.Database.zip
+  http https://github.com/fsdn-projects/FSDN.Database/releases/download/2016%2F10%2F13-235332/FSDN.Database.zip
 
 group Doc
   source https://api.nuget.org/v3/index.json
 
-  github hafuu/FSharpApiSearch:4ed79ee45e46a1fff1e4f9af5489abe63b68db9c README.md
+  github hafuu/FSharpApiSearch:6abc0a5289a22952dff9ea25afe5d247407c7eba README.md
 
 group Test
   source https://api.nuget.org/v3/index.json
