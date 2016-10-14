@@ -62,7 +62,7 @@
   <ul class="collapsible popout" data-collapsible="expandable" v-show="searched && (! raised_error)">
     <li v-for="result in search_results">
       <div class="collapsible-header">
-        <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}: {{ result.api.signature }}</span>
+        <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : {{ result.api.signature }}</span>
       </div>
       <div class="collapsible-body">
         <ul class="collection" id="assembly_info">
