@@ -16,9 +16,10 @@ This document describes the F# API Search library specific formats.
 | Fields of records and structs | `Ref<'a> => 'a` |
 | Descriminated Union | `'a -> Option<'a>` |
 | Methods and properties | `'a list -> int` <br> or <br> `'a list => int` |
-| Constructors | `new : string -> Uri` |
+| Constructors | `Uri : _`<br>`Uri.new : _`<br>`Uri..ctor : _` |
 | Names (function and method names) | `head : 'a list -> 'a` |
 | Active patterns | <code>(&#124;&#124;) : ... -> Expr -> ?</code> |
+| Type, Type Abbreviation and Module | `List<'T>` |
 
 ### Search by name
 
