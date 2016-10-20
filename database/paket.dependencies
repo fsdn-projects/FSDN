@@ -2,6 +2,7 @@ source https://api.nuget.org/v3/index.json
 
 nuget FSharp.Compiler.Service
 nuget FSharp.Data
+nuget FSharp.Collections.ParallelSeq
 nuget FSharp.Control.AsyncSeq
 nuget FSharp.ViewModule.Core = 0.9.9.1
 nuget FsPickler
@@ -9,4 +10,5 @@ nuget FParsec
 nuget Argu
 nuget FsUnit
 nuget Suave
+nuget Suave.Experimental
 nuget Newtonsoft.Json

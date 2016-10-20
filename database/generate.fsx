@@ -205,6 +205,7 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
   )
   |> Array.append [|
     standard "System.Net.Http"
+    standard "System.Web"
     standard "System.Xml"
     standard "System.Xml.Linq"
   |]

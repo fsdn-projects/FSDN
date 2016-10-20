@@ -6,6 +6,8 @@
   Assemblies: [FParsec]
 - Name: FSharp.Compiler.Service
   Assemblies: [FSharp.Compiler.Service]
+- Name: FSharp.Collections.ParallelSeq
+  Assemblies: [FSharp.Collections.ParallelSeq]
 - Name: FSharp.Control.AsyncSeq
   Assemblies: [FSharp.Control.AsyncSeq]
 - Name: FSharp.Data
@@ -18,3 +20,5 @@
   Assemblies: [FsUnit.NUnit]
 - Name: Suave
   Assemblies: [Suave]
+- Name: Suave.Experimental
+  Assemblies: [Suave.Experimental]
