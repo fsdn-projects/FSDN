@@ -88,16 +88,7 @@ module FSharpApi =
 
     let private printDisplayName = function
     | [] -> ""
-    | ns ->
-      let print (x: NameItem) =
-        match x.GenericParametersForDisplay with
-        | [] -> x.FSharpName
-        | args ->
-          args
-          |> List.map (fun t -> sprintf "%s%s" (if t.IsSolveAtCompileTime then "^" else "'") t.Name)
-          |> String.concat ", "
-          |> sprintf "%s<%s>" x.FSharpName
-      ns |> Seq.map print |> Seq.rev |> String.concat "."
+    | ns -> ns |> Seq.map (fun (n: NameItem) -> n.Print()) |> Seq.rev |> String.concat "."
 
     let id (name: Name) =
       match name with
