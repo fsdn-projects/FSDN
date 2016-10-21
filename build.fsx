@@ -179,7 +179,7 @@ let updateApiDatabase now =
   sprintf "commit -am \"[skip ci]auto update database %s\"" now
   |> runSimpleGitCommand currentDirectory
   |> trace
-  Branches.push currentDirectory
+  Branches.pushBranch currentDirectory "origin" "HEAD:master"
 
 Target "PublishApiDatabaseFromAppVeyor" (fun _ ->
 
