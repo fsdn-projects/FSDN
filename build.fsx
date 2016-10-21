@@ -104,21 +104,14 @@ Target "RevReplace" (fun _ ->
 let databasePackage = "FSDN.Database.zip"
 
 Target "CopyApiDatabase" (fun _ ->
-  let dir = "./paket-files/build/github.com/"
-  Unzip dir (dir @@ databasePackage)
+  let dir = "./paket-files/database/github.com/"
   CopyFile ("./bin" @@ project) (dir @@ "database")
   CopyFile ("./bin" @@ project) (dir @@ "packages.yml")
 )
 
 Target "GenerateApiDatabase" (fun _ ->
   FileUtils.cd "./database"
-  let isAzure =
-    CurrentTargetOrder
-    |> List.exists (List.contains "DeployOnAzure")
-  let args =
-    if isAzure then " platform=Azure"
-    else ""
-    |> sprintf "./generate.fsx Generate%s"
+  let args = "./generate.fsx Generate"
   let exitCode =
     ExecProcess (fun info ->
       info.FileName <- "../packages/build/FAKE/tools/FAKE.exe"
@@ -140,27 +133,46 @@ Target "PackApiDatabase" (fun _ ->
 #load "paket-files/build/fsharp/FAKE/modules/Octokit/Octokit.fsx"
 open Octokit
 
-Target "PublishApiDatabase" (fun _ ->
-
-  let now = DateTime.UtcNow.ToString("yyyy/MM/dd-HHmmss")
+let publishApiDatabase now =
 
   // push empty commit
   let tempDatabaseDir = "temp/database"
   CleanDir tempDatabaseDir
-  Repository.cloneSingleBranch "" ("https://github.com/fsdn-projects/FSDN.Database.git") "master" tempDatabaseDir
+  Repository.cloneSingleBranch "" ("git@github.com:fsdn-projects/FSDN.Database.git") "master" tempDatabaseDir
   sprintf "commit --allow-empty -m \"update database %s\"" now
   |> runSimpleGitCommand tempDatabaseDir
   |> trace
   Branches.push tempDatabaseDir
 
   // upload database file
-  match environVarOrNone "GITHUB_TOKEN" with
-  | Some token -> createClientWithToken token
-  | None -> createClient (getBuildParamOrDefault "github-user" "") (getBuildParamOrDefault "github-pw" "")
+  environVar "access_token"
+  |> createClientWithToken
   |> createDraft "fsdn-projects" "FSDN.Database" now false Seq.empty
   |> uploadFile databasePackagePath
   |> releaseDraft
   |> Async.RunSynchronously
+
+let updateApiDatabase now =
+  let exitCode =
+    ExecProcess (fun info ->
+      info.FileName <- "../.paket/paket.exe"
+      info.Arguments <- "update group Database -f")
+      TimeSpan.MaxValue
+  if exitCode <> 0 then failwithf "failed to update group Database: %d" exitCode
+  // push
+  sprintf "commit -am \"[skip ci]auto update database %s\"" now
+  |> runSimpleGitCommand currentDirectory
+  |> trace
+  Branches.push currentDirectory
+
+Target "PublishApiDatabaseFromAppVeyor" (fun _ ->
+
+  let branch = environVar "APPVEYOR_REPO_BRANCH"
+  let pr = environVar "APPVEYOR_PULL_REQUEST_NUMBER"
+  if branch = "master" && String.IsNullOrEmpty(pr) then
+    let now = DateTime.UtcNow.ToString("yyyy/MM/dd-HHmmss")
+    publishApiDatabase now
+    updateApiDatabase now
 )
 
 // --------------------------------------------------------------------------------------
@@ -219,10 +231,10 @@ Target "All" DoNothing
 "BuildFront"
   ==> "All"
 
-"RunTests"
-  ==> "GenerateApiDatabase"
+// require "Build"
+"GenerateApiDatabase"
   ==> "PackApiDatabase"
-  ==> "PublishApiDatabase"
+  ==> "PublishApiDatabaseFromAppVeyor"
 
 "BuildFront"
   ==> "RevReplace"

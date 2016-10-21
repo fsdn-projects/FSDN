@@ -18,10 +18,15 @@ open FSDN
 let out = "../bin/FSDN.Database/"
 
 Target "PaketRestore" (fun _ ->
+  let cmd, args =
+    let exe = "../.paket/paket.exe"
+    let restore = "restore"
+    if isMono then ("mono", sprintf "%s %s" exe restore)
+    else (exe, restore)
   let exitCode =
     ExecProcess (fun info ->
-      info.FileName <- "../.paket/paket.exe"
-      info.Arguments <- "restore")
+      info.FileName <- cmd
+      info.Arguments <- args)
       TimeSpan.MaxValue
   if exitCode <> 0 then failwithf "failed to restore package: %d" exitCode
 )
@@ -31,12 +36,6 @@ let changeMonoAssemblyPath (es: XElement seq) =
   es
   |> Seq.iter (fun e ->
     e.Attribute(XName.Get("value")).Value <- path @@ "lib/mono/4.5/"
-  )
-
-let changeAzureAssemblyPath (es: XElement seq) =
-  es
-  |> Seq.iter (fun e ->
-    e.Attribute(XName.Get("value")).Value <- e.Attribute(XName.Get("value")).Value.Replace(@"C:\", @"D:\")
   )
 
 let targetFrameworks = [|
@@ -109,13 +108,11 @@ let searchExternalAssemblies () =
   |> Array.toList
 
 Target "Generate" (fun _ ->
-  let isAzure = getBuildParamOrDefault "platform" "" = "Azure"
-  if isMono || isAzure then
-    let changeAssemblyPath = if isMono then changeMonoAssemblyPath else changeAzureAssemblyPath
+  if isMono then
     let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ ".." @@ "packages" @@ "build")
     let doc = XDocument.Load(config)
     doc.XPathSelectElements("/configuration/appSettings/add")
-    |> changeAssemblyPath
+    |> changeMonoAssemblyPath
     doc.Save(config)
   let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ ".." @@ "packages" @@ "build")
   let args =

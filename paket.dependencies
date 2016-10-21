@@ -21,6 +21,10 @@ group Build
   github fsdn-projects/fsdn-logo:master fsdn_mono.png
   github fsdn-projects/fsdn-logo:master favicon.ico
   github fsharp/FAKE modules/Octokit/Octokit.fsx
+
+group Database
+  source https://api.nuget.org/v3/index.json
+
   http https://github.com/fsdn-projects/FSDN.Database/releases/download/2016%2F10%2F13-235332/FSDN.Database.zip
 
 group Doc

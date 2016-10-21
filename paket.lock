@@ -615,6 +615,8 @@ GITHUB
   remote: fsharp/FAKE
     modules/Octokit/Octokit.fsx (eaaca41581957cd07e33f34a0a5baa6f39d5aa6a)
       Octokit (>= 0.20)
+GROUP Database
+
 HTTP
   remote: https://github.com
     FSDN.Database.zip (/fsdn-projects/FSDN.Database/releases/download/2016%2F10%2F13-235332/FSDN.Database.zip)

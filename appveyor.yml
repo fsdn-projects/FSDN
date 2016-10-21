@@ -24,3 +24,14 @@ cache:
   - packages -> paket.lock
   - paket-files -> paket.lock
   - database\packages -> database\paket.lock
+
+environment:
+  access_token:
+    secure: nxEBN4u1zub9oahgulKQ2y/UIfq6x2p6bAwF4Ke3q2PQXmHjfhIM5U4yvgFVzMqn
+
+on_success:
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
+  - git config --global user.name "pocketberserker"
+  - git config --global user.email "pocketberserker@gmail.com"
+  - cmd: ./build.cmd PublishApiDatabaseFromAppVeyor
