@@ -28,10 +28,16 @@ cache:
 environment:
   access_token:
     secure: nxEBN4u1zub9oahgulKQ2y/UIfq6x2p6bAwF4Ke3q2PQXmHjfhIM5U4yvgFVzMqn
+  appveyor_deploy_key:
+    secure: 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
 
 on_success:
   - git config --global credential.helper store
   - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
   - git config --global user.name "pocketberserker"
   - git config --global user.email "pocketberserker@gmail.com"
+  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
+  - ps: $fileContent += $env:appveyor_deploy_key.Replace(' ', "`n")
+  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
+  - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
   - cmd: ./build.cmd PublishApiDatabaseFromAppVeyor
