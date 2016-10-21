@@ -155,7 +155,7 @@ let publishApiDatabase now =
 let updateApiDatabase now =
   let exitCode =
     ExecProcess (fun info ->
-      info.FileName <- "../.paket/paket.exe"
+      info.FileName <- "./.paket/paket.exe"
       info.Arguments <- "update group Database -f")
       TimeSpan.MaxValue
   if exitCode <> 0 then failwithf "failed to update group Database: %d" exitCode
