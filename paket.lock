@@ -619,7 +619,7 @@ GROUP Database
 
 HTTP
   remote: https://github.com
-    FSDN.Database.zip (/fsdn-projects/FSDN.Database/releases/download/2016%2F10%2F13-235332/FSDN.Database.zip)
+    FSDN.Database.zip (/fsdn-projects/FSDN.Database/releases/download/2016%2F10%2F21-060814/FSDN.Database.zip)
 GROUP Doc
 NUGET
   remote: http://api.nuget.org/v3/index.json
