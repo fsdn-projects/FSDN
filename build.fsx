@@ -4,6 +4,7 @@ open Fake
 open Fake.Git
 open System
 open System.IO
+open System.Text.RegularExpressions
 
 let project = "FSDN"
 
@@ -152,13 +153,28 @@ let publishApiDatabase now =
   |> releaseDraft
   |> Async.RunSynchronously
 
+let paketDependencies = "./paket.dependencies"
+
 let updateApiDatabase now =
+
+  let newDatabaseUrl =
+    now
+    |> Uri.EscapeDataString
+    |> sprintf "https://github.com/fsdn-projects/FSDN.Database/releases/download/%s/FSDN.Database.zip"
+  let deps = Regex.Replace(
+    File.ReadAllText(paketDependencies),
+    "https://github.com/fsdn-projects/FSDN.Database/releases/download/[^/]+/FSDN.Database.zip",
+    newDatabaseUrl
+  )
+  File.WriteAllText(paketDependencies, deps)
+
   let exitCode =
     ExecProcess (fun info ->
       info.FileName <- "./.paket/paket.exe"
       info.Arguments <- "update group Database")
       TimeSpan.MaxValue
   if exitCode <> 0 then failwithf "failed to update group Database: %d" exitCode
+
   // push
   sprintf "commit -am \"[skip ci]auto update database %s\"" now
   |> runSimpleGitCommand currentDirectory
