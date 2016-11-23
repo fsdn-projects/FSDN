@@ -40,4 +40,4 @@ on_success:
   - ps: $fileContent += $env:appveyor_deploy_key.Replace(' ', "`n")
   - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
   - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
-  - cmd: ./build.cmd PublishApiDatabaseFromAppVeyor
+  - ps: if(($env:APPVEYOR_REPO_BRANCH -eq "master") -And (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER)) { ./build.cmd PublishApiDatabaseFromAppVeyor }
