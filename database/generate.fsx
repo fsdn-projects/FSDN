@@ -22,7 +22,7 @@ Target "PaketRestore" (fun _ ->
   let cmd, args =
     let exe = "../.paket/paket.exe"
     let restore = "restore"
-    if isMono then ("mono", sprintf "%s %s" exe restore)
+    if isMonoRuntime then ("mono", sprintf "%s %s" exe restore)
     else (exe, restore)
   let exitCode =
     ExecProcess (fun info ->
@@ -109,7 +109,7 @@ let searchExternalAssemblies () =
   |> Array.toList
 
 Target "Generate" (fun _ ->
-  if isMono then
+  if isMonoRuntime then
     let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ ".." @@ "packages" @@ "build")
     let doc = XDocument.Load(config)
     doc.XPathSelectElements("/configuration/appSettings/add")
@@ -118,7 +118,7 @@ Target "Generate" (fun _ ->
   let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ ".." @@ "packages" @@ "build")
   let args =
     // TODO: enable external assemblies
-    if isMono then
+    if isMonoRuntime then
       [|
         "System.Xml.Linq"
         "System.Runtime.Serialization"
@@ -189,7 +189,7 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
     LockFile.LoadFrom("./paket.lock")
       .GetGroup(GroupName("Main"))
       .Resolution
-  if isMono then [||]
+  if isMonoRuntime then [||]
   else Package.loadTargets "./packages.yml"
   |> Array.map (fun x ->
     let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = x.Name then Some v else None)
