@@ -61,6 +61,7 @@
       </div>
     </div>
   </div>
+  <p v-show="searched && (! raised_error)">{{ search_results.length }} results.</p>
   <ul class="collapsible popout" data-collapsible="expandable" v-show="searched && (! raised_error)">
     <li v-for="result in search_results">
       <div class="collapsible-header">
