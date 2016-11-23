@@ -17,6 +17,7 @@ group Build
   nuget FSharp.Formatting
   nuget FSharpApiSearch.Console
   nuget Fake.Persimmon
+  nuget Paket.Core
 
   github fsdn-projects/fsdn-logo:master fsdn_mono.png
   github fsdn-projects/fsdn-logo:master favicon.ico
