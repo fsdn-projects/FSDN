@@ -55,9 +55,11 @@ let searchExternalAssemblies () =
   |> Array.collect (fun d ->
     let libs =
       subDirectories d
-      |> Array.find (fun d -> d.Name = "lib")
-      |> subDirectories
-      |> Array.rev
+      |> Array.tryFind (fun d -> d.Name = "lib")
+      |> Option.map subDirectories
+      |> function
+        | Some libs -> Array.rev libs
+        | None -> [||]
     let withoutPortable = libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t) && not (d.Name.Contains("portable"))))
     let target =
       match withoutPortable with
