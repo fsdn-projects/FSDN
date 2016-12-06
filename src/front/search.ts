@@ -17,6 +17,8 @@ interface SearchInformation {
   greedy_matching: string;
   ignore_parameter_style: string;
   ignore_case: string;
+  swap_order: string;
+  complement: string;
   limit: number;
 }
 
@@ -48,6 +50,8 @@ let app = new Vue({
     greedy_matching: false,
     ignore_parameter_style: true,
     ignore_case: true,
+    swap_order: true,
+    complement: true,
     all_assemblies: <Assembly[]>[],
     progress: false,
     search_results: undefined,
@@ -78,6 +82,8 @@ const respectNameDifference = "respect_name_difference";
 const greedyMatching = "greedy_matching";
 const ignoreParameterStyle = "ignore_parameter_style";
 const ignoreCase = "ignore_case";
+const swapOrder = "swap_order";
+const complement = "complement";
 
 function search(input?: string) {
   const query = input ? input : app.$get(queryLiteral);
@@ -92,6 +98,8 @@ function search(input?: string) {
       greedy_matching: boolToStatus(app.$get(greedyMatching)),
       ignore_parameter_style: boolToStatus(app.$get(ignoreParameterStyle)),
       ignore_case: boolToStatus(app.$get(ignoreCase)),
+      swap_order: boolToStatus(app.$get(swapOrder)),
+      complement: boolToStatus(app.$get(complement)),
       limit: 500
     })
       .end((err, res) => {
@@ -155,6 +163,12 @@ request
         }
         if (queries.ignore_case) {
           setStatus(ignoreCase, queries.ignore_case);
+        }
+        if (queries.swap_order) {
+          setStatus(swapOrder, queries.swap_order);
+        }
+        if (queries.complement) {
+          setStatus(complement, queries.complement);
         }
         search(queries.query);
       }

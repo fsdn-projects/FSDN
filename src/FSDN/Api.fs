@@ -72,6 +72,8 @@ module Search =
       let! greedyMatching = validate SearchOptionLiteral.GreedyMatching validation.Return
       let! ignoreParameterStyle = validate SearchOptionLiteral.IgnoreParameterStyle validation.Return
       let! ignoreCase = validate SearchOptionLiteral.IgnoreCase validation.Return
+      let! swapOrder = validate SearchOptionLiteral.SwapOrder validation.Return
+      let! complement = validate SearchOptionLiteral.Complement validation.Return
       let! limit = validate "limit" (fun x ->
         match Int32.TryParse(x) with
         | true, v -> Choice1Of2 v
@@ -87,6 +89,8 @@ module Search =
             GreedyMatching = greedyMatching
             IgnoreParameterStyle = ignoreParameterStyle
             IgnoreCase = ignoreCase
+            SwapOrder = swapOrder
+            Complement = complement
           }
         Query = query
         Limit = limit

@@ -20,6 +20,12 @@ module SearchOptionLiteral =
   [<Literal>]
   let IgnoreCase = "ignore_case"
 
+  [<Literal>]
+  let SwapOrder = "swap_order"
+
+  [<Literal>]
+  let Complement = "complement"
+
 [<DataContract>]
 type ApiName = {
   [<field: DataMember(Name = "id")>]
@@ -66,6 +72,10 @@ type SearchOptions = {
   IgnoreParameterStyle: string
   [<field: DataMember(Name = SearchOptionLiteral.IgnoreCase)>]
   IgnoreCase: string
+  [<field: DataMember(Name = SearchOptionLiteral.SwapOrder)>]
+  SwapOrder: string
+  [<field: DataMember(Name = SearchOptionLiteral.Complement)>]
+  Complement: string
 }
 
 [<DataContract>]
@@ -166,6 +176,8 @@ module FSharpApi =
       |> applyOrDefault ApiSearchOptions.GreedyMatching info.RawOptions.GreedyMatching
       |> applyOrDefault ApiSearchOptions.IgnoreParameterStyle info.RawOptions.IgnoreParameterStyle
       |> applyOrDefault ApiSearchOptions.IgnoreCase info.RawOptions.IgnoreCase
+      |> applyOrDefault ApiSearchOptions.SwapOrder info.RawOptions.SwapOrder
+      |> applyOrDefault ApiSearchOptions.Complement info.RawOptions.Complement
 
   let trySearch database info =
     let client = FSharpApiSearchClient(info.Targets, database)
