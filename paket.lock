@@ -1510,7 +1510,7 @@ NUGET
       System.Runtime (>= 4.1) - framework: dnxcore50, netstandard10, >= netstandard13
 GITHUB
   remote: hafuu/FSharpApiSearch
-    README.md (6abc0a5289a22952dff9ea25afe5d247407c7eba)
+    README.md (efb9466c793cba35f351629980086ec867840e8a)
       FParsec (>= 1.0.2)
       FSharp.Collections.ParallelSeq (>= 1.0.2)
       FSharp.Compiler.Service (>= 6.0)
