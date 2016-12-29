@@ -20,6 +20,7 @@ This document describes the F# API Search library specific formats.
 | Names (function and method names) | `head : 'a list -> 'a` |
 | Active patterns | <code>(&#124;&#124;) : ... -> Expr -> ?</code> |
 | Type, Type Abbreviation and Module | `List<'T>` |
+| Computation Expressions | `{ let! } : Async<'T>` |
 
 ### Search by name
 
@@ -174,6 +175,14 @@ This must be different between active patterns each of which supports one case, 
 and `option<_>` or `Choice<_,...,_>` must be specified.
 Usually a wildcard (`?`) is recommended for `returnType`.
 
+### Computation Expressions
+
+To search computation expression builders, the query should be formatted as `{ syntax } : type`.
+It searches all builders that support specified syntax and type.
+
+`let!`, `yield`, `yield!`, `return`, `return!`, `use`, `use!`, `if/then`, `for`, `while`, `try/with`, `try/finally` and custom operations can be specified as the `syntax`.
+To specify multiple syntaxes, use semicolon (`;`) separated value: `{ s1; s2 } : type`.
+
 ## Search Options
 
 ### `respect-name-difference` option
@@ -199,6 +208,16 @@ These styles are considered as identical.
 ### `ignore-case` option
 
 When this option is enabled, API name and type name matching are case-insensitive.
+
+### `swap-order` option
+
+When this option is enabled, APIs that has swapped order of parameters or of tuple elements are searched as well.
+For instance, `a -> b -> c` matches `b -> a -> c` because `a` and `b` are swapped.
+
+### `complement` option
+
+When this option is enabled, it complements missing arguments or tuple elements.
+For instance, `a * c` matches `a * c` and also `a * b * c` where `b` includes `a` and `c`.
 
 ## Current Build Status
 

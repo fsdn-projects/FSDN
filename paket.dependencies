@@ -31,7 +31,7 @@ group Database
 group Doc
   source https://api.nuget.org/v3/index.json
 
-  github hafuu/FSharpApiSearch:6abc0a5289a22952dff9ea25afe5d247407c7eba README.md
+  github hafuu/FSharpApiSearch:efb9466c793cba35f351629980086ec867840e8a README.md
 
 group Test
   source https://api.nuget.org/v3/index.json
