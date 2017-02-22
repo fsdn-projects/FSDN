@@ -39,6 +39,28 @@ Target "RunTests" (fun _ ->
     |> Persimmon id
 )
 
+Target "CopyDocs" (fun _ ->
+  let dir = "./src/public/docs"
+  let docs = [
+    ("en", "./README.md")
+    ("ja", "./paket-files/doc/hafuu/FSharpApiSearch/README.md")
+  ]
+  for (lang, doc) in docs do
+    ensureDirectory (dir @@ lang)
+    CopyFile (dir @@ lang) doc
+    let doc =
+      File.ReadAllLines(doc)
+      |> Array.skipWhile (fun line -> line <> "## Query format specifications" && line <> "## クエリ仕様")
+      |> Array.takeWhile (fun line -> line <> "## Current Build Status" && line <> "## FSharp.Compiler.Service の制限により対応できないAPI")
+      |> Array.append [|
+        "## Search Engine"
+        "[FSharpApiSearch](https://github.com/hafuu/FSharpApiSearch)"
+      |]
+    File.WriteAllLines(dir @@ lang @@ "README.md", doc)
+    CopyFile (dir @@ lang) (dir @@ "query_spec.js")
+    CopyFile (dir @@ lang) (dir @@ "app.vue")
+)
+
 open NpmHelper
 
 let npm =
@@ -51,9 +73,7 @@ let npm =
 let NodeEnv = "NODE_ENV"
 
 Target "BuildFront" (fun _ ->
-  let isProduction =
-    CurrentTargetOrder
-    |> List.exists (List.exists (fun x -> x.StartsWith("Deploy")))
+  let isProduction = configuration = "Release"
   let nodeEnv = environVar NodeEnv
   if isProduction then
     setEnvironVar NodeEnv "production"
@@ -67,36 +87,11 @@ Target "BuildFront" (fun _ ->
   Npm (fun p ->
     {
       p with
-        Command = Run "typings"
-        WorkingDirectory = currentDirectory
-        NpmFilePath = npm
-    })
-  Npm (fun p ->
-    {
-      p with
-        Command = Run "pack"
+        Command = Run "build"
         WorkingDirectory = currentDirectory
         NpmFilePath = npm
     })
   setEnvironVar NodeEnv nodeEnv
-)
-
-Target "GenerateViews" (fun _ ->
-  let definitions =
-    if configuration = "Release" then ["--define:RELEASE"]
-    else []
-  if not <| executeFSIWithArgs "views/tools" "generate.fsx" definitions [] then
-    failwith "Failed: generating views"
-)
-
-Target "RevReplace" (fun _ ->
-  Npm (fun p ->
-    {
-      p with
-        Command = Run "replace"
-        WorkingDirectory = currentDirectory
-        NpmFilePath = npm
-    })
 )
 
 // --------------------------------------------------------------------------------------
@@ -245,20 +240,14 @@ Target "All" DoNothing
   ==> "CopyWebConfig"
   ==> "All"
 
-"BuildFront"
+"CopyDocs"
+  ==> "BuildFront"
   ==> "All"
 
 // require "Build"
 "GenerateApiDatabase"
   ==> "PackApiDatabase"
   ==> "PublishApiDatabaseFromAppVeyor"
-
-"BuildFront"
-  ==> "RevReplace"
-
-"GenerateViews"
-  ==> "RevReplace"
-  ==> "All"
 
 "CopyApiDatabase"
   ==> "All"

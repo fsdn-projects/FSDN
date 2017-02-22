@@ -38,32 +38,6 @@
     <DocumentationFile>bin\Release\FSDN.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Serialization" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Response.fs" />
-    <Compile Include="ApiLinkGenerator.fs" />
-    <Compile Include="FSharpApi.fs" />
-    <Compile Include="Api.fs" />
-    <Compile Include="Program.fs" />
-    <None Include="App.config" />
-    <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FSDN.Package\FSDN.Package.fsproj">
-      <Name>FSDN.Package</Name>
-      <Project>{52e5cc20-cd00-4c62-8ab9-7a80c4d78c19}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -87,6 +61,38 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Compile Include="Response.fs" />
+    <Compile Include="ApiLinkGenerator.fs" />
+    <Compile Include="FSharpApi.fs" />
+    <Compile Include="Api.fs" />
+    <Compile Include="Program.fs" />
+    <None Include="App.config" />
+    <None Include="paket.references" />
+    <Content Include="..\..\paket-files\build\fsdn-projects\fsdn-logo\favicon.ico">
+      <Link>favicon.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="..\..\paket-files\build\fsdn-projects\fsdn-logo\fsdn_mono.png">
+      <Link>fsdn_mono.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <ProjectReference Include="..\FSDN.Package\FSDN.Package.fsproj">
+      <Name>FSDN.Package</Name>
+      <Project>{52e5cc20-cd00-4c62-8ab9-7a80c4d78c19}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v3.5'">
       <ItemGroup>
@@ -160,13 +166,13 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
       <ItemGroup>
-        <Reference Include="FSharp.Compiler.Service.MSBuild.v12">
-          <HintPath>..\..\packages\app\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.MSBuild.v12.dll</HintPath>
+        <Reference Include="FSharp.Compiler.Service">
+          <HintPath>..\..\packages\app\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="FSharp.Compiler.Service">
-          <HintPath>..\..\packages\app\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+        <Reference Include="FSharp.Compiler.Service.MSBuild.v12">
+          <HintPath>..\..\packages\app\FSharp.Compiler.Service\lib\net45\FSharp.Compiler.Service.MSBuild.v12.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -203,36 +209,36 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v3.5'">
       <ItemGroup>
+        <Reference Include="System.Xml">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FsPickler">
           <HintPath>..\..\packages\app\FsPickler\lib\net35\FsPickler.dll</HintPath>
           <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Xml">
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
     </When>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.0'">
       <ItemGroup>
+        <Reference Include="System.Xml">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FsPickler">
           <HintPath>..\..\packages\app\FsPickler\lib\net40\FsPickler.dll</HintPath>
           <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Xml">
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
     </When>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
       <ItemGroup>
+        <Reference Include="System.Xml">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FsPickler">
           <HintPath>..\..\packages\app\FsPickler\lib\net45\FsPickler.dll</HintPath>
           <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Xml">
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -563,12 +569,12 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.3'">
       <ItemGroup>
+        <Reference Include="System.IO.Compression.FileSystem">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="System.IO.Compression.ZipFile">
           <HintPath>..\..\packages\app\System.IO.Compression.ZipFile\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
           <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.IO.Compression.FileSystem">
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -841,12 +847,12 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.3'">
       <ItemGroup>
+        <Reference Include="System.ComponentModel.Composition">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="System.Runtime">
           <HintPath>..\..\packages\app\System.Runtime\lib\net462\System.Runtime.dll</HintPath>
           <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.ComponentModel.Composition">
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>

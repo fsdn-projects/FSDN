@@ -14,7 +14,6 @@ group Build
   nuget FAKE
   nuget KuduSync.NET
   nuget Npm.js
-  nuget FSharp.Formatting
   nuget FSharpApiSearch.Console
   nuget Fake.Persimmon
   nuget Paket.Core
@@ -37,4 +36,3 @@ group Test
   source https://api.nuget.org/v3/index.json
 
   nuget Persimmon
-

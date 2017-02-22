@@ -189,7 +189,6 @@ paket-files
 .paket/paket.exe
 .fake/
 .vs/
-typings/*
-!typings/browser.d.ts
-!typings/main.d.ts
 temp/
+
+src/public/docs/**/

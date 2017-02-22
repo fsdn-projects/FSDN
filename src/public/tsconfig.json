@@ -3,11 +3,8 @@
     "target": "ES5",
     "module": "commonjs",
     "sourceMap": true,
-    "noImplicitAny": true,
     "removeComments": true,
-    "outDir": "../../bin/scripts"
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "experimentalDecorators": true,
+    "lib": ["es5", "dom"]
+  }
 }

@@ -7,10 +7,8 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"/>
       <link href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.min.css" rel="stylesheet"/>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/default.min.css"/>
       <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js"></script>
       <style>
 code {
   color: #444;
@@ -24,66 +22,66 @@ code {
   <body>
     <nav class="light-blue darken-2">
       <div class="nav-wrapper">
-        <a href="@Root/" class="brand-logo">
-          <img src="@Root/fsdn_mono.png" width="85px" height="64px"></img>
+        <a href="/" class="brand-logo">
+          <img src="/fsdn_mono.png" width="85px" height="64px"></img>
         </a>
         <ul class="right hide-on-med-and-down">
-          <li><a href="@Root/" class="collection-item">Search</a></li>
-          <li><a href="@Root/assemblies.html" class="collection-item">Target Assemblies</a></li>
+          <li><a href="/" class="collection-item">Search</a></li>
+          <li><a href="/assemblies.html" class="collection-item">Target Assemblies</a></li>
           <li><a class="dropdown-button" data-activates="query_spec">Query Spec</a></li>
           <ul id="query_spec" class="dropdown-content">
-            <li><a href="@Root/en/query_spec.html">English</a></li>
-            <li><a href="@Root/ja/query_spec.html">Japanese</a></li>
+            <li><a href="/en/query_spec.html">English</a></li>
+            <li><a href="/ja/query_spec.html">Japanese</a></li>
           </ul>
           <li>
-            <a href='@Properties["project-github"]/issues'>
+            <a href="https://github.com/fsdn-projects/FSDN/issues">
               <span class="octicon octicon-issue-opened"></span>
               Issue
             </a>
           </li>
           <li>
-            <a href='@Properties["project-github"]'>
+            <a href="https://github.com/fsdn-projects/FSDN">
               <span class="octicon octicon-repo-forked"></span>
               Fork
             </a>
           </li>
           <li>
-            <a href='@Properties["tweet"]'>
+            <a href="https://twitter.com/intent/tweet?text=FSDN%20is%20awesome%21%21&amp;url=http%3A%2F%2Ffsdn.azurewebsites.net%2F&amp;hashtags=fsdn%2Cfsharp">
               <span class="fa fa-twitter"></span>
               Tweet
             </a>
           </li>
         </ul>
         <ul id="nav-mobile" class="side-nav">
-          <li><a href="@Root/" class="collection-item">Search</a></li>
-          <li><a href="@Root/assemblies.html" class="collection-item">Target Assemblies</a></li>
+          <li><a href="/" class="collection-item">Search</a></li>
+          <li><a href="/assemblies.html" class="collection-item">Target Assemblies</a></li>
           <li class="no-padding">
             <ul class="collapsible collapsible-accordion">
               <li>
                 <a class="collapsible-header">Query Spec</a>
                 <div class="collapsible-body">
                   <ul>
-                    <li><a href="@Root/en/query_spec.html">English</a></li>
-                    <li><a href="@Root/ja/query_spec.html">Japanese</a></li>
+                    <li><a href="/en/query_spec.html">English</a></li>
+                    <li><a href="/ja/query_spec.html">Japanese</a></li>
                   </ul>
                 </div>
               </li>
             </ul>
           </li>
           <li>
-            <a href='@Properties["project-github"]/issues'>
+            <a href="https://github.com/fsdn-projects/FSDN/issues">
               <span class="octicon octicon-issue-opened"></span>
               Issue
             </a>
           </li>
           <li>
-            <a href='@Properties["project-github"]'>
+            <a href="https://github.com/fsdn-projects/FSDN">
               <span class="octicon octicon-repo-forked"></span>
               Fork
             </a>
           </li>
           <li>
-            <a href='@Properties["tweet"]'>
+            <a href="https://twitter.com/intent/tweet?text=FSDN%20is%20awesome%21%21&amp;url=http%3A%2F%2Ffsdn.azurewebsites.net%2F&amp;hashtags=fsdn%2Cfsharp">
               <span class="fa fa-twitter"></span>
               Tweet
             </a>
@@ -92,12 +90,8 @@ code {
         <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
       </div>
     </nav>
-    <div id="app" class="row">
-      @RenderBody()
-    </div>
-    @Properties["script"]
+    <div id="app"></div>
     <script>
-hljs.initHighlighting();
 $(document).ready(function(){
   $(".button-collapse").sideNav();
   $(".dropdown-button").dropdown();
