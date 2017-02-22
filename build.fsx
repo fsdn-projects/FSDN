@@ -161,11 +161,12 @@ let updateApiDatabase now =
     now
     |> Uri.EscapeDataString
     |> sprintf "https://github.com/fsdn-projects/FSDN.Database/releases/download/%s/FSDN.Database.zip"
-  let deps = Regex.Replace(
-    File.ReadAllText(paketDependencies),
-    "https://github.com/fsdn-projects/FSDN.Database/releases/download/[^/]+/FSDN.Database.zip",
-    newDatabaseUrl
-  )
+  let deps =
+    Regex.Replace(
+      File.ReadAllText(paketDependencies),
+      "https://github.com/fsdn-projects/FSDN.Database/releases/download/[^/]+/FSDN.Database.zip",
+      newDatabaseUrl
+    )
   File.WriteAllText(paketDependencies, deps)
 
   let exitCode =
