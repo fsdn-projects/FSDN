@@ -18,7 +18,7 @@ group Build
   nuget Fake.Persimmon
   nuget Paket.Core
 
-  github fsdn-projects/fsdn-logo:master fsdn_mono.png
+  github fsdn-projects/fsdn-logo:master fsdn_mono_85x64.png
   github fsdn-projects/fsdn-logo:master favicon.ico
   github fsharp/FAKE modules/Octokit/Octokit.fsx
 

@@ -73,7 +73,7 @@
       <Link>favicon.ico</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="..\..\paket-files\build\fsdn-projects\fsdn-logo\fsdn_mono.png">
+    <None Include="..\..\paket-files\build\fsdn-projects\fsdn-logo\fsdn_mono_85x64.png">
       <Link>fsdn_mono.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

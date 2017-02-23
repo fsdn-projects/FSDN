@@ -1355,7 +1355,7 @@ NUGET
 GITHUB
   remote: fsdn-projects/fsdn-logo
     favicon.ico (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
-    fsdn_mono.png (331db90c3e59bfb844bcf09b1bd1fb174d06e654)
+    fsdn_mono_85x64.png (26e1bf089f0d6031e0d97459f2ca84eafd0ac6d8)
   remote: fsharp/FAKE
     modules/Octokit/Octokit.fsx (33e702f6c220f3facaf41f20dae03a912eeebf9a)
       Octokit (>= 0.20)
