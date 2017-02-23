@@ -75,8 +75,6 @@ let NodeEnv = "NODE_ENV"
 Target "BuildFront" (fun _ ->
   let isProduction = configuration = "Release"
   let nodeEnv = environVar NodeEnv
-  if isProduction then
-    setEnvironVar NodeEnv "production"
   Npm (fun p ->
     {
       p with
@@ -84,6 +82,8 @@ Target "BuildFront" (fun _ ->
         WorkingDirectory = currentDirectory
         NpmFilePath = npm
     })
+  if isProduction then
+    setEnvironVar NodeEnv "production"
   Npm (fun p ->
     {
       p with
