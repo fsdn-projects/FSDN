@@ -29,14 +29,14 @@ with
       | MSDN_Link _ -> "specify MSDN link."
 
 let logger (args: ParseResults<Args>) =
-  match args.TryPostProcessResult(<@ Log_Level @>, LogLevel.FromString) with
-  | Some l -> l
-  | None -> LogLevel.Warn
-  |> Loggers.ConsoleWindowLogger
+  let level =
+    args.TryPostProcessResult(<@ Log_Level @>, LogLevel.ofString)
+    |> Option.defaultValue LogLevel.Warn
+  Targets.create level [|"FSDN"|]
 
 let notFound homeDir ctx = asyncOption {
   let! ctx = browseFile homeDir "404.html" ctx
-  return { ctx with response = { ctx.response with status = HTTP_404 } }
+  return { ctx with response = { ctx.response with status = HTTP_404.status } }
 }
 
 let fileRequest homeDir =
@@ -57,7 +57,7 @@ let app database generator homeDir logger : WebPart =
 
 let serverConfig port homeDir logger = {
   defaultConfig with
-    bindings = [ HttpBinding.mk HTTP IPAddress.Any port ]
+    bindings = [ HttpBinding.create HTTP IPAddress.Any port ]
     homeFolder = Some homeDir
     logger = logger
 }

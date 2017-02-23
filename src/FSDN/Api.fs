@@ -3,10 +3,12 @@
 open System
 open System.Runtime.Serialization
 open Suave
+open Suave.Logging
+open Suave.Logging.Message
 open Suave.Operators
 open Suave.Filters
 
-type ValidationBuilder(path, logger) =
+type ValidationBuilder(path, logger: Logger) =
   member __.Bind(x, f) =
     match x with
     | Choice1Of2 x -> f x
@@ -21,8 +23,8 @@ type ValidationBuilder(path, logger) =
   member __.Run(f) =
     match f () with
     | Choice1Of2 result -> Suave.Successful.ok result
-    | Choice2Of2 e ->
-      Log.infoe logger path (Logging.TraceHeader.mk None None) e "validation error"
+    | Choice2Of2 (e: exn) ->
+      logger.info (eventX "validation error" >> addExn e >> setSingleName path)
       RequestErrors.BAD_REQUEST e.Message
 
 module Search =
