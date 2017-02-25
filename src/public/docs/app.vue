@@ -1,6 +1,8 @@
 <template>
-  <div class="markdown-body">
-    <markdown></markdown>
+  <div class="row">
+    <div class="markdown-body">
+      <markdown></markdown>
+    </div>
   </div>
 </template>
 
@@ -20,7 +22,6 @@ export default {
     box-sizing: border-box;
     min-width: 200px;
     max-width: 980px;
-    margin: 0 auto;
-    padding: 45px;
+    margin: 10px;
   }
 </style>
