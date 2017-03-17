@@ -80,7 +80,7 @@
               <li class="collection-item" id="kind">kind: {{ result.api.kind }}</li>
               <li class="collection-item" id="assembly">assembly: {{ result.api.assembly }}</li>
               <li class="collection-item" id="xml_doc" v-if="result.api.xml_doc">{{ result.api.xml_doc }}</li>
-              <li class="collection-item" id="link" v-if="result.api.link"><a v-bind:href="result.api.link" target="_blank">{{ result.api.link }}</a></li>
+              <li class="collection-item" id="link" v-if="result.api.link"><a v-bind:href="result.api.link" target="_blank" rel="noopener">{{ result.api.link }}</a></li>
             </ul>
           </div>
         </li>
