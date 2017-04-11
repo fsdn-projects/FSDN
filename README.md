@@ -228,7 +228,7 @@ For instance, `a * c` matches `a * c` and also `a * b * c` where `b` includes `a
 
 - Node.js >= 6.x
 - F# 4.0
-- .NET Framework 4.6 or Mono >= 4.2.2
+- .NET Framework 4.6 or Mono >= 4.6.0
 
 ## How To build
 
