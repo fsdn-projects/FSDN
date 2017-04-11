@@ -1,4 +1,4 @@
-FROM fsharp:4.0.1.1
+FROM fsharp:4.1.0.1
 MAINTAINER pocketberserker
 
 COPY ./bin/FSDN /app/FSDN
