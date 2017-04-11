@@ -233,8 +233,14 @@ export default class Search extends Vue {
           this.progress = false;
         })
         .catch(err => {
-          this.error_message = err;
+          if (err.response){
+            this.error_message = err.response.data;
+          } else {
+            this.error_message = err;
+          }
           this.search_results = [];
+          this.query = query;
+          this.progress = false;
         });
     }
   }
