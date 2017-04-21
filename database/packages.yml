@@ -10,6 +10,8 @@
   Assemblies: [FSharp.Collections.ParallelSeq]
 - Name: FSharp.Control.AsyncSeq
   Assemblies: [FSharp.Control.AsyncSeq]
+- Name: FSharp.Control.Reactive
+  Assemblies: [FSharp.Control.Reactive]
 - Name: FSharp.Data
   Assemblies: [FSharp.Data]
 - Name: FSharp.ViewModule.Core
@@ -22,3 +24,11 @@
   Assemblies: [Suave]
 - Name: Suave.Experimental
   Assemblies: [Suave.Experimental]
+- Name: System.Reactive.Core
+  Assemblies: [System.Reactive.Core]
+- Name: System.Reactive.Interfaces
+  Assemblies: [System.Reactive.Interfaces]
+- Name: System.Reactive.Linq
+  Assemblies: [System.Reactive.Linq]
+- Name: System.ValueTuple
+  Assemblies: [System.ValueTuple]

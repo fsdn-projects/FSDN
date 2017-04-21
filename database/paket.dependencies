@@ -12,3 +12,4 @@ nuget FsUnit
 nuget Suave
 nuget Suave.Experimental
 nuget Newtonsoft.Json
+nuget FSharp.Control.Reactive

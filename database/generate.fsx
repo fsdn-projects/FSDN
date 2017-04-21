@@ -91,6 +91,7 @@ let searchExternalAssemblies () =
     "System.Runtime.Handles"
     "System.Runtime.Numerics"
     "System.Runtime.Serialization"
+    "System.Security"
     "System.ServiceModel.Internals"
     "System.Text.Encoding"
     "System.Text.RegularExpressions"
@@ -100,6 +101,7 @@ let searchExternalAssemblies () =
     "System.Web"
     "System.Web.ApplicationServices"
     "System.Web.Services"
+    "System.Xaml"
     "System.Xml.Linq"
     "System.Xml.ReaderWriter"
   |]
