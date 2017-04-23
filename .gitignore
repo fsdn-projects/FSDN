@@ -192,3 +192,5 @@ paket-files
 temp/
 
 src/public/docs/**/
+
+database/.paket/

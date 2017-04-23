@@ -1,6 +1,7 @@
 #r @"../packages/build/FAKE/tools/FakeLib.dll"
 #r "System.Xml.Linq.dll"
 #I @"../packages/build/Chessie/lib/net40"
+#r @"Chessie.dll"
 #r "../packages/build/Paket.Core/lib/net45/Paket.Core.dll"
 #I @"../packages/app/YamlDotNet/lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1"
 #I @"../packages/app/FSharp.Configuration/lib/net40"
@@ -18,9 +19,11 @@ open FSDN
 
 let out = "../bin/FSDN.Database/"
 
+let paket = "../.paket/paket.exe"
+
 Target "PaketRestore" (fun _ ->
   let cmd, args =
-    let exe = "../.paket/paket.exe"
+    let exe = paket
     let restore = "restore"
     if isMonoRuntime then ("mono", sprintf "%s %s" exe restore)
     else (exe, restore)
@@ -32,6 +35,8 @@ Target "PaketRestore" (fun _ ->
   if exitCode <> 0 then failwithf "failed to restore package: %d" exitCode
 )
 
+
+
 let changeMonoAssemblyPath (es: XElement seq) =
   let path = getBuildParamOrDefault "mono" "/usr"
   es
@@ -39,53 +44,41 @@ let changeMonoAssemblyPath (es: XElement seq) =
     e.Attribute(XName.Get("value")).Value <- path @@ "lib/mono/4.5/"
   )
 
-let targetFrameworks = [|
-  "net45"
-  "net40"
-  "net4"
-  "net35"
-  "net20"
-|]
+let framework = "net46"
+
+let generateLoadScripts() =
+  let exitCode =
+    ExecProcess (fun info ->
+      info.FileName <- paket
+      info.Arguments <- sprintf "generate-load-scripts framework %s type fsx" framework)
+      TimeSpan.MaxValue
+  if exitCode <> 0 then failwithf "failed to generate-load-scripts: %d" exitCode
 
 let searchExternalAssemblies () =
-  "./packages/"
-  |> directoryInfo
-  |> subDirectories
-  |> Array.filter (fun d -> d.Name.StartsWith("System.") = false)
-  |> Array.collect (fun d ->
-    let libs =
-      subDirectories d
-      |> Array.tryFind (fun d -> d.Name = "lib")
-      |> Option.map subDirectories
-      |> function
-        | Some libs -> Array.rev libs
-        | None -> [||]
-    let withoutPortable = libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t) && not (d.Name.Contains("portable"))))
-    let target =
-      match withoutPortable with
-      | Some w -> Some w
-      | None -> libs |> Array.tryFind (fun d -> targetFrameworks |> Array.exists (fun t -> d.Name.Contains(t)))
-    match target with
-    | Some target ->
-      target
-      |> filesInDir
-      |> Array.choose (fun f ->
-          if f.Name = "FSharp.Core.dll" then None
-          elif f.Extension = ".dll" then Some(f.FullName)
-          else None
-      )
-    | None -> [||]
+  generateLoadScripts()
+  
+  let loadScriptDir = currentDirectory @@ (sprintf @".paket\load\%s\" framework)
+  let loadScriptPath = loadScriptDir @@ @"main.group.fsx"
+
+  File.ReadAllLines(loadScriptPath)
+  |> Array.map (fun line ->
+    let reference = line.Substring(4).TrimEnd('"', ' ')
+    if reference.StartsWith(@"..") then
+      Path.GetFullPath(loadScriptDir @@ reference)
+    else
+      reference
   )
-  |> Array.distinct
   |> Array.append [|
     "System.Collections"
     "System.ComponentModel.DataAnnotations"
     "System.Data"
     "System.Diagnostics.Debug"
+    "System.Diagnostics.Tracing"
     "System.Drawing"
     "System.EnterpriseServices"
     "System.Globalization"
     "System.IO"
+    "System.Linq.Expressions"
     "System.Net"
     "System.Net.Http"
     "System.Numerics"
@@ -94,8 +87,11 @@ let searchExternalAssemblies () =
     "System.Reflection.Primitives"
     "System.Runtime"
     "System.Runtime.Extensions"
+    "System.Runtime.InteropServices"
+    "System.Runtime.Handles"
     "System.Runtime.Numerics"
     "System.Runtime.Serialization"
+    "System.Security"
     "System.ServiceModel.Internals"
     "System.Text.Encoding"
     "System.Text.RegularExpressions"
@@ -105,6 +101,7 @@ let searchExternalAssemblies () =
     "System.Web"
     "System.Web.ApplicationServices"
     "System.Web.Services"
+    "System.Xaml"
     "System.Xml.Linq"
     "System.Xml.ReaderWriter"
   |]
@@ -144,7 +141,7 @@ Target "Generate" (fun _ ->
     timer.Stop()
     printfn ""
     exitCode
-
+    
   if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
   MoveFile out (currentDirectory @@ "database")
 )
