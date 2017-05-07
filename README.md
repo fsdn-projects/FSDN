@@ -215,9 +215,9 @@ To specify multiple syntaxes, use semicolon (`;`) separated value: `{ s1; s2 } :
 
 ## Required Tools
 
-- Node.js >= 6.x
-- F# 4.0
-- .NET Framework 4.6 or Mono >= 4.6.0
+- Node.js >= 7.x
+- F# 4.1
+- .NET Framework 4.6 or Mono >= 4.8.0
 
 ## How To build
 
@@ -242,7 +242,7 @@ or
 ### OS X with homebrew
 
 ```
-./build.sh mono='/usr/local/Cellar/mono/4.2.3/'
+./build.sh mono='/usr/local/Cellar/mono/4.8.0/'
 ```
 
 ### Docker
