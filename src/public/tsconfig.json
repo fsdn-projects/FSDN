@@ -5,6 +5,7 @@
     "sourceMap": true,
     "removeComments": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "lib": ["es5", "dom"]
   }
 }
