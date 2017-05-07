@@ -38,7 +38,6 @@
                 <a class="collection-item" v-on:click="search(&quot;(+) : _&quot;)">(+) : _</a>
                 <a class="collection-item" v-on:click="search(&quot;? -&gt; list&lt;?&gt; -&gt; ?&quot;)">? -&gt; list&lt;?&gt; -&gt; ?</a>
                 <a class="collection-item" v-on:click="search(&quot;DateTime -&gt; DayOfWeek&quot;)">DateTime -&gt; DayOfWeek</a>
-                <a class="collection-item" v-on:click="search(&quot;string =&gt; int&quot;)">string =&gt; int</a>
                 <a class="collection-item" v-on:click="search(&quot;(|_|) : Expr -&gt; ?&quot;)">(|_|) : Expr -&gt; ?</a>
                 <a class="collection-item" v-on:click="search(&quot;List.* : _&quot;)">List.* : _</a>
                 <a class="collection-item" v-on:click="search(&quot;new : string -&gt; Uri&quot;)">new : string -&gt; Uri</a>
@@ -146,6 +145,7 @@ interface SearchInformation {
   ignore_case: string;
   swap_order: string;
   complement: string;
+  language: string;
   limit: number;
 }
 
@@ -219,6 +219,7 @@ export default class Search extends Vue {
         ignore_case: boolToStatus(this.ignore_case),
         swap_order: boolToStatus(this.swap_order),
         complement: boolToStatus(this.complement),
+        language: "",
         limit: 500
       })
         .then(res => {

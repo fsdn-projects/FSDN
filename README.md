@@ -6,18 +6,54 @@ FSDN is a web application that uses [F# API Search](https://github.com/hafuu/FSh
 F# API Search library supports the standard signature of F# with some extentions.
 This document describes the F# API Search library specific formats.
 
-## Query format specifications
+## Search Options
+
+### `respect-name-difference` option
+
+When this option is enabled and when performing wildcard search,
+each of the wildcards are distinguished by its name.
+For instance, `?a -> ?a` matches `int -> int`,
+but `?a -> ?b` doesn't match `int -> int`.
+If this option is disabled, `?a -> ?b` matches `int -> int`.
+
+### `greedy-matching` option
+
+When this option is enabled, type parameters match concrete type names, and vice-versa.
+The results will be ordered by its similarity.
+In addition, type constraint will be considered significant.
+
+### `ignore-parameter-style` option
+
+When this option is enabled, the difference between curried style parameter signature (`arg1 -> arg2 -> returnType`)
+and tuple style (`arg1 * arg2 -> returnType`) are ignored.
+These styles are considered as identical.
+
+### `ignore-case` option
+
+When this option is enabled, API name and type name matching are case-insensitive.
+
+### `swap-order` option
+
+When this option is enabled, APIs that has swapped order of parameters or of tuple elements are searched as well.
+For instance, `a -> b -> c` matches `b -> a -> c` because `a` and `b` are swapped.
+
+### `complement` option
+
+When this option is enabled, it complements missing arguments or tuple elements.
+For instance, `a * c` matches `a * c` and also `a * b * c` where `b` includes `a` and `c`.
+
+## Query format specifications of F#
 
 ### Supported API signatures
 
 | API signature | Query example |
 |:--------------|:--------------|
 | Functions and values in modules | `int -> string` |
-| Fields of records and structs | `Ref<'a> => 'a` |
+| Fields of records and structs | `Ref<'a> -> 'a` |
 | Descriminated Union | `'a -> Option<'a>` |
-| Methods and properties | `'a list -> int` <br> or <br> `'a list => int` |
+| Members | `'a list -> int` |
 | Constructors | `Uri : _`<br>`Uri.new : _`<br>`Uri..ctor : _` |
-| Names (function and method names) | `head : 'a list -> 'a` |
+| Names (function and member names) | `head : 'a list -> 'a` |
 | Active patterns | <code>(&#124;&#124;) : ... -> Expr -> ?</code> |
 | Type, Type Abbreviation and Module | `List<'T>` |
 | Computation Expressions | `{ let! } : Async<'T>` |
@@ -123,33 +159,6 @@ If you want to distinguish between them, uncheck `ignore-argstyle` option.
 To find properties, use `receiver -> propertyType`.
 To find indexed properties, use `receiver -> index -> propertyType`.
 
-`receiver -> signature` searches both instance members and functions.
-However, when you use `=>` instead of `->`, it searches instance members only.
-
-Only for the query contains `=>`, the following special rules are applied:
-
-1. it matches `arg -> receiver -> returnType`.
-2. a query to search parameterless members (`receiver => propertyType`) also matches instance methods which signature is `receiver => unit -> propertyType`.
-
-The following query:
-
-````
-string => int
-````
-
-illustrates an example of these special rules.
-This query matches the following methods and functions:
-
-````
-System.String.Length: int
-Microsoft.FSharp.Core.String.length: string -> int
-System.String.GetHashCode: unit -> int
-````
-
-The first result `System.String.Length` matches exactly.
-In addition, `Microsoft.FSharp.Core.String.length` and `System.String.GetHashCode` are also retuned
-because the 1st and 2nd special rules are applied respectively.
-
 #### Static members
 
 Static members can be found by using the same query for functions and values in modules.
@@ -182,42 +191,6 @@ It searches all builders that support specified syntax and type.
 
 `let!`, `yield`, `yield!`, `return`, `return!`, `use`, `use!`, `if/then`, `for`, `while`, `try/with`, `try/finally` and custom operations can be specified as the `syntax`.
 To specify multiple syntaxes, use semicolon (`;`) separated value: `{ s1; s2 } : type`.
-
-## Search Options
-
-### `respect-name-difference` option
-
-When this option is enabled and when performing wildcard search,
-each of the wildcards are distinguished by its name.
-For instance, `?a -> ?a` matches `int -> int`,
-but `?a -> ?b` doesn't match `int -> int`.
-If this option is disabled, `?a -> ?b` matches `int -> int`.
-
-### `greedy-matching` option
-
-When this option is enabled, type parameters match concrete type names, and vice-versa.
-The results will be ordered by its similarity.
-In addition, type constraint will be considered significant.
-
-### `ignore-parameter-style` option
-
-When this option is enabled, the difference between curried style parameter signature (`arg1 -> arg2 -> returnType`)
-and tuple style (`arg1 * arg2 -> returnType`) are ignored.
-These styles are considered as identical.
-
-### `ignore-case` option
-
-When this option is enabled, API name and type name matching are case-insensitive.
-
-### `swap-order` option
-
-When this option is enabled, APIs that has swapped order of parameters or of tuple elements are searched as well.
-For instance, `a -> b -> c` matches `b -> a -> c` because `a` and `b` are swapped.
-
-### `complement` option
-
-When this option is enabled, it complements missing arguments or tuple elements.
-For instance, `a * c` matches `a * c` and also `a * b * c` where `b` includes `a` and `c`.
 
 ## Current Build Status
 
