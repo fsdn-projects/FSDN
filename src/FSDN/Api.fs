@@ -1,7 +1,6 @@
 ﻿module FSDN.Api
 
 open System
-open System.Runtime.Serialization
 open Suave
 open Suave.Logging
 open Suave.Logging.Message
@@ -103,7 +102,7 @@ module Search =
       let! result = FSharpApi.trySearch database info
       return
         result
-        |> FSharpApi.toSerializable generator
+        ||> FSharpApi.toSerializable generator
         |> Json.toJson
     }
 

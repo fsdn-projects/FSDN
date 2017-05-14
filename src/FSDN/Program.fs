@@ -18,6 +18,7 @@ type Args =
   | Log_Level of string
   | FSharp_Link of string
   | MSDN_Link of string
+  | DOTNET_API_Browser_Link of string
 with
   interface IArgParserTemplate with
     member this.Usage =
@@ -27,6 +28,7 @@ with
       | Log_Level _ -> "specify log level."
       | FSharp_Link _ -> "specify official F# library document link."
       | MSDN_Link _ -> "specify MSDN link."
+      | DOTNET_API_Browser_Link _ -> "specify .NET API Browser link."
 
 let logger (args: ParseResults<Args>) =
   let level =
@@ -34,13 +36,7 @@ let logger (args: ParseResults<Args>) =
     |> Option.defaultValue LogLevel.Warn
   Targets.create level [|"FSDN"|]
 
-let notFound homeDir ctx = asyncOption {
-  let! ctx = browseFile homeDir "404.html" ctx
-  return { ctx with response = { ctx.response with status = HTTP_404.status } }
-}
-
 let fileRequest homeDir =
-  let notFound = notFound homeDir
   choose [
     path "/" >=> browseFile homeDir "index.html"
     browseHome
@@ -51,7 +47,7 @@ let app database generator homeDir logger : WebPart =
     GET >=> fileRequest homeDir
     HEAD >=> fileRequest homeDir
     Api.app database generator logger
-    notFound homeDir
+    browseFile homeDir "index.html"
   ]
   >=> log logger logFormat
 
@@ -88,6 +84,9 @@ let main args =
     MSDN =
       args.GetResult(<@ MSDN_Link @>, "https://msdn.microsoft.com/en-us/library/")
       |> FSharpApiSearch.LinkGenerator.msdn
+    DotNetApiBrowser =
+      args.GetResult(<@ DOTNET_API_Browser_Link @>, "https://docs.microsoft.com/en-us/dotnet/api/")
+      |> FSharpApiSearch.LinkGenerator.dotNetApiBrowser "netframework-4.5"
     Packages = packages
   }
   let app = app database generator homeDir logger
