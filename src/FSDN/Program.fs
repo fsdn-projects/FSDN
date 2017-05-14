@@ -85,8 +85,8 @@ let main args =
       args.GetResult(<@ MSDN_Link @>, "https://msdn.microsoft.com/en-us/library/")
       |> FSharpApiSearch.LinkGenerator.msdn
     DotNetApiBrowser =
-      args.GetResult(<@ DOTNET_API_Browser_Link @>, "https://docs.microsoft.com/en-us/dotnet/api/")
-      |> FSharpApiSearch.LinkGenerator.dotNetApiBrowser "netframework-4.5"
+      let baseUrl = args.GetResult(<@ DOTNET_API_Browser_Link @>, "https://docs.microsoft.com/en-us/dotnet/api/")
+      FSharpApiSearch.LinkGenerator.dotNetApiBrowser baseUrl "netframework-4.5"
     Packages = packages
   }
   let app = app database generator homeDir logger
