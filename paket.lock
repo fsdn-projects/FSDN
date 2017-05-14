@@ -1617,11 +1617,6 @@ GROUP Database
 HTTP
   remote: https://github.com
     FSDN.Database.zip (/fsdn-projects/FSDN.Database/releases/download/2017%2F04%2F23-042938/FSDN.Database.zip)
-GROUP Doc
-
-GITHUB
-  remote: hafuu/FSharpApiSearch
-    README.md (f439fcc19a65aeac523c82ec245a9c2e50301629)
 GROUP Test
 NUGET
   remote: https://api.nuget.org/v3/index.json

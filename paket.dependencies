@@ -27,11 +27,6 @@ group Database
 
   http https://github.com/fsdn-projects/FSDN.Database/releases/download/2017%2F04%2F23-042938/FSDN.Database.zip
 
-group Doc
-  source https://api.nuget.org/v3/index.json
-
-  github hafuu/FSharpApiSearch:f439fcc19a65aeac523c82ec245a9c2e50301629 README.md
-
 group Test
   source https://api.nuget.org/v3/index.json
 

@@ -9,9 +9,7 @@ var isProd = process.env.NODE_ENV === 'production';
 
 var config = {
   entry: {
-    "app": path.join(srcDir, "app.ts"),
-    "en/query_spec": path.join(docDir, "en/query_spec.js"),
-    "ja/query_spec": path.join(docDir, "ja/query_spec.js")
+    "app": path.join(srcDir, "app.ts")
   },
   output : {
     path: outDir,
@@ -51,10 +49,6 @@ var config = {
           "style-loader",
           "css-loader"
         ]
-      },
-      {
-        test: /\.md$/,
-        loader: 'vue-markdown-loader'
       }
     ],
   },
@@ -69,16 +63,6 @@ var config = {
     new HtmlWebpackPlugin({
       chunks: ['app'],
       filename: path.join(outDir, 'index.html'),
-      template: path.join(srcDir, 'views/template.html')
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['en/query_spec'],
-      filename: path.join(outDir, 'en/query_spec.html'),
-      template: path.join(srcDir, 'views/template.html')
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['ja/query_spec'],
-      filename: path.join(outDir, 'ja/query_spec.html'),
       template: path.join(srcDir, 'views/template.html')
     })
   ]

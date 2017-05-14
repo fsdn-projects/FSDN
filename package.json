@@ -13,8 +13,6 @@
   "dependencies": {
     "av-ts": "0.7.2",
     "axios": "0.16.1",
-    "github-markdown-css": "2.6.0",
-    "highlight.js": "9.11.0",
     "vue": "2.3.2",
     "vue-router": "2.5.3"
   },
@@ -31,7 +29,6 @@
     "typescript": "2.3.2",
     "uglify-save-license": "0.4.1",
     "vue-loader": "12.0.3",
-    "vue-markdown-loader": "0.6.2",
     "vue-template-compiler": "2.3.2",
     "webpack": "2.5.1"
   }
