@@ -44,9 +44,9 @@ let fileRequest homeDir =
 
 let app database generator homeDir logger : WebPart =
   choose [
+    Api.app database generator logger
     GET >=> fileRequest homeDir
     HEAD >=> fileRequest homeDir
-    Api.app database generator logger
     browseFile homeDir "index.html"
   ]
   >=> log logger logFormat
