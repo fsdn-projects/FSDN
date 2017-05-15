@@ -29,7 +29,8 @@ const router = new VueRouter({
           { query: "new : string -> Uri" },
           { query: "'a -> Option<'a>" },
           { query: "Seq : _" },
-          { query: "{ let! } : Async<'T>" }
+          { query: "{ let! } : Async<'T>" },
+          { query: "#seq<'a> -> 'a" },
         ]
       },
       alias: "/"
@@ -41,6 +42,17 @@ const router = new VueRouter({
       props: {
         language: "c#",
         examples: [
+          { query: "?a -> ?a" },
+          { query: "? -> int" },
+          { query: "object -> () -> string" },
+          { query: "string -> int" },
+          { query: "Uri..ctor : _" },
+          { query: "List.* : _" },
+          { query: "Try* : _" },
+          { query: "<T> : List<T> -> T" },
+          { query: "Length : string -> int" },
+          { query: "<T> : #IEnumerable<T> -> T" },
+          
         ]
       }
     },
