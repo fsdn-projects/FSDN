@@ -74,7 +74,7 @@ NUGET
       System.Threading.ThreadPool (>= 4.0.10) - framework: >= netstandard16
       System.Threading.Timer (>= 4.0.1) - framework: >= netstandard16
       System.ValueTuple (>= 4.3) - framework: >= net10, netstandard10, netstandard11, netstandard12, netstandard13, netstandard14, netstandard15
-    FSharpApiSearch (3.0.0-beta2)
+    FSharpApiSearch (3.0.0-beta3)
       FParsec (>= 1.0.2)
       FSharp.Collections.ParallelSeq (>= 1.0.2)
       FSharp.Compiler.Service (>= 12.0.2)
@@ -855,7 +855,7 @@ NUGET
       System.ValueTuple (>= 4.3) - framework: >= net10, netstandard10, netstandard11, netstandard12, netstandard13, netstandard14, netstandard15
     FSharp.NET.Sdk (1.0.4) - framework: >= netstandard16
       FSharp.Compiler.Tools (>= 4.1.15) - framework: >= net40, >= netstandard13
-    FSharpApiSearch.Console (3.0.0-beta2)
+    FSharpApiSearch.Console (3.0.0-beta3)
     KuduSync.NET (1.3.1)
     Microsoft.Bcl (1.1.10) - framework: net10, net11, net20, net30, net35, net40, net40-full
       Microsoft.Bcl.Build (>= 1.0.14)

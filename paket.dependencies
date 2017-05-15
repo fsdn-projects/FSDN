@@ -5,7 +5,7 @@ group App
 
   nuget Suave
   nuget Argu
-  nuget FSharpApiSearch >= 3.0.0-beta1
+  nuget FSharpApiSearch >= 3.0.0-beta3
   nuget FsYaml
 
 group Build
@@ -14,7 +14,7 @@ group Build
   nuget FAKE
   nuget KuduSync.NET
   nuget Npm.js
-  nuget FSharpApiSearch.Console >= 3.0.0-beta1
+  nuget FSharpApiSearch.Console >= 3.0.0-beta3
   nuget Fake.Persimmon
   nuget Paket.Core
 
