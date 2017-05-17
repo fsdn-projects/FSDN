@@ -30,21 +30,7 @@
             <div class="card-content white-text">
               <span class="card-title">Examples</span>
               <div class="collection">
-                <a class="collection-item" v-on:click="search(&quot;'a -&gt; 'a&quot;)">'a -&gt; 'a</a>
-                <a class="collection-item" v-on:click="search(&quot;?a -&gt; ?a&quot;)">?a -&gt; ?a</a>
-                <a class="collection-item" v-on:click="search(&quot;id : 'a -&gt; 'a&quot;)">id : 'a -&gt; 'a</a>
-                <a class="collection-item" v-on:click="search(&quot;map : _&quot;)">map : _</a>
-                <a class="collection-item" v-on:click="search(&quot;*map* : _&quot;)">*map* : _</a>
-                <a class="collection-item" v-on:click="search(&quot;(+) : _&quot;)">(+) : _</a>
-                <a class="collection-item" v-on:click="search(&quot;? -&gt; list&lt;?&gt; -&gt; ?&quot;)">? -&gt; list&lt;?&gt; -&gt; ?</a>
-                <a class="collection-item" v-on:click="search(&quot;DateTime -&gt; DayOfWeek&quot;)">DateTime -&gt; DayOfWeek</a>
-                <a class="collection-item" v-on:click="search(&quot;string =&gt; int&quot;)">string =&gt; int</a>
-                <a class="collection-item" v-on:click="search(&quot;(|_|) : Expr -&gt; ?&quot;)">(|_|) : Expr -&gt; ?</a>
-                <a class="collection-item" v-on:click="search(&quot;List.* : _&quot;)">List.* : _</a>
-                <a class="collection-item" v-on:click="search(&quot;new : string -&gt; Uri&quot;)">new : string -&gt; Uri</a>
-                <a class="collection-item" v-on:click="search(&quot;'a -&gt; Option&lt;'a&gt;&quot;)">'a -&gt; Option&lt;'a&gt;</a>
-                <a class="collection-item" v-on:click="search(&quot;Seq : _&quot;)">Seq : _</a>
-                <a class="collection-item" v-on:click="search(&quot;{ let! } : Async&lt;'T&gt;&quot;)">{ let! } : Async&lt;'T&gt;</a>
+                <a v-for="example in examples" class="collection-item" v-on:click="search(example.query)">{{ example.query }}</a>
               </div>
             </div>
           </div>
@@ -127,7 +113,7 @@
 </template>
 
 <script lang="ts">
-import {Vue, Component, Lifecycle} from "av-ts"
+import {Vue, Component, Lifecycle, Prop, p} from "av-ts"
 import axios from "axios";
 import * as querystring from "querystring";
 import {baseUrl, enabled, disabled} from "../util";
@@ -146,6 +132,7 @@ interface SearchInformation {
   ignore_case: string;
   swap_order: string;
   complement: string;
+  language: string;
   limit: number;
 }
 
@@ -188,6 +175,16 @@ export default class Search extends Vue {
   search_results: any[] = undefined
   error_message: string = undefined
 
+  @Prop language = p({
+    type: String,
+    required: true
+  })
+
+  @Prop examples = p({
+    type: Array,
+    required: true
+  })
+
   get valid(): boolean {
     return validate(this.query);
   }
@@ -219,6 +216,7 @@ export default class Search extends Vue {
         ignore_case: boolToStatus(this.ignore_case),
         swap_order: boolToStatus(this.swap_order),
         complement: boolToStatus(this.complement),
+        language: this.language.valueOf(),
         limit: 500
       })
         .then(res => {

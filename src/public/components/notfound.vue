@@ -6,7 +6,10 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import {Vue, Component} from "av-ts"
+
+@Component
+export default class NotFound extends Vue {
 }
 </script>

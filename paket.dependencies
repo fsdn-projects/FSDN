@@ -5,7 +5,7 @@ group App
 
   nuget Suave
   nuget Argu
-  nuget FSharpApiSearch
+  nuget FSharpApiSearch >= 3.0.0-beta3
   nuget FsYaml
 
 group Build
@@ -14,7 +14,7 @@ group Build
   nuget FAKE
   nuget KuduSync.NET
   nuget Npm.js
-  nuget FSharpApiSearch.Console
+  nuget FSharpApiSearch.Console >= 3.0.0-beta3
   nuget Fake.Persimmon
   nuget Paket.Core
 
@@ -26,11 +26,6 @@ group Database
   source https://api.nuget.org/v3/index.json
 
   http https://github.com/fsdn-projects/FSDN.Database/releases/download/2017%2F04%2F23-042938/FSDN.Database.zip
-
-group Doc
-  source https://api.nuget.org/v3/index.json
-
-  github hafuu/FSharpApiSearch:efb9466c793cba35f351629980086ec867840e8a README.md
 
 group Test
   source https://api.nuget.org/v3/index.json

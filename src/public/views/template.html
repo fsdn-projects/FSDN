@@ -3,7 +3,7 @@
   <head>
       <meta charset="utf-8"/>
       <title>FSDN</title>
-      <meta name="description" content="FSDN is a F# API search service. You can search the API in F# and .NET libraries." />
+      <meta name="description" content="FSDN is a F# or C# API search service. You can search the API in F# and .NET libraries." />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css"/>
       <link href="https://cdnjs.cloudflare.com/ajax/libs/octicons/4.4.0/octicons.min.css" rel="stylesheet"/>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
@@ -21,18 +21,23 @@ code {
       </style>
   </head>
   <body>
+    <div id="app">
     <nav class="light-blue darken-2">
       <div class="nav-wrapper">
-        <a href="/" class="brand-logo">
+        <router-link to="/" class="brand-logo">
           <img src="/fsdn_mono.png" width="85px" height="64px"></img>
-        </a>
+        </router-link>
         <ul class="right hide-on-med-and-down">
-          <li><a href="/" class="collection-item">Search</a></li>
-          <li><a href="/assemblies.html" class="collection-item">Target Assemblies</a></li>
+          <li><a class="dropdown-button" data-activates="search_language">Search</a></li>
+          <ul id="search_language" class="dropdown-content">
+            <li><router-link to="/fsharp">F#</router-link></li>
+            <li><router-link to="/csharp">C#</router-link></li>
+          </ul>
+          <li><router-link to="/assemblies" class="collection-item">Target Assemblies</router-link></li>
           <li><a class="dropdown-button" data-activates="query_spec">Query Spec</a></li>
           <ul id="query_spec" class="dropdown-content">
-            <li><a href="/en/query_spec.html">English</a></li>
-            <li><a href="/ja/query_spec.html">Japanese</a></li>
+            <li><a href="https://github.com/fsdn-projects/FSDN#search-options">English</a></li>
+            <li><a href="https://github.com/hafuu/FSharpApiSearch#検索オプション">Japanese</a></li>
           </ul>
           <li>
             <a href="https://github.com/fsdn-projects/FSDN/issues">
@@ -54,16 +59,28 @@ code {
           </li>
         </ul>
         <ul id="nav-mobile" class="side-nav">
-          <li><a href="/" class="collection-item">Search</a></li>
-          <li><a href="/assemblies.html" class="collection-item">Target Assemblies</a></li>
+          <li class="no-padding">
+            <ul class="collapsible collapsible-accordion">
+              <li>
+                <a class="collapsible-header">Search</a>
+                <div class="collapsible-body">
+                  <ul>
+                    <li><router-link to="/fsharp">F#</router-link></li>
+                    <li><router-link to="/csharp">C#</router-link></li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </li>
+          <li><router-link to="/assemblies" class="collection-item">Target Assemblies</router-link></li>
           <li class="no-padding">
             <ul class="collapsible collapsible-accordion">
               <li>
                 <a class="collapsible-header">Query Spec</a>
                 <div class="collapsible-body">
                   <ul>
-                    <li><a href="/en/query_spec.html">English</a></li>
-                    <li><a href="/ja/query_spec.html">Japanese</a></li>
+                    <li><a href="https://github.com/fsdn-projects/FSDN#search-options">English</a></li>
+                    <li><a href="https://github.com/hafuu/FSharpApiSearch#検索オプション">Japanese</a></li>
                   </ul>
                 </div>
               </li>
@@ -91,7 +108,8 @@ code {
         <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
       </div>
     </nav>
-    <div id="app"></div>
+    <router-view></router-view>
+    </div>
     <script>
 $(document).ready(function(){
   $(".button-collapse").sideNav();

@@ -1,7 +1,6 @@
 ﻿module FSDN.Api
 
 open System
-open System.Runtime.Serialization
 open Suave
 open Suave.Logging
 open Suave.Logging.Message
@@ -67,15 +66,17 @@ module Search =
       | Choice1Of2 param -> f param
       | Choice2Of2 _ -> Choice2Of2 (sprintf """Query parameter: "%s" does not exist.""" key)
     let validation = ValidationBuilder(Path, logger)
+    let inline validateRet key = validate key validation.Return
     validation {
-      let! query = validate Query.Literal validation.Return
+      let! query = validateRet Query.Literal
       let! excluded = validateOpt Exclusion.Literal Exclusion.parse
-      let! respectNameDifference = validate SearchOptionLiteral.RespectNameDifference validation.Return
-      let! greedyMatching = validate SearchOptionLiteral.GreedyMatching validation.Return
-      let! ignoreParameterStyle = validate SearchOptionLiteral.IgnoreParameterStyle validation.Return
-      let! ignoreCase = validate SearchOptionLiteral.IgnoreCase validation.Return
-      let! swapOrder = validate SearchOptionLiteral.SwapOrder validation.Return
-      let! complement = validate SearchOptionLiteral.Complement validation.Return
+      let! respectNameDifference = validateRet SearchOptionLiteral.RespectNameDifference
+      let! greedyMatching = validateRet SearchOptionLiteral.GreedyMatching
+      let! ignoreParameterStyle = validateRet SearchOptionLiteral.IgnoreParameterStyle
+      let! ignoreCase = validateRet SearchOptionLiteral.IgnoreCase 
+      let! swapOrder = validateRet SearchOptionLiteral.SwapOrder 
+      let! complement = validateRet SearchOptionLiteral.Complement
+      let! language = validateOpt SearchOptionLiteral.Language validation.Return
       let! limit = validate "limit" (fun x ->
         match Int32.TryParse(x) with
         | true, v -> Choice1Of2 v
@@ -93,6 +94,7 @@ module Search =
             IgnoreCase = ignoreCase
             SwapOrder = swapOrder
             Complement = complement
+            Language = language
           }
         Query = query
         Limit = limit
@@ -100,7 +102,7 @@ module Search =
       let! result = FSharpApi.trySearch database info
       return
         result
-        |> FSharpApi.toSerializable generator
+        ||> FSharpApi.toSerializable generator
         |> Json.toJson
     }
 
