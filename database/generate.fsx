@@ -104,6 +104,7 @@ let searchExternalAssemblies () =
     "System.Xaml"
     "System.Xml.Linq"
     "System.Xml.ReaderWriter"
+    "Microsoft.Build.Framework"
   |]
   |> Array.toList
 

@@ -4,6 +4,7 @@ NUGET
       FSharp.Core (>= 4.0.1.7-alpha) - framework: >= net463, >= netstandard16
       NETStandard.Library (>= 1.6) - framework: >= net463, >= netstandard16
       System.Xml.XDocument (>= 4.0.11) - framework: >= net463, >= netstandard16
+    FAKE.Lib (4.61.2)
     FParsec (1.0.2)
     FSharp.Collections.ParallelSeq (1.0.2)
     FSharp.Compiler.Service (12.0.5)
