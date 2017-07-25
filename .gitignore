@@ -191,6 +191,4 @@ paket-files
 .vs/
 temp/
 
-src/public/docs/**/
-
 database/.paket/
