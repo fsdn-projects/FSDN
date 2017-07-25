@@ -50,7 +50,7 @@ Target "CopyDocs" (fun _ ->
     CopyFile (dir @@ lang) doc
     let doc =
       File.ReadAllLines(doc)
-      |> Array.skipWhile (fun line -> line <> "## Query format specifications" && line <> "## クエリ仕様")
+      |> Array.skipWhile (fun line -> line <> "## Search Options" && line <> "## 検索オプション")
       |> Array.takeWhile (fun line -> line <> "## Current Build Status" && line <> "## FSharp.Compiler.Service の制限により対応できないAPI")
       |> Array.append [|
         "## Search Engine"
