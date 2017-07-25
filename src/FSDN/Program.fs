@@ -17,7 +17,8 @@ type Args =
   | Home_Directory of string
   | Log_Level of string
   | FSharp_Link of string
-  | MSDN_Link of string
+  | DOTNET_API_Browser_Link of string
+  | FParsec_Link of string
 with
   interface IArgParserTemplate with
     member this.Usage =
@@ -26,7 +27,8 @@ with
       | Home_Directory _ -> "specify a home or root diretory."
       | Log_Level _ -> "specify log level."
       | FSharp_Link _ -> "specify official F# library document link."
-      | MSDN_Link _ -> "specify MSDN link."
+      | DOTNET_API_Browser_Link _ -> "specify .NET API Browser link."
+      | FParsec_Link _ -> "specify FParsec reference link."
 
 let logger (args: ParseResults<Args>) =
   let level =
@@ -85,9 +87,13 @@ let main args =
     FSharp =
       args.GetResult(<@ FSharp_Link @>, "https://msdn.microsoft.com/visualfsharpdocs/conceptual/")
       |> FSharpApiSearch.LinkGenerator.fsharp
-    MSDN =
-      args.GetResult(<@ MSDN_Link @>, "https://msdn.microsoft.com/en-us/library/")
-      |> FSharpApiSearch.LinkGenerator.msdn
+    DotNetApiBrowser =
+      let baseUrl = args.GetResult(<@ DOTNET_API_Browser_Link @>, "https://docs.microsoft.com/en-us/dotnet/api/")
+      let view = "netframework-4.6.2"
+      FSharpApiSearch.LinkGenerator.dotNetApiBrowser baseUrl view
+    FParsec =
+      args.GetResult(<@ FParsec_Link @>, "http://www.quanttec.com/fparsec/reference/")
+      |> FSharpApiSearch.LinkGenerator.fparsec
     Packages = packages
   }
   let app = app database generator homeDir logger

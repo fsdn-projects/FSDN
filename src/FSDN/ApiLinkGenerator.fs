@@ -4,7 +4,8 @@ open FSharpApiSearch
 
 type ApiLinkGenerator = {
   FSharp: LinkGenerator
-  MSDN: LinkGenerator
+  DotNetApiBrowser: LinkGenerator
+  FParsec: LinkGenerator
   Packages: NuGetPackage []
 }
 
@@ -15,7 +16,8 @@ module ApiLinkGenerator =
     let generate =
       match Array.tryFind ((=) result.AssemblyName) package.Assemblies with
       | Some "FSharp.Core" -> generator.FSharp
-      | Some _ when package.Standard -> generator.MSDN
+      | Some _ when package.Standard -> generator.DotNetApiBrowser
+      | Some "FParsec" -> generator.FParsec
       | Some _ | None -> fun _ -> None
     generate result.Api
 
