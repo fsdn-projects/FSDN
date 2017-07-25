@@ -97,33 +97,6 @@ type SearchInformation = {
 }
 
 module FSharpApi =
-
-  [<RequireQualifiedAccess>]
-  module Name =
-
-    let private printDisplayName = function
-    | [] -> ""
-    | ns -> ns |> Seq.map (fun (n: DisplayNameItem) -> n.Print()) |> Seq.rev |> String.concat "."
-
-    let id (name: Name) =
-      match name with
-      | LoadingName _ -> failwith "LoadingName only use to generate database."
-      | DisplayName xs -> printDisplayName (List.truncate 1 xs)
-
-    let ``namespace`` (name: Name) =
-      match name with
-      | LoadingName _ -> failwith "LoadingName only use to generate database."
-      | DisplayName xs ->
-        match xs with
-        | [] | [_] -> []
-        | _ :: _  :: xs -> xs
-        |> printDisplayName
-
-    let className (name: Name) =
-      match name with
-      | LoadingName _ -> failwith "LoadingName only use to generate database."
-      | DisplayName xs -> printDisplayName (xs |> List.skip 1 |> List.truncate 1)
-
   let inline private getOrEmpty value = Option.defaultValue "" value
 
   let toSerializable (generator: ApiLinkGenerator) (results: FSharpApiSearch.Result seq) =
@@ -137,9 +110,9 @@ module FSharpApi =
               {
                 Name =
                   {
-                    Id = Name.id result.Api.Name
-                    Namespace = Name.``namespace`` result.Api.Name
-                    Class = Name.className result.Api.Name
+                    Id = FSharp.printApiName result.Api
+                    Namespace = FSharp.printAccessPath None result.Api
+                    Class = FSharp.printAccessPath (Some 1) result.Api
                   }
                 Kind = FSharp.printKind result.Api
                 Signature = FSharp.printSignature result.Api
