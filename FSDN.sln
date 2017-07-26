@@ -1,8 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSDN", "src\FSDN\FSDN.fsproj", "{F4DC2D27-5813-479A-A7CA-F1D8A6CF792D}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSDN.Tests", "tests\FSDN.Tests\FSDN.Tests.fsproj", "{0EF378C3-28C6-45C3-9599-C748B906CA14}"
