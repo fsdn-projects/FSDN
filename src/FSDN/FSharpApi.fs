@@ -30,6 +30,9 @@ module SearchOptionLiteral =
   [<Literal>]
   let Language = "language"
 
+  [<Literal>]
+  let SingleLetterAsVariable = "single_letter_as_variable"
+
 [<DataContract>]
 type ApiName = {
   [<field: DataMember(Name = "id")>]
@@ -82,6 +85,8 @@ type SearchOptions = {
   Complement: string
   [<field: DataMember(Name = SearchOptionLiteral.Language)>]
   Language: string
+  [<field: DataMember(Name = SearchOptionLiteral.SingleLetterAsVariable)>]
+  SingleLetterAsVariable: string
 }
 
 [<DataContract>]
@@ -159,6 +164,7 @@ module FSharpApi =
       |> applyStatus ApiSearchOptions.IgnoreCase info.RawOptions.IgnoreCase
       |> applyStatus ApiSearchOptions.SwapOrder info.RawOptions.SwapOrder
       |> applyStatus ApiSearchOptions.Complement info.RawOptions.Complement
+      |> applyStatus ApiSearchOptions.SingleLetterAsVariable info.RawOptions.SingleLetterAsVariable
       |> applyLanguage ApiSearchOptions.Language info.RawOptions.Language
 
   let trySearch database info =

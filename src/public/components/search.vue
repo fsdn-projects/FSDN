@@ -110,6 +110,10 @@
         <input type="checkbox" class="filled-in" v-model="complement" id="complement" />
         <label for="complement">complement</label>
       </p>
+      <p>
+        <input type="checkbox" class="filled-in" v-model="single_letter_as_variable" id="single_letter_as_variable" />
+        <label for="single_letter_as_variable">single-letter-as-variable</label>
+      </p>
       <div class="card light-blue darken-2">
         <div class="card-content white-text">
           <span class="card-title">Target Assemblies</span>
@@ -146,6 +150,7 @@ interface SearchInformation {
   swap_order: string;
   complement: string;
   language: string;
+  single_letter_as_variable: string;
   limit: number;
 }
 
@@ -183,6 +188,7 @@ export default class Search extends Vue {
   ignore_case = true
   swap_order = true
   complement = true
+  single_letter_as_variable = true
   all_assemblies = <Assembly[]>[]
   progress = false
   search_results: any[] = undefined
@@ -219,6 +225,7 @@ export default class Search extends Vue {
         ignore_case: boolToStatus(this.ignore_case),
         swap_order: boolToStatus(this.swap_order),
         complement: boolToStatus(this.complement),
+        single_letter_as_variable: boolToStatus(this.single_letter_as_variable),
         language: "",
         limit: 500
       })
@@ -290,6 +297,9 @@ export default class Search extends Vue {
             }
             if (queries.complement) {
               this.complement = statusToBool(queries.complement);
+            }
+            if (queries.single_letter_as_variable) {
+              this.single_letter_as_variable = statusToBool(queries.single_letter_as_variable);
             }
             this.search(queries.query);
           }

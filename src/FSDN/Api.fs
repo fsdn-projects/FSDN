@@ -78,6 +78,7 @@ module Search =
       let! swapOrder = validateRet SearchOptionLiteral.SwapOrder 
       let! complement = validateRet SearchOptionLiteral.Complement
       let! language = validateOpt SearchOptionLiteral.Language validation.Return
+      let! singleLetterAsVariable = validateRet SearchOptionLiteral.SingleLetterAsVariable
       let! limit = validate "limit" (fun x ->
         match Int32.TryParse(x) with
         | true, v -> Choice1Of2 v
@@ -96,6 +97,7 @@ module Search =
             SwapOrder = swapOrder
             Complement = complement
             Language = language
+            SingleLetterAsVariable = singleLetterAsVariable
           }
         Query = query
         Limit = limit
