@@ -42,6 +42,11 @@ For instance, `a -> b -> c` matches `b -> a -> c` because `a` and `b` are swappe
 When this option is enabled, it complements missing arguments or tuple elements.
 For instance, `a * c` matches `a * c` and also `a * b * c` where `b` includes `a` and `c`.
 
+### `single-letter-as-variable` option
+
+When this option is enabled, it treats one letter type name as type variable name.
+For instance, `t list` is equal to `'t list`.
+
 ## Query format specifications of F#
 
 ### Supported API signatures
@@ -53,7 +58,7 @@ For instance, `a * c` matches `a * c` and also `a * b * c` where `b` includes `a
 | Descriminated Union | `'a -> Option<'a>` |
 | Members | `'a list -> int` |
 | Constructors | `Uri : _`<br>`Uri.new : _`<br>`Uri..ctor : _` |
-| Names (function and member names) | `head : 'a list -> 'a` |
+| Names (function and member names) | `head : 'a list -> 'a`<br>`head` |
 | Active patterns | <code>(&#124;&#124;) : ... -> Expr -> ?</code> |
 | Type, Type Abbreviation and Module | `List<'T>` |
 | Computation Expressions | `{ let! } : Async<'T>` |
@@ -92,6 +97,9 @@ Microsoft.FSharp.Control.Event.choose: ('T -> option<'U>) -> IEvent<'Del, 'T> ->
 when 'Del : delegate and 'Del :> Delegate
 Microsoft.FSharp.Control.Observable.choose: ('T -> option<'U>) -> IObservable<'T> -> IObservable<'U>
 ````
+
+You can search by partial matche if you use asterisk.
+For instance, to find all functions in `FSharp.Core.String` module, use `FSharp.Core.String.* : _`.
 
 ### Wildcard
 
@@ -143,6 +151,14 @@ and if you specify named wildcard as follows:
 ````
 
 this doesn't match either `'a -> int` or `int -> string`.
+
+#### Search subtypes
+To search subtypes of the specified base type or interface, the query should be formatted as `#type`.
+
+`type` indicates a base type name or an interface name.
+You can not use type parameters and wildcards for `type`.
+
+For instance, `? -> #seq<'t>` can search for functions that return subtype of `seq<'t>`, such as `List<'T>`, `IList<'T>` and `'T[]`.
 
 ### Search members
 
