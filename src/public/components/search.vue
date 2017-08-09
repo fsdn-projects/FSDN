@@ -40,7 +40,7 @@
                 <a class="collection-item" v-on:click="search(&quot;(|_|) : Expr -&gt; ?&quot;)">(|_|) : Expr -&gt; ?</a>
                 <a class="collection-item" v-on:click="search(&quot;new : string -&gt; Uri&quot;)">new : string -&gt; Uri</a>
                 <a class="collection-item" v-on:click="search(&quot;{ let! } : Async&lt;'T&gt;&quot;)">{ let! } : Async&lt;'T&gt;</a>
-                <a class="collection-item" v-on:click="search(&auot;#seq&lt;'a&gt; -&gt; 'a&quot;)">#seq&lt;'a&gt; -&gt; 'a</a>
+                <a class="collection-item" v-on:click="search(&quot;#seq&lt;'a&gt; -&gt; 'a&quot;)">#seq&lt;'a&gt; -&gt; 'a</a>
               </div>
             </div>
           </div>
