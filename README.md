@@ -44,7 +44,7 @@ For instance, `a * c` matches `a * c` and also `a * b * c` where `b` includes `a
 
 ### `single-letter-as-variable` option
 
-When this option is enabled, it treats one letter type name as type variable name.
+When this option is enabled, single-letter type name is treated as a type variable name.
 For instance, `t list` is equal to `'t list`.
 
 ## Query format specifications of F#
@@ -152,7 +152,7 @@ and if you specify named wildcard as follows:
 
 this doesn't match either `'a -> int` or `int -> string`.
 
-#### Search subtypes
+### Search subtypes
 To search subtypes of the specified base type or interface, the query should be formatted as `#type`.
 
 `type` indicates a base type name or an interface name.
