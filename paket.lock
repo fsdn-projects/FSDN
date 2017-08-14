@@ -74,7 +74,7 @@ NUGET
       System.Threading.ThreadPool (>= 4.0.10) - restriction: >= netstandard1.6
       System.Threading.Timer (>= 4.0.1) - restriction: >= netstandard1.6
       System.ValueTuple (>= 4.3) - restriction: < netstandard1.6
-    FSharpApiSearch (3.0)
+    FSharpApiSearch (3.0.1)
       FParsec (>= 1.0.2)
       FSharp.Collections.ParallelSeq (>= 1.0.2)
       FSharp.Compiler.Service (>= 13.0)
@@ -866,7 +866,7 @@ NUGET
       System.ValueTuple (>= 4.3) - restriction: < netstandard1.6
     FSharp.NET.Sdk (1.0.4) - restriction: >= netstandard1.6
       FSharp.Compiler.Tools (>= 4.1.15) - restriction: || (>= net40) (>= netstandard1.3)
-    FSharpApiSearch.Console (3.0)
+    FSharpApiSearch.Console (3.0.1)
     KuduSync.NET (1.3.1)
     Microsoft.Bcl (1.1.10) - restriction: && (< net45) (< win8) (< portable-win81+wpa81)
       Microsoft.Bcl.Build (>= 1.0.14)
@@ -1621,7 +1621,7 @@ GITHUB
     favicon.ico (26e1bf089f0d6031e0d97459f2ca84eafd0ac6d8)
     fsdn_mono_85x64.png (26e1bf089f0d6031e0d97459f2ca84eafd0ac6d8)
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (2ee15aef9d007268857c287318650bd68aa074a6)
+    modules/Octokit/Octokit.fsx (291f58cc70aba6dd871cf18e66d2d88357e4f208)
       Octokit (>= 0.20)
 GROUP Database
 
