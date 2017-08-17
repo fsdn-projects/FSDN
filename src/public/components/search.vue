@@ -84,6 +84,12 @@
     </div>
     <div id="search_options" class="col s12 m4 l3">
       <p>
+        <select v-model="language" class="browser-default" id="language">
+          <option value="fsharp">F#</option>
+          <option value="csharp">C#</option>
+        </select>
+      </p>
+      <p>
         <input type="checkbox" class="filled-in" v-model="respect_name_difference" id="respect_name_difference" />
         <label for="respect_name_difference">respect-name-difference</label>
       </p>
@@ -186,6 +192,7 @@ export default class Search extends Vue {
   swap_order = true
   complement = true
   single_letter_as_variable = true
+  language = "fsharp"
   all_assemblies = <Assembly[]>[]
   progress = false
   search_results: any[] = undefined
@@ -223,7 +230,7 @@ export default class Search extends Vue {
         swap_order: boolToStatus(this.swap_order),
         complement: boolToStatus(this.complement),
         single_letter_as_variable: boolToStatus(this.single_letter_as_variable),
-        language: "",
+        language: this.language,
         limit: 500
       })
         .then(res => {
@@ -297,6 +304,9 @@ export default class Search extends Vue {
             }
             if (queries.single_letter_as_variable) {
               this.single_letter_as_variable = statusToBool(queries.single_letter_as_variable);
+            }
+            if (queries.language) {
+              this.language = queries.language
             }
             this.search(queries.query);
           }
