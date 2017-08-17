@@ -44,7 +44,7 @@ type ApiName = {
 }
 
 [<DataContract>]
-type FSharpApi = {
+type LanguageApi = {
   [<field: DataMember(Name = "name")>]
   Name: ApiName
   [<field: DataMember(Name = "kind")>]
@@ -66,7 +66,7 @@ type SearchResult = {
   [<field: DataMember(Name = "distance")>]
   Distance: int
   [<field: DataMember(Name = "api")>]
-  Api: FSharpApi
+  Api: LanguageApi
 }
 
 [<DataContract>]
@@ -104,30 +104,51 @@ type SearchInformation = {
 module FSharpApi =
   let inline private getOrEmpty value = Option.defaultValue "" value
 
-  let toSerializable (generator: ApiLinkGenerator) (results: FSharpApiSearch.Result seq) =
+  let private toLanguageApi generator language (result: FSharpApiSearch.Result) =
+    match language with
+    | FSharp ->
+      {
+        Name =
+          {
+            Id = FSharp.printApiName result.Api
+            Namespace = FSharp.printAccessPath None result.Api
+            Class = FSharp.printAccessPath (Some 1) result.Api
+          }
+        Kind = FSharp.printKind result.Api
+        Signature = FSharp.printSignature result.Api
+        TypeConstraints =
+          FSharp.tryPrintTypeConstraints result.Api
+          |> getOrEmpty
+        Assembly = result.AssemblyName
+        XmlDoc = getOrEmpty result.Api.Document
+        Link = ApiLinkGenerator.generate result generator |> getOrEmpty
+      }
+    | CSharp ->
+      {
+        Name =
+          {
+            Id = CSharp.printApiName result.Api
+            Namespace = CSharp.printAccessPath None result.Api
+            Class = CSharp.printAccessPath (Some 1) result.Api
+          }
+        Kind = CSharp.printKind result.Api
+        Signature = CSharp.printSignature result.Api
+        TypeConstraints =
+          CSharp.tryPrintTypeConstraints result.Api
+          |> getOrEmpty
+        Assembly = result.AssemblyName
+        XmlDoc = getOrEmpty result.Api.Document
+        Link = ApiLinkGenerator.generate result generator |> getOrEmpty
+      }
+
+  let toSerializable (generator: ApiLinkGenerator) language (results: FSharpApiSearch.Result seq) =
     {
       Values =
         results
         |> Seq.map (fun result ->
           {
             Distance = result.Distance
-            Api =
-              {
-                Name =
-                  {
-                    Id = FSharp.printApiName result.Api
-                    Namespace = FSharp.printAccessPath None result.Api
-                    Class = FSharp.printAccessPath (Some 1) result.Api
-                  }
-                Kind = FSharp.printKind result.Api
-                Signature = FSharp.printSignature result.Api
-                TypeConstraints =
-                  FSharp.tryPrintTypeConstraints result.Api
-                  |> getOrEmpty
-                Assembly = result.AssemblyName
-                XmlDoc = getOrEmpty result.Api.Document
-                Link = ApiLinkGenerator.generate result generator |> getOrEmpty
-              }
+            Api = toLanguageApi generator language result
           })
         |> Seq.toArray
     }
@@ -169,9 +190,11 @@ module FSharpApi =
 
   let trySearch database info =
     let client = FSharpApiSearchClient(info.Targets, database)
+    let options = SearchOptions.apply info
     try
-      client.Search(info.Query, SearchOptions.apply info)
-      |> client.Sort
-      |> Seq.truncate info.Limit
-      |> Choice1Of2
+      let actual =
+        client.Search(info.Query, options)
+        |> client.Sort
+        |> Seq.truncate info.Limit
+      Choice1Of2(ApiSearchOptions.Language.Get options, actual)
     with e -> Choice2Of2 e

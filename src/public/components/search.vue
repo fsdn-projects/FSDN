@@ -56,7 +56,8 @@
       <ul class="collapsible popout" data-collapsible="expandable" v-show="searched && (! raised_error)">
         <li v-for="result in search_results">
           <div class="collapsible-header">
-            <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : {{ result.api.signature }}</span>
+            <span v-if="language=='fsharp'"><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : {{ result.api.signature }}</span>
+            <span v-if="language=='csharp'"><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}{{ result.api.signature }}</span>
           </div>
           <div class="collapsible-body">
             <ul class="collection" id="assembly_info">
@@ -74,7 +75,7 @@
     </div>
     <div id="search_options" class="col s12 m4 l3">
       <p>
-        <select v-model="language" class="browser-default" id="language">
+        <select v-model="language" class="browser-default" id="language" v-on:change="reset()">
           <option value="fsharp">F#</option>
           <option value="csharp">C#</option>
         </select>
@@ -230,6 +231,11 @@ export default class Search extends Vue {
 
   get api_count(): number {
     return this.search_results.length;
+  }
+  
+  reset() {
+    this.search_results = undefined;
+    this.error_message = undefined;
   }
 
   search(input?: string) {

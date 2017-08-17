@@ -105,7 +105,7 @@ module Search =
       let! result = FSharpApi.trySearch database info
       return
         result
-        |> FSharpApi.toSerializable generator
+        ||> FSharpApi.toSerializable generator
         |> Json.toJson
     }
 
