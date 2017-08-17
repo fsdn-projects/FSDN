@@ -30,17 +30,7 @@
             <div class="card-content white-text">
               <span class="card-title">Examples</span>
               <div class="collection">
-                <a class="collection-item" v-on:click="search(&quot;'a -&gt; 'a&quot;)">'a -&gt; 'a</a>
-                <a class="collection-item" v-on:click="search(&quot;?a -&gt; ?a&quot;)">?a -&gt; ?a</a>
-                <a class="collection-item" v-on:click="search(&quot;id : 'a -&gt; 'a&quot;)">id : 'a -&gt; 'a</a>
-                <a class="collection-item" v-on:click="search(&quot;List.map* : _&quot;)">*map* : _</a>
-                <a class="collection-item" v-on:click="search(&quot;(+) : _&quot;)">(+) : _</a>
-                <a class="collection-item" v-on:click="search(&quot;? -&gt; list&lt;?&gt; -&gt; ?&quot;)">? -&gt; list&lt;?&gt; -&gt; ?</a>
-                <a class="collection-item" v-on:click="search(&quot;DateTime -&gt; DayOfWeek&quot;)">DateTime -&gt; DayOfWeek</a>
-                <a class="collection-item" v-on:click="search(&quot;(|_|) : Expr -&gt; ?&quot;)">(|_|) : Expr -&gt; ?</a>
-                <a class="collection-item" v-on:click="search(&quot;new : string -&gt; Uri&quot;)">new : string -&gt; Uri</a>
-                <a class="collection-item" v-on:click="search(&quot;{ let! } : Async&lt;'T&gt;&quot;)">{ let! } : Async&lt;'T&gt;</a>
-                <a class="collection-item" v-on:click="search(&quot;#seq&lt;'a&gt; -&gt; 'a&quot;)">#seq&lt;'a&gt; -&gt; 'a</a>
+                <a v-for="example in examples[language]" class="collection-item" v-on:click="search(example.query)">{{ example.query }}</a>
               </div>
             </div>
           </div>
@@ -197,6 +187,34 @@ export default class Search extends Vue {
   progress = false
   search_results: any[] = undefined
   error_message: string = undefined
+
+  examples = {
+    "fsharp" : [
+      { query: "'a -> 'a" },
+      { query: "?a -> ?a" },
+      { query: "id : 'a -> 'a" },
+      { query: "*map* : _" },
+      { query: "(+) : _" },
+      { query: "? -> list<?> -> ?" },
+      { query: "DateTime -> DayOfWeek" },
+      { query: "(|_|) : Expr -> ?" },
+      { query: "new : string -> Uri" },
+      { query: "{ let! } : Async<'T>" },
+      { query: "#seq<'a> -> 'a" },
+    ],
+    "csharp" : [
+      { query: "?a -> ?a" },
+      { query: "? -> int" },
+      { query: "object -> () -> string" },
+      { query: "string -> int" },
+      { query: "Uri..ctor : _" },
+      { query: "List.* : _" },
+      { query: "Try* : _" },
+      { query: "<T> : List<T> -> T" },
+      { query: "Length : string -> int" },
+      { query: "<T> : #IEnumerable<T> -> T" },
+    ]
+  }
 
   get valid(): boolean {
     return validate(this.query);
