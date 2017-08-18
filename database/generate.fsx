@@ -164,14 +164,6 @@ with
       Assemblies = this.Assemblies
     }
 
-let standard name = {
-  Name = name
-  Standard = true
-  Version = None
-  IconUrl = None
-  Assemblies = [|name|]
-}
-
 let tryFindIconUrl name =
   "./packages/" @@ name
   |> FindFirstMatchingFile (name + ".nuspec")
@@ -189,26 +181,35 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
     LockFile.LoadFrom("./paket.lock")
       .GetGroup(GroupName("Main"))
       .Resolution
-  if isMonoRuntime then [||]
-  else Package.loadTargets "./packages.yml"
-  |> Array.map (fun x ->
-    let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = x.Name then Some v else None)
-    {
-      Name = x.Name
-      Standard = false
-      Version = Some p.Version
-      IconUrl = tryFindIconUrl x.Name
-      Assemblies = x.Assemblies
-    }
+  let config = Package.loadTargets "./packages.yml"
+  let allTargets =
+    if isMonoRuntime then [||]
+    else config.Targets
+    |> Array.map (fun x ->
+      {
+        Name = x.Name
+        Standard = x.Standard
+        Version =
+          if x.Standard then
+            None
+          else
+            let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = x.Name then Some v else None)
+            Some p.Version
+        IconUrl =
+          if x.Standard then
+            None
+          else
+            tryFindIconUrl x.Name
+        Assemblies = x.Assemblies
+      }
+    )
+    |> Array.map (fun x -> x.ToSerializablePackage)
+  config.Languages
+  |> Map.iter (fun lang langTargets ->
+    allTargets
+    |> Array.filter (fun at -> Array.contains at.Name langTargets)
+    |> Package.dump (out @@ sprintf "packages.%s.yml" lang)
   )
-  |> Array.append [|
-    standard "System.Net.Http"
-    standard "System.Web"
-    standard "System.Xml"
-    standard "System.Xml.Linq"
-  |]
-  |> Array.map (fun x -> x.ToSerializablePackage)
-  |> Package.dump (out @@ "packages.yml")
 )
 
 "PaketRestore"

@@ -1,3 +1,71 @@
+Languages:
+  fsharp:
+  - mscorlib
+  - System
+  - System.Core
+  - FSharp.Core
+  - System.Net.Http
+  - System.Web
+  - System.Xml
+  - System.Xml.Linq
+  - Argu
+  - Newtonsoft.Json
+  - Fake.Lib
+  - FParsec
+  - FSharp.Compiler.Service
+  - FSharp.Collections.ParallelSeq
+  - FSharp.Control.AsyncSeq
+  - FSharp.Control.Reqctive
+  - FSharp.Data
+  - FSharp.ViewModule.Core
+  - FsPickler
+  - FsUnit
+  - Suave
+  - Suave.Experimental
+  - System.Reactive.Core
+  - System.Reactive.Interfaces
+  - System.Reactive.Linq
+  - System.ValueTuple
+  csharp:
+  - mscorlib
+  - System
+  - System.Core
+  - System.Net.Http
+  - System.Web
+  - System.Xml
+  - System.Xml.Linq
+  - Newtonsoft.Json
+  - System.Reactive.Core
+  - System.Reactive.Interfaces
+  - System.Reactive.Linq
+  - System.ValueTuple
+  
+Targets:
+- Name: mscorlib
+  Assemblies: [mscorlib]
+  Standard: true
+- Name: System
+  Assemblies: [System]
+  Standard: true
+- Name: System.Core
+  Assemblies: [System.Core]
+  Standard: true
+- Name: FSharp.Core
+  Assemblies: [FSharp.Core]
+  Standard: true
+- Name: System.Net.Http
+  Assemblies: [System.Net.Http]
+  Standard: true
+- Name: System.Web
+  Assemblies: [System.Web]
+  Standard: true
+- Name: System.Xml
+  Assemblies: [System.Xml]
+  Standard: true
+- Name: System.Xml.Linq
+  Assemblies: [System.Xml.Linq]
+  Standard: true
+
 - Name: Argu
   Assemblies: [Argu]
 - Name: Newtonsoft.Json

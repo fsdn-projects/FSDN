@@ -6,7 +6,7 @@ type ApiLinkGenerator = {
   FSharp: LinkGenerator
   DotNetApiBrowser: LinkGenerator
   FParsec: LinkGenerator
-  Packages: NuGetPackage []
+  Packages: Map<string, NuGetPackage []>
 }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -21,7 +21,7 @@ module ApiLinkGenerator =
       | Some _ | None -> fun _ -> None
     generate result.Api
 
-  let generate result generator =
-    generator.Packages
+  let generate result (generator: ApiLinkGenerator) language =
+    generator.Packages.[language]
     |> Array.tryPick (impl generator result)
 

@@ -80,7 +80,8 @@ let databasePackage = "FSDN.Database.zip"
 Target "CopyApiDatabase" (fun _ ->
   let dir = "./paket-files/database/github.com/"
   CopyFile ("./bin" @@ project) (dir @@ "database")
-  CopyFile ("./bin" @@ project) (dir @@ "packages.yml")
+
+  !! (dir @@ "packages.*.yml") |> CopyFiles ("./bin" @@ project)
 )
 
 Target "GenerateApiDatabase" (fun _ ->

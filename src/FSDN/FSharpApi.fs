@@ -104,6 +104,10 @@ type SearchInformation = {
 module FSharpApi =
   let inline private getOrEmpty value = Option.defaultValue "" value
 
+  let languageToString = function
+    | FSharp -> "fsharp"
+    | CSharp -> "csharp"
+
   let private toLanguageApi generator language (result: FSharpApiSearch.Result) =
     match language with
     | FSharp ->
@@ -121,7 +125,7 @@ module FSharpApi =
           |> getOrEmpty
         Assembly = result.AssemblyName
         XmlDoc = getOrEmpty result.Api.Document
-        Link = ApiLinkGenerator.generate result generator |> getOrEmpty
+        Link = ApiLinkGenerator.generate result generator (languageToString language) |> getOrEmpty
       }
     | CSharp ->
       {
@@ -138,7 +142,7 @@ module FSharpApi =
           |> getOrEmpty
         Assembly = result.AssemblyName
         XmlDoc = getOrEmpty result.Api.Document
-        Link = ApiLinkGenerator.generate result generator |> getOrEmpty
+        Link = ApiLinkGenerator.generate result generator (languageToString language) |> getOrEmpty
       }
 
   let toSerializable (generator: ApiLinkGenerator) language (results: FSharpApiSearch.Result seq) =

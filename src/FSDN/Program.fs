@@ -77,12 +77,15 @@ let main args =
     Path.Combine(homeDir, ApiLoader.databaseName)
     |> ApiLoader.loadFromFile
   let packages =
-    Path.Combine(homeDir, "packages.yml")
-    |> Package.load
-    |> function
-    | Some xs -> xs
-    | None -> [||]
-    |> Package.all
+    Directory.GetFiles(homeDir, "packages.*.yml")
+    |> Array.choose (fun path ->
+      let lang =
+        let fileName = Path.GetFileNameWithoutExtension(path)
+        fileName.Substring(fileName.IndexOf('.') + 1)
+      Package.load path
+      |> Option.map (fun packages -> lang, packages)
+    )
+    |> Map.ofArray
   let generator = {
     FSharp =
       args.GetResult(<@ FSharp_Link @>, "https://msdn.microsoft.com/visualfsharpdocs/conceptual/")

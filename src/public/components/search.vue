@@ -75,7 +75,7 @@
     </div>
     <div id="search_options" class="col s12 m4 l3">
       <p>
-        <select v-model="language" class="browser-default" id="language" v-on:change="reset()">
+        <select v-model="language" class="browser-default" id="language" v-on:change="languageChanged()">
           <option value="fsharp">F#</option>
           <option value="csharp">C#</option>
         </select>
@@ -233,6 +233,11 @@ export default class Search extends Vue {
     return this.search_results.length;
   }
   
+  languageChanged() {
+    this.reset();
+    this.updateAssemblies();
+  }
+  
   reset() {
     this.search_results = undefined;
     this.error_message = undefined;
@@ -280,10 +285,60 @@ export default class Search extends Vue {
         });
     }
   }
-
-  @Lifecycle beforeMount() {
+  
+  updateAssemblies() {
     axios
-      .get(baseUrl + "/api/assemblies")
+      .get(baseUrl + "/api/assemblies", { params: { language: this.language } })
+      .then(res => {
+        if (res.status !== 200) {
+          this.error_message = res.data;
+        } else {
+          this.error_message = undefined;
+          this.all_assemblies =
+            res.data.values.map((a: any) => ({
+              name: a.name,
+              checked: a.checked
+            }));
+        }
+      })
+      .catch(err => {
+        this.error_message = err;
+      });
+  }
+  
+  @Lifecycle beforeMount() {
+    const queries = querystring.parse(window.location.search.substring(1));
+    
+    if (queries.query) {
+      this.query = queries.query
+    }
+    if (queries.respect_name_difference) {
+      this.respect_name_difference = statusToBool(queries.respect_name_difference);
+    }
+    if (queries.greedy_matching) {
+      this.greedy_matching = statusToBool(queries.greedy_matching);
+    }
+    if (queries.ignore_parameter_style) {
+      this.ignore_parameter_style = statusToBool(queries.ignore_parameter_style);
+    }
+    if (queries.ignore_case) {
+      this.ignore_case = statusToBool(queries.ignore_case);
+    }
+    if (queries.swap_order) {
+      this.swap_order = statusToBool(queries.swap_order);
+    }
+    if (queries.complement) {
+      this.complement = statusToBool(queries.complement);
+    }
+    if (queries.single_letter_as_variable) {
+      this.single_letter_as_variable = statusToBool(queries.single_letter_as_variable);
+    }
+    if (queries.language) {
+      this.language = queries.language
+    }
+    
+    axios
+      .get(baseUrl + "/api/assemblies", { params: { language: this.language } })
       .then(res => {
         if (res.status !== 200) {
           this.error_message = res.data;
@@ -295,7 +350,6 @@ export default class Search extends Vue {
               checked: a.checked
             }));
           if (window.location.search) {
-            const queries = querystring.parse(window.location.search.substring(1));
             if (queries.exclusion) {
               const exclusion = queries.exclusion.split("+");
               this.all_assemblies.forEach((asm: any) => {
@@ -303,35 +357,8 @@ export default class Search extends Vue {
                   asm.checked = true;
                 }
               });
-            } else {
-              this.all_assemblies.forEach((asm: any) => {
-                asm.checked = true;
-              });
             }
-            if (queries.respect_name_difference) {
-              this.respect_name_difference = statusToBool(queries.respect_name_difference);
-            }
-            if (queries.greedy_matching) {
-              this.greedy_matching = statusToBool(queries.greedy_matching);
-            }
-            if (queries.ignore_parameter_style) {
-              this.ignore_parameter_style = statusToBool(queries.ignore_parameter_style);
-            }
-            if (queries.ignore_case) {
-              this.ignore_case = statusToBool(queries.ignore_case);
-            }
-            if (queries.swap_order) {
-              this.swap_order = statusToBool(queries.swap_order);
-            }
-            if (queries.complement) {
-              this.complement = statusToBool(queries.complement);
-            }
-            if (queries.single_letter_as_variable) {
-              this.single_letter_as_variable = statusToBool(queries.single_letter_as_variable);
-            }
-            if (queries.language) {
-              this.language = queries.language
-            }
+            
             this.search(queries.query);
           }
         }
