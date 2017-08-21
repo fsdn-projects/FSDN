@@ -184,7 +184,8 @@ export default class Search extends Vue {
   complement = true
   single_letter_as_variable = true
   language = "fsharp"
-  all_assemblies = <Assembly[]>[]
+  all_assemblies: Assembly[] = []
+  assembly_cache = {}
   progress = false
   search_results: any[] = undefined
   error_message: string = undefined
@@ -287,23 +288,29 @@ export default class Search extends Vue {
   }
   
   updateAssemblies() {
-    axios
-      .get(baseUrl + "/api/assemblies", { params: { language: this.language } })
-      .then(res => {
-        if (res.status !== 200) {
-          this.error_message = res.data;
-        } else {
-          this.error_message = undefined;
-          this.all_assemblies =
-            res.data.values.map((a: any) => ({
-              name: a.name,
-              checked: a.checked
-            }));
-        }
-      })
-      .catch(err => {
-        this.error_message = err;
-      });
+    if (this.assembly_cache[this.language]) {
+      this.all_assemblies = this.assembly_cache[this.language];
+    } else {
+      axios
+        .get(baseUrl + "/api/assemblies", { params: { language: this.language } })
+        .then(res => {
+          if (res.status !== 200) {
+            this.error_message = res.data;
+          } else {
+            this.error_message = undefined;
+            this.all_assemblies =
+              res.data.values.map((a: any) => ({
+                name: a.name,
+                checked: a.checked
+              }));
+
+            this.assembly_cache[this.language] = this.all_assemblies;
+          }
+        })
+        .catch(err => {
+          this.error_message = err;
+        });
+    }
   }
   
   @Lifecycle beforeMount() {
@@ -337,35 +344,20 @@ export default class Search extends Vue {
       this.language = queries.language
     }
     
-    axios
-      .get(baseUrl + "/api/assemblies", { params: { language: this.language } })
-      .then(res => {
-        if (res.status !== 200) {
-          this.error_message = res.data;
-        } else {
-          this.error_message = undefined;
-          this.all_assemblies =
-            res.data.values.map((a: any) => ({
-              name: a.name,
-              checked: a.checked
-            }));
-          if (window.location.search) {
-            if (queries.exclusion) {
-              const exclusion = queries.exclusion.split("+");
-              this.all_assemblies.forEach((asm: any) => {
-                if (exclusion.indexOf(asm.name) == -1) {
-                  asm.checked = true;
-                }
-              });
-            }
-            
-            this.search(queries.query);
+    this.updateAssemblies();
+
+    if (window.location.search) {
+      if (queries.exclusion) {
+        const exclusion = queries.exclusion.split("+");
+        this.all_assemblies.forEach((asm: any) => {
+          if (exclusion.indexOf(asm.name) == -1) {
+            asm.checked = true;
           }
-        }
-      })
-      .catch(err => {
-        this.error_message = err;
-      });
+        });
+      }
+      
+      this.search(queries.query);
+    }
   }
 }
 </script>
