@@ -279,7 +279,7 @@ The queries of the type parameter is as follows:
 | Lower case letters | `Dictionary<tkey, tvalue>` | `tkey`, `tvalue` | `<T>` can be omitted if it is all lower case |
 | Single letter | `List<T> -> int` | `T` | `<T>` can be omitted if it is single letter |
 
-Even if it is all lower case, built-in types such as `int` and `string` are not type parameters.
+Even if it is all lower case, built-in type names, such as `int` or `string`, are not treated as type parameters.
 
 The type parameter name in the query dose not have to match the type parameter name in API.
 For instance, `List<A>` matches `System.Collections.Generics.List<T>`.
@@ -344,14 +344,49 @@ To find methods that accept one argument, use `receiver -> arg -> returnType`.
 To find methods that accept multiple arguments, use `receiver -> (arg1, arg2) -> returnType`
 The parentheses of the argument part can be omitted.
 
+```
+<T> : List<T> -> T -> int
+```
+
+This query shows the following results:
+
+```
+System.Collections.Generic.List<T>.BinarySearch(T item) : int, instance method, mscorlib
+System.Collections.Generic.List<T>.IndexOf(T item) : int, instance method, mscorlib
+(snip)
+```
+
 To find properties, use `receiver -> propertyType`.
 To find indexed properties, use `receiver -> index -> propertyType`.
+
+```
+<T> : List<T> -> int
+```
+
+This query shows the following results:
+
+```
+System.Collections.Generic.List<T>.Capacity : int, instance property with get set, mscorlib
+System.Collections.Generic.List<T>.Count : int, instance property with get, mscorlib
+(snip)
+```
 
 #### Static members
 
 To find static methods, use `(arg1, arg2) -> returnType`.
-
 To find static properties, use `propertyType` or `index -> propertyType`.
+
+```
+string -> int
+```
+
+This query shows the following results:
+
+```
+System.Convert.ToInt32(string value) : int, static method, mscorlib
+System.Int32.Parse(string s) : int, static method, mscorlib
+(snip)
+```
 
 ## Current Build Status
 
