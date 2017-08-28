@@ -62,10 +62,11 @@ For instance, `t list` is equal to `'t list`.
 | Active patterns | <code>(&#124;&#124;) : ... -> Expr -> ?</code> |
 | Type, Type Abbreviation and Module | `List<'T>` |
 | Computation Expressions | `{ let! } : Async<'T>` |
+| Subtypes | `#seq<'a> -> 'a` |
 
 ### Search by name
 
-To search by name, the query should be formatted as `name : signature`.
+To search by name, the query should be formatted as `name : signature` or `name`.
 If you don't want to specify the signature explicitly, use `_`, instead.
 
 The following query:
@@ -81,6 +82,12 @@ Microsoft.FSharp.Core.Operators.id: 'T -> 'T
 ````
 
 And the following query:
+
+```
+choose
+```
+
+or
 
 ````
 choose : _
@@ -207,6 +214,179 @@ It searches all builders that support specified syntax and type.
 
 `let!`, `yield`, `yield!`, `return`, `return!`, `use`, `use!`, `if/then`, `for`, `while`, `try/with`, `try/finally` and custom operations can be specified as the `syntax`.
 To specify multiple syntaxes, use semicolon (`;`) separated value: `{ s1; s2 } : type`.
+
+## Query format specifications of C#
+
+### Supported API signatures
+
+| API signature | Query example |
+|:--------------|:--------------|
+| Members | `object -> () -> string`<br>`string -> int` |
+| Constructors | `Uri : _`<br>`Uri..ctor : _` |
+| Type parameters | `List<T> -> int`<br>`Dictionary<tkey, tvalue>`<br>`<TKey, TValue> : Dictionary<TKey, TValue>` |
+| Names (member and type names) | `Length : string -> int`<br>`Length` |
+| Types | `List` |
+| Subtypes | `<T> : #IEnumerable<T> -> T` |
+
+### Search by name
+
+To search by name, the query should be formatted as `name : signature` or `name`.
+If you don't want to specify the signature explicitly, use `_`, instead.
+
+The following query:
+
+````
+Length : string -> int
+````
+
+shows the following result:
+
+````
+System.String.Length : int, instance property with get, mscorlib
+````
+
+And the following query:
+
+```
+Length
+```
+
+or
+
+````
+Length : _
+````
+
+shows the followings:
+
+````
+int Array.Length { get; }, instance property, mscorlib
+int BitArray.Length { get; set; }, instance property, mscorlib
+long BufferedStream.Length { get; }, instance property, mscorlib
+long FileInfo.Length { get; }, instance property, mscorlib
+````
+
+You can search by partial matche if you use asterisk.
+For instance, to find all functions in `System.String` type, use `System.String.* : _`.
+
+### Type parameters
+
+The queries of the type parameter is as follows:
+
+| Format | Example | Type Parameter | Note |
+|:-------|:--------|:---------------|:-----|
+| `<T> : signature` | `<TKey, TValue> : Dictionary<TKey, TValue>` | `TKey`, `TValue` | All letters can be used for type parameters |
+| Lower case letters | `Dictionary<tkey, tvalue>` | `tkey`, `tvalue` | `<T>` can be omitted if it is all lower case |
+| Single letter | `List<T> -> int` | `T` | `<T>` can be omitted if it is single letter |
+
+Even if it is all lower case, built-in type names, such as `int` or `string`, are not treated as type parameters.
+
+The type parameter name in the query dose not have to match the type parameter name in API.
+For instance, `List<A>` matches `System.Collections.Generics.List<T>`.
+
+### Wildcard
+
+By default, FSDN doesn't return results that match type parameters, such as `'a`, with concrete type names, such as `int`.
+To find them, use wildcard: `?`.
+
+````
+<T> : List<T> -> ? -> int
+````
+
+This query shows the following results:
+
+````
+System.Collections.Generic.List<T>.BinarySearch(T item) : int, instance method, mscorlib
+System.Collections.Generic.List<T>.FindIndex(Predicate<T> match) : int, instance method, mscorlib
+System.Collections.Generic.List<T>.FindLastIndex(Predicate<T> match) : int, instance method, mscorlib
+System.Collections.Generic.List<T>.IndexOf(T item) : int, instance method, mscorlib
+(snip)
+````
+
+If you want to specify the same type in several places, use "named wildcard".
+For instance, when the following query
+
+````
+? -> ?
+````
+
+matches the following signatures:
+
+````
+F1<T>(T x) : T
+F2(int x) : int
+F3<T>(int x) : T
+F4(string x) : int
+````
+
+and if you specify named wildcard as follows:
+
+````
+?a -> ?a
+````
+
+this doesn't match either `F2` or `F4`.
+
+### Search subtypes
+
+To search subtypes of the specified base type or interface, the query should be formatted as `#type`.
+
+`type` indicates a base type name or an interface name.
+You can not use type parameters and wildcards for `type`.
+
+For instance, `<T> : ? -> #IEnumerable<T>` can search for functions that return subtype of `IEnumrable<T>`, such as `List<T>`, `IList<T>` and `T[]`.
+
+### Search members
+
+#### Instance members
+
+To find methods that accept one argument, use `receiver -> arg -> returnType`.
+To find methods that accept multiple arguments, use `receiver -> (arg1, arg2) -> returnType`
+The parentheses of the argument part can be omitted.
+
+```
+<T> : List<T> -> T -> int
+```
+
+This query shows the following results:
+
+```
+System.Collections.Generic.List<T>.BinarySearch(T item) : int, instance method, mscorlib
+System.Collections.Generic.List<T>.IndexOf(T item) : int, instance method, mscorlib
+(snip)
+```
+
+To find properties, use `receiver -> propertyType`.
+To find indexed properties, use `receiver -> index -> propertyType`.
+
+```
+<T> : List<T> -> int
+```
+
+This query shows the following results:
+
+```
+System.Collections.Generic.List<T>.Capacity : int, instance property with get set, mscorlib
+System.Collections.Generic.List<T>.Count : int, instance property with get, mscorlib
+(snip)
+```
+
+#### Static members
+
+To find static methods, use `(arg1, arg2) -> returnType`.
+To find static properties, use `propertyType` or `index -> propertyType`.
+
+```
+string -> int
+```
+
+This query shows the following results:
+
+```
+System.Convert.ToInt32(string value) : int, static method, mscorlib
+System.Int32.Parse(string s) : int, static method, mscorlib
+(snip)
+```
 
 ## Current Build Status
 

@@ -86,7 +86,7 @@ module Search =
       )
       let info = {
         Targets =
-          generator.Packages
+          generator.Packages.[language]
           |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
         RawOptions =
           {
@@ -105,15 +105,31 @@ module Search =
       let! result = FSharpApi.trySearch database info
       return
         result
-        |> FSharpApi.toSerializable generator
+        ||> FSharpApi.toSerializable generator
         |> Json.toJson
     }
+
+module Assembly =
+  [<Literal>]
+  let Path = "/api/assemblies"
+
+  let apply generator (req: HttpRequest) =
+    let packages =
+      match req.queryParamOpt SearchOptionLiteral.Language with
+      | Some (_, Some lang) -> generator.Packages.[lang]
+      | Some (_, None) | None -> generator.Packages |> Seq.map (fun (KeyValue(_, v)) -> v) |> Array.concat |> Array.distinct
+    let values =
+      System.Linq.Enumerable.OrderBy(packages, fun p -> (not p.Standard, p.Name))
+      |> Seq.toArray
+    { Values = values }
+    |> Json.toJson
+    |> Suave.Successful.ok
 
 let app database generator logger : WebPart =
   choose [
     GET >=> choose [
-      path "/api/assemblies"
-        >=> ({ Values = generator.Packages } |> Json.toJson |> Suave.Successful.ok)
+      path Assembly.Path
+        >=> request (Assembly.apply generator)
       path Search.Path >=>
         request (Search.apply database generator logger)
     ]

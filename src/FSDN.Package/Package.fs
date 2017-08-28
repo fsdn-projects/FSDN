@@ -22,6 +22,14 @@ type NuGetPackage = {
 type TargetPackage = {
   Name: string
   Assemblies: string []
+  Standard: bool
+}
+with
+  static member DefaultStandard = false
+
+type PackageInput = {
+  Languages: Map<string, string []>
+  Targets: TargetPackage []
 }
 
 module Package =
@@ -42,4 +50,4 @@ module Package =
 
   let loadTargets fileName =
     File.ReadAllText(fileName)
-    |> Yaml.load<TargetPackage []>
+    |> Yaml.load<PackageInput>

@@ -22,7 +22,7 @@
         <li class="collection-item" v-for="assembly in assemblies">
           <img v-bind:src="assembly.icon_url" alt="" width="32px" height="32px" v-if="assembly.icon_url"></img>
           {{ assembly.name }} {{ assembly.version }}
-          <a v-bind:href="'https://www.nuget.org/packages/' + assembly.name + '/' + assembly.version" class="secondary-content" v-if="! assembly.checked"><i class="fa fa-arrow-circle-right"></i></a>
+          <a v-bind:href="'https://www.nuget.org/packages/' + assembly.name + '/' + assembly.version" class="secondary-content" v-if="! assembly.checked" target="_blank" rel="noopener"><i class="fa fa-arrow-circle-right"></i></a>
         </li>
       </ul>
     </div>

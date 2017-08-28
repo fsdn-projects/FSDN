@@ -30,17 +30,7 @@
             <div class="card-content white-text">
               <span class="card-title">Examples</span>
               <div class="collection">
-                <a class="collection-item" v-on:click="search(&quot;'a -&gt; 'a&quot;)">'a -&gt; 'a</a>
-                <a class="collection-item" v-on:click="search(&quot;?a -&gt; ?a&quot;)">?a -&gt; ?a</a>
-                <a class="collection-item" v-on:click="search(&quot;id : 'a -&gt; 'a&quot;)">id : 'a -&gt; 'a</a>
-                <a class="collection-item" v-on:click="search(&quot;List.map* : _&quot;)">*map* : _</a>
-                <a class="collection-item" v-on:click="search(&quot;(+) : _&quot;)">(+) : _</a>
-                <a class="collection-item" v-on:click="search(&quot;? -&gt; list&lt;?&gt; -&gt; ?&quot;)">? -&gt; list&lt;?&gt; -&gt; ?</a>
-                <a class="collection-item" v-on:click="search(&quot;DateTime -&gt; DayOfWeek&quot;)">DateTime -&gt; DayOfWeek</a>
-                <a class="collection-item" v-on:click="search(&quot;(|_|) : Expr -&gt; ?&quot;)">(|_|) : Expr -&gt; ?</a>
-                <a class="collection-item" v-on:click="search(&quot;new : string -&gt; Uri&quot;)">new : string -&gt; Uri</a>
-                <a class="collection-item" v-on:click="search(&quot;{ let! } : Async&lt;'T&gt;&quot;)">{ let! } : Async&lt;'T&gt;</a>
-                <a class="collection-item" v-on:click="search(&quot;#seq&lt;'a&gt; -&gt; 'a&quot;)">#seq&lt;'a&gt; -&gt; 'a</a>
+                <a v-for="example in examples[language]" class="collection-item" v-on:click="search(example.query)">{{ example.query }}</a>
               </div>
             </div>
           </div>
@@ -66,7 +56,8 @@
       <ul class="collapsible popout" data-collapsible="expandable" v-show="searched && (! raised_error)">
         <li v-for="result in search_results">
           <div class="collapsible-header">
-            <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : {{ result.api.signature }}</span>
+            <span v-if="language=='fsharp'"><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : {{ result.api.signature }}</span>
+            <span v-if="language=='csharp'"><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}{{ result.api.signature }}</span>
           </div>
           <div class="collapsible-body">
             <ul class="collection" id="assembly_info">
@@ -83,6 +74,12 @@
       </ul>
     </div>
     <div id="search_options" class="col s12 m4 l3">
+      <p>
+        <select v-model="language" class="browser-default" id="language" v-on:change="languageChanged()">
+          <option value="fsharp">F#</option>
+          <option value="csharp">C#</option>
+        </select>
+      </p>
       <p>
         <input type="checkbox" class="filled-in" v-model="respect_name_difference" id="respect_name_difference" />
         <label for="respect_name_difference">respect-name-difference</label>
@@ -186,10 +183,40 @@ export default class Search extends Vue {
   swap_order = true
   complement = true
   single_letter_as_variable = true
-  all_assemblies = <Assembly[]>[]
+  language = "fsharp"
+  all_assemblies: Assembly[] = []
+  assembly_cache = {}
   progress = false
   search_results: any[] = undefined
   error_message: string = undefined
+
+  examples = {
+    "fsharp" : [
+      { query: "'a -> 'a" },
+      { query: "?a -> ?a" },
+      { query: "id : 'a -> 'a" },
+      { query: "*map* : _" },
+      { query: "(+) : _" },
+      { query: "? -> list<?> -> ?" },
+      { query: "DateTime -> DayOfWeek" },
+      { query: "(|_|) : Expr -> ?" },
+      { query: "new : string -> Uri" },
+      { query: "{ let! } : Async<'T>" },
+      { query: "#seq<'a> -> 'a" },
+    ],
+    "csharp" : [
+      { query: "?a -> ?a" },
+      { query: "? -> int" },
+      { query: "object -> () -> string" },
+      { query: "string -> int" },
+      { query: "Uri..ctor : _" },
+      { query: "List.* : _" },
+      { query: "Try* : _" },
+      { query: "<T> : List<T> -> T" },
+      { query: "Length : string -> int" },
+      { query: "<T> : #IEnumerable<T> -> T" },
+    ]
+  }
 
   get valid(): boolean {
     return validate(this.query);
@@ -205,6 +232,16 @@ export default class Search extends Vue {
 
   get api_count(): number {
     return this.search_results.length;
+  }
+  
+  languageChanged() {
+    this.reset();
+    this.updateAssemblies();
+  }
+  
+  reset() {
+    this.search_results = undefined;
+    this.error_message = undefined;
   }
 
   search(input?: string) {
@@ -223,7 +260,7 @@ export default class Search extends Vue {
         swap_order: boolToStatus(this.swap_order),
         complement: boolToStatus(this.complement),
         single_letter_as_variable: boolToStatus(this.single_letter_as_variable),
-        language: "",
+        language: this.language,
         limit: 500
       })
         .then(res => {
@@ -249,62 +286,78 @@ export default class Search extends Vue {
         });
     }
   }
+  
+  updateAssemblies() {
+    if (this.assembly_cache[this.language]) {
+      this.all_assemblies = this.assembly_cache[this.language];
+    } else {
+      axios
+        .get(baseUrl + "/api/assemblies", { params: { language: this.language } })
+        .then(res => {
+          if (res.status !== 200) {
+            this.error_message = res.data;
+          } else {
+            this.error_message = undefined;
+            this.all_assemblies =
+              res.data.values.map((a: any) => ({
+                name: a.name,
+                checked: a.checked
+              }));
 
-  @Lifecycle beforeMount() {
-    axios
-      .get(baseUrl + "/api/assemblies")
-      .then(res => {
-        if (res.status !== 200) {
-          this.error_message = res.data;
-        } else {
-          this.error_message = undefined;
-          this.all_assemblies =
-            res.data.values.map((a: any) => ({
-              name: a.name,
-              checked: a.checked
-            }));
-          if (window.location.search) {
-            const queries = querystring.parse(window.location.search.substring(1));
-            if (queries.exclusion) {
-              const exclusion = queries.exclusion.split("+");
-              this.all_assemblies.forEach((asm: any) => {
-                if (exclusion.indexOf(asm.name) == -1) {
-                  asm.checked = true;
-                }
-              });
-            } else {
-              this.all_assemblies.forEach((asm: any) => {
-                asm.checked = true;
-              });
-            }
-            if (queries.respect_name_difference) {
-              this.respect_name_difference = statusToBool(queries.respect_name_difference);
-            }
-            if (queries.greedy_matching) {
-              this.greedy_matching = statusToBool(queries.greedy_matching);
-            }
-            if (queries.ignore_parameter_style) {
-              this.ignore_parameter_style = statusToBool(queries.ignore_parameter_style);
-            }
-            if (queries.ignore_case) {
-              this.ignore_case = statusToBool(queries.ignore_case);
-            }
-            if (queries.swap_order) {
-              this.swap_order = statusToBool(queries.swap_order);
-            }
-            if (queries.complement) {
-              this.complement = statusToBool(queries.complement);
-            }
-            if (queries.single_letter_as_variable) {
-              this.single_letter_as_variable = statusToBool(queries.single_letter_as_variable);
-            }
-            this.search(queries.query);
+            this.assembly_cache[this.language] = this.all_assemblies;
           }
-        }
-      })
-      .catch(err => {
-        this.error_message = err;
-      });
+        })
+        .catch(err => {
+          this.error_message = err;
+        });
+    }
+  }
+  
+  @Lifecycle beforeMount() {
+    const queries = querystring.parse(window.location.search.substring(1));
+    
+    if (queries.query) {
+      this.query = queries.query
+    }
+    if (queries.respect_name_difference) {
+      this.respect_name_difference = statusToBool(queries.respect_name_difference);
+    }
+    if (queries.greedy_matching) {
+      this.greedy_matching = statusToBool(queries.greedy_matching);
+    }
+    if (queries.ignore_parameter_style) {
+      this.ignore_parameter_style = statusToBool(queries.ignore_parameter_style);
+    }
+    if (queries.ignore_case) {
+      this.ignore_case = statusToBool(queries.ignore_case);
+    }
+    if (queries.swap_order) {
+      this.swap_order = statusToBool(queries.swap_order);
+    }
+    if (queries.complement) {
+      this.complement = statusToBool(queries.complement);
+    }
+    if (queries.single_letter_as_variable) {
+      this.single_letter_as_variable = statusToBool(queries.single_letter_as_variable);
+    }
+    if (queries.language) {
+      this.language = queries.language
+    }
+    
+    this.updateAssemblies();
+
+    if (window.location.search) {
+      if (queries.exclusion) {
+        const exclusion = queries.exclusion.split("+");
+        this.all_assemblies.forEach((asm: any) => {
+          if (exclusion.indexOf(asm.name) == -1) {
+            asm.checked = true;
+          }
+        });
+      }
+      
+      this.search(queries.query);
+    }
   }
 }
 </script>
