@@ -30,4 +30,8 @@ group Database
 group Test
   source https://api.nuget.org/v3/index.json
 
+  nuget Suave
+  nuget Argu
+  nuget FSharpApiSearch
+  nuget FsYaml
   nuget Persimmon
