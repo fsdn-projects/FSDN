@@ -39,6 +39,7 @@ Languages:
   - System.Reactive.Interfaces
   - System.Reactive.Linq
   - System.ValueTuple
+  - NUnit
   
 Targets:
 - Name: mscorlib
@@ -102,3 +103,5 @@ Targets:
   Assemblies: [System.Reactive.Linq]
 - Name: System.ValueTuple
   Assemblies: [System.ValueTuple]
+- Name: NUnit
+  Assemblies: [nunit.framework]
