@@ -11,6 +11,7 @@ open Suave.Filters
 open Suave.Files
 open Argu
 open FSharpApiSearch
+open Suave.Writers
 
 type Args =
   | Port of Sockets.Port
@@ -55,6 +56,7 @@ let app database generator homeDir logger : WebPart =
     Api.app database generator logger
     notFound homeDir
   ]
+  >=> addHeader "Cache-Control" "no-cache, no-store"
   >=> log logger logFormat
 
 let serverConfig port homeDir logger = {
