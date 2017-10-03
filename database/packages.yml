@@ -10,7 +10,7 @@ Languages:
   - System.Xml.Linq
   - Argu
   - Newtonsoft.Json
-  - Fake.Lib
+  - FAKE.Lib
   - FParsec
   - FSharp.Compiler.Service
   - FSharp.Collections.ParallelSeq
