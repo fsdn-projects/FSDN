@@ -4,7 +4,6 @@ open System.Collections.Generic
 open System.Runtime.Serialization
 open Microsoft.FSharp.Reflection
 open FSharpApiSearch
-open FSharpApiSearch.Printer
 module ApiSearchOptions = FSharpApiSearch.SearchOptions
 
 module SearchOptionLiteral =
@@ -114,14 +113,15 @@ module FSharpApi =
       {
         Name =
           {
-            Id = FSharp.printApiName result.Api
-            Namespace = FSharp.printAccessPath None result.Api
-            Class = FSharp.printAccessPath (Some 1) result.Api
+            Id = StringPrinter.FSharp.printApiName result.Api
+            Namespace = StringPrinter.FSharp.printAccessPath None result.Api
+            Class = StringPrinter.FSharp.printAccessPath (Some 1) result.Api
           }
-        Kind = FSharp.printKind result.Api
-        Signature = FSharp.printSignature result.Api
+        Kind = StringPrinter.FSharp.printKind result.Api
+        Signature = StringPrinter.FSharp.printSignature result.Api
+        //Signature = (HtmlPrintHelper.signature result (Printer.FSharp.printSignature result.Api)).Text
         TypeConstraints =
-          FSharp.tryPrintTypeConstraints result.Api
+          StringPrinter.FSharp.tryPrintTypeConstraints result.Api
           |> getOrEmpty
         Assembly = result.AssemblyName
         XmlDoc = getOrEmpty result.Api.Document
@@ -131,14 +131,15 @@ module FSharpApi =
       {
         Name =
           {
-            Id = CSharp.printApiName result.Api
-            Namespace = CSharp.printAccessPath None result.Api
-            Class = CSharp.printAccessPath (Some 1) result.Api
+            Id = StringPrinter.CSharp.printApiName result.Api
+            Namespace = StringPrinter.CSharp.printAccessPath None result.Api
+            Class = StringPrinter.CSharp.printAccessPath (Some 1) result.Api
           }
-        Kind = CSharp.printKind result.Api
-        Signature = CSharp.printSignature result.Api
+        Kind = StringPrinter.CSharp.printKind result.Api
+        Signature = StringPrinter.CSharp.printSignature result.Api
+        //Signature = (HtmlPrintHelper.signature result (Printer.CSharp.printSignature result.Api)).Text
         TypeConstraints =
-          CSharp.tryPrintTypeConstraints result.Api
+          StringPrinter.CSharp.tryPrintTypeConstraints result.Api
           |> getOrEmpty
         Assembly = result.AssemblyName
         XmlDoc = getOrEmpty result.Api.Document
@@ -197,7 +198,8 @@ module FSharpApi =
     let options = SearchOptions.apply info
     try
       let actual =
-        client.Search(info.Query, options)
+        let query, results = client.Search(info.Query, options)
+        results
         |> client.Sort
         |> Seq.truncate info.Limit
       Choice1Of2(ApiSearchOptions.Language.Get options, actual)

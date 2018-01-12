@@ -5,7 +5,7 @@ group App
 
   nuget Suave
   nuget Argu
-  nuget FSharpApiSearch
+  nuget FSharpApiSearch prerelease
   nuget FsYaml
 
 group Build
@@ -14,7 +14,7 @@ group Build
   nuget FAKE
   nuget KuduSync.NET
   nuget Npm.js
-  nuget FSharpApiSearch.Console
+  nuget FSharpApiSearch.Console  prerelease
   nuget Fake.Persimmon
   nuget Paket.Core
 
@@ -32,6 +32,6 @@ group Test
 
   nuget Suave
   nuget Argu
-  nuget FSharpApiSearch
+  nuget FSharpApiSearch  prerelease
   nuget FsYaml
   nuget Persimmon

@@ -76,8 +76,8 @@ let main args =
   let port = args.GetResult(<@ Port @>, 8083us)
   let config = serverConfig port homeDir logger
   let database =
-    Path.Combine(homeDir, ApiLoader.databaseName)
-    |> ApiLoader.loadFromFile
+    Path.Combine(homeDir, Database.databaseName)
+    |> Database.loadFromFile
   let packages =
     Directory.GetFiles(homeDir, "packages.*.yml")
     |> Array.choose (fun path ->
