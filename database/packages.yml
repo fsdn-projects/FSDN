@@ -10,6 +10,7 @@ Languages:
   - System.Xml.Linq
   - Argu
   - Newtonsoft.Json
+  - ExtCore
   - FAKE.Lib
   - FParsec
   - FSharp.Compiler.Service
@@ -105,3 +106,5 @@ Targets:
   Assemblies: [System.ValueTuple]
 - Name: NUnit
   Assemblies: [nunit.framework]
+- Name: ExtCore
+  Assemblies: [ExtCore]

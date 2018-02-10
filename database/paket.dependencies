@@ -1,5 +1,7 @@
 source https://api.nuget.org/v3/index.json
 
+framework: net46
+
 nuget FSharp.Compiler.Service
 nuget FSharp.Data
 nuget FSharp.Collections.ParallelSeq
@@ -15,3 +17,4 @@ nuget Newtonsoft.Json
 nuget FSharp.Control.Reactive
 nuget FAKE.Lib
 nuget NUnit
+nuget ExtCore
