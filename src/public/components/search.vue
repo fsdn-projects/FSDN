@@ -56,8 +56,26 @@
       <ul class="collapsible popout" data-collapsible="expandable" v-show="searched && (! raised_error)">
         <li v-for="result in search_results">
           <div class="collapsible-header">
-            <span v-if="language=='fsharp'"><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : {{ result.api.signature }}</span>
-            <span v-if="language=='csharp'"><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}{{ result.api.signature }}</span>
+            <span v-if="language=='fsharp'">
+              <font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>
+              <span>{{ result.api.name.id }} : </span>
+              <span v-for="(sig, index) in result.api.signature">
+                <span v-if="sig.color">
+                  <font v-bind:color="sig.color">{{ sig.name }}</font>
+                </span>
+                <span v-else>{{ sig.name }}</span>
+              </span>
+            </span>
+            <span v-if="language=='csharp'">
+              <font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>
+              <span>{{ result.api.name.id }}</span>
+              <span v-for="sig in result.api.signature">
+                <span v-if="sig.color">
+                  <font v-bind:color="sig.color">{{ sig.name }}</font>
+                </span>
+                <span v-else>{{ sig.name }}</span>
+              </span>
+            </span>
           </div>
           <div class="collapsible-body">
             <ul class="collection" id="assembly_info">

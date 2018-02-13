@@ -43,13 +43,21 @@ type ApiName = {
 }
 
 [<DataContract>]
+type TypeName = {
+  [<field: DataMember(Name = "name")>]
+  Name: string
+  [<field: DataMember(Name = "color")>]
+  Color: string
+}
+
+[<DataContract>]
 type LanguageApi = {
   [<field: DataMember(Name = "name")>]
   Name: ApiName
   [<field: DataMember(Name = "kind")>]
   Kind: string
   [<field: DataMember(Name = "signature")>]
-  Signature: string
+  Signature: TypeName []
   [<field: DataMember(Name = "type_constraints")>]
   TypeConstraints: string
   [<field: DataMember(Name = "assembly")>]
@@ -107,6 +115,22 @@ module FSharpApi =
     | FSharp -> "fsharp"
     | CSharp -> "csharp"
 
+  let private colors =
+    [|
+      "lime"
+      "red"
+      "orange"
+      "cyan"
+    |]
+    |> Array.mapi (fun i x -> (i, x))
+    |> Map.ofArray
+  let private colorLength = Map.count colors
+
+  let private toTypeName (name, color) = {
+    Name = name
+    Color = color |> Option.map (fun c -> Map.find (c % colorLength) colors) |> Option.defaultValue null
+  }
+
   let private toLanguageApi generator language (result: FSharpApiSearch.Result) =
     match language with
     | FSharp ->
@@ -118,8 +142,9 @@ module FSharpApi =
             Class = StringPrinter.FSharp.printAccessPath (Some 1) result.Api
           }
         Kind = StringPrinter.FSharp.printKind result.Api
-        Signature = StringPrinter.FSharp.printSignature result.Api
-        //Signature = (HtmlPrintHelper.signature result (Printer.FSharp.printSignature result.Api)).Text
+        Signature =
+          (HtmlPrintHelper.signature result (Printer.FSharp.printSignature result.Api)).Text
+          |> Array.map toTypeName
         TypeConstraints =
           StringPrinter.FSharp.tryPrintTypeConstraints result.Api
           |> getOrEmpty
@@ -136,8 +161,9 @@ module FSharpApi =
             Class = StringPrinter.CSharp.printAccessPath (Some 1) result.Api
           }
         Kind = StringPrinter.CSharp.printKind result.Api
-        Signature = StringPrinter.CSharp.printSignature result.Api
-        //Signature = (HtmlPrintHelper.signature result (Printer.CSharp.printSignature result.Api)).Text
+        Signature =
+          (HtmlPrintHelper.signature result (Printer.CSharp.printSignature result.Api)).Text
+          |> Array.map toTypeName
         TypeConstraints =
           StringPrinter.CSharp.tryPrintTypeConstraints result.Api
           |> getOrEmpty
