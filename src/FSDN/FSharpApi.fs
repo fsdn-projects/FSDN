@@ -79,6 +79,14 @@ type SearchResult = {
 }
 
 [<DataContract>]
+type ResultResponse = {
+  [<field: DataMember(Name = "values")>]
+  Values: SearchResult []
+  [<field: DataMember(Name = "query")>]
+  Query: TypeName []
+}
+
+[<DataContract>]
 type SearchOptions = {
   [<field: DataMember(Name = SearchOptionLiteral.RespectNameDifference)>]
   RespectNameDifference: string
@@ -163,7 +171,7 @@ module FSharpApi =
         Link = ApiLinkGenerator.generate result generator (languageToString language) |> getOrEmpty
       }
 
-  let toSerializable (generator: ApiLinkGenerator) language (results: FSharpApiSearch.Result seq) =
+  let toSerializable (generator: ApiLinkGenerator) language (query: FSharpApiSearch.Query) (results: FSharpApiSearch.Result seq) =
     {
       Values =
         results
@@ -173,6 +181,9 @@ module FSharpApi =
             Api = toLanguageApi generator language result
           })
         |> Seq.toArray
+      Query =
+        (HtmlPrintHelper.query (QueryPrinter.print query)).Text
+        |> Array.map toTypeName
     }
 
   module OptionStatus =
@@ -214,10 +225,11 @@ module FSharpApi =
     let client = FSharpApiSearchClient(info.Targets, database)
     let options = SearchOptions.apply info
     try
+      let query, results = client.Search(info.Query, options)
       let actual =
-        let query, results = client.Search(info.Query, options)
         results
         |> client.Sort
         |> Seq.truncate info.Limit
-      Choice1Of2(ApiSearchOptions.Language.Get options, actual)
+      let language = ApiSearchOptions.Language.Get options
+      Choice1Of2(language, query, actual)
     with e -> Choice2Of2 e

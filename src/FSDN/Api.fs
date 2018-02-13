@@ -102,10 +102,9 @@ module Search =
         Query = query
         Limit = limit
       }
-      let! result = FSharpApi.trySearch database info
+      let! language, query, results = FSharpApi.trySearch database info
       return
-        result
-        ||> FSharpApi.toSerializable generator
+        FSharpApi.toSerializable generator language query results
         |> Json.toJson
     }
 
@@ -121,7 +120,7 @@ module Assembly =
     let values =
       System.Linq.Enumerable.OrderBy(packages, fun p -> (not p.Standard, p.Name))
       |> Seq.toArray
-    { Values = values }
+    values
     |> Json.toJson
     |> Suave.Successful.ok
 

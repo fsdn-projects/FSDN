@@ -69,7 +69,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Compile Include="Response.fs" />
     <Compile Include="ApiLinkGenerator.fs" />
     <Compile Include="FSharpApi.fs" />
     <Compile Include="Api.fs" />

@@ -52,8 +52,16 @@
           </div>
         </div>
       </div>
-      <p v-if="searched && (! raised_error)">{{ api_count }} results.</p>
-      <ul class="collapsible popout" data-collapsible="expandable" v-show="searched && (! raised_error)">
+      <p v-if="suceeded">{{ api_count }} results.</p>
+      <p v-if="suceeded">
+        <template v-for="(sig, index) in result_query">
+          <span v-if="sig.color_id !== null">
+            <font v-bind:color="get_color(sig.color_id)">{{ sig.name }}</font>
+          </span>
+          <span v-else>{{ sig.name }}</span>
+        </template>
+      </p>
+      <ul class="collapsible popout" data-collapsible="expandable" v-show="suceeded">
         <li v-for="result in search_results">
           <div class="collapsible-header">
             <template v-if="language=='fsharp'">
@@ -208,6 +216,7 @@ export default class Search extends Vue {
   assembly_cache = {}
   progress = false
   search_results: any[] = undefined
+  result_query: any = undefined
   error_message: string = undefined
 
   examples = {
@@ -254,6 +263,10 @@ export default class Search extends Vue {
     return this.search_results.length;
   }
   
+  get suceeded(): boolean {
+    return this.searched && (! this.raised_error);
+  }
+  
   languageChanged() {
     this.reset();
     this.updateAssemblies();
@@ -261,6 +274,7 @@ export default class Search extends Vue {
   
   reset() {
     this.search_results = undefined;
+    this.result_query = undefined;
     this.error_message = undefined;
   }
   
@@ -298,9 +312,11 @@ export default class Search extends Vue {
           if (res.status !== 200) {
             this.error_message = res.data;
             this.search_results = [];
+            this.result_query = undefined;
           } else {
             this.error_message = undefined;
             this.search_results = res.data.values;
+            this.result_query = res.data.query;
           }
           this.query = query;
           this.progress = false;
@@ -312,6 +328,7 @@ export default class Search extends Vue {
             this.error_message = err;
           }
           this.search_results = [];
+          this.result_query = undefined;
           this.query = query;
           this.progress = false;
         });
@@ -330,7 +347,7 @@ export default class Search extends Vue {
           } else {
             this.error_message = undefined;
             this.all_assemblies =
-              res.data.values.map((a: any) => ({
+              res.data.map((a: any) => ({
                 name: a.name,
                 checked: a.checked
               }));

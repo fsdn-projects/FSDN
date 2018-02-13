@@ -59,7 +59,7 @@ export default class Assemblies extends Vue {
           this.error_message = res.data;
         } else {
           this.error_message = undefined;
-          this.assemblies = res.data.values;
+          this.assemblies = res.data;
         }
       })
       .catch(err => {
