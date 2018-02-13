@@ -1,6 +1,6 @@
 declare var require: any
 
-import * as Vue from "vue"
+import Vue, {ComponentOptions} from "vue"
 var NotFound = require("./components/notfound").default
 
 new Vue({
@@ -9,4 +9,4 @@ new Vue({
     "app": NotFound
   },
   render: h => h("app")
-})
+} as ComponentOptions<Vue>)

@@ -61,7 +61,7 @@
           </div>
           <div class="collapsible-body">
             <ul class="collection" id="assembly_info">
-              <li class="collection-item" id="type_constraints" v-if="result.api.type_constraints">{{ result.api.type_constraints }}</span>
+              <li class="collection-item" id="type_constraints" v-if="result.api.type_constraints">{{ result.api.type_constraints }}</li>
               <li class="collection-item" id="namespace" v-if="result.api.name.namespace">namespace: {{ result.api.name.namespace }}</li>
               <li class="collection-item" id="distance">distance: {{ result.distance }}</li>
               <li class="collection-item" id="kind">kind: {{ result.api.kind }}</li>
@@ -112,7 +112,7 @@
         <div class="card-content white-text">
           <span class="card-title">Target Assemblies</span>
           <div class="collection">
-            <p class="collection-item" v-for="assembly in all_assemblies">
+            <p class="collection-item" v-for="assembly in all_assemblies" :key="assembly.name">
               <input type="checkbox" class="filled-in" v-bind:id="assembly.name" v-bind:value="assembly.name" v-model="assembly.checked" />
               <label v-bind:for="assembly.name">{{assembly.name}}</label>
             </p>
@@ -132,6 +132,10 @@ import {baseUrl, enabled, disabled} from "../util";
 interface Assembly {
   name: string;
   checked: boolean
+}
+
+type Partial<T> = {
+  [P in keyof T]?: T[P];
 }
 
 interface SearchInformation {
@@ -314,7 +318,7 @@ export default class Search extends Vue {
   }
   
   @Lifecycle beforeMount() {
-    const queries = querystring.parse(window.location.search.substring(1));
+    const queries = querystring.parse<Partial<SearchInformation>>(window.location.search.substring(1));
     
     if (queries.query) {
       this.query = queries.query

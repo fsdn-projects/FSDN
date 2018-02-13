@@ -1,4 +1,4 @@
-import * as Vue from "vue"
+import Vue, {ComponentOptions} from "vue"
 import Search from "./components/search"
 
 new Vue({
@@ -7,4 +7,4 @@ new Vue({
     "app": Search
   },
   render: h => h("app")
-})
+} as ComponentOptions<Vue>)

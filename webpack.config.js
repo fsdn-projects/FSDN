@@ -58,7 +58,7 @@ var config = {
   resolve: {
     extensions: ["*", ".js", ".ts", ".vue", ".md"],
     alias: {
-      'vue$': 'vue/dist/vue.common.js'
+      'vue$': 'vue/dist/vue.esm.js'
     }
   },
   plugins: [
