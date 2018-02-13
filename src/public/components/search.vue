@@ -59,8 +59,8 @@
             <template v-if="language=='fsharp'">
               <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : </span>
               <template v-for="(sig, index) in result.api.signature">
-                <span v-if="sig.color">
-                  <font v-bind:color="sig.color">{{ sig.name }}</font>
+                <span v-if="sig.color_id !== null">
+                  <font v-bind:color="get_color(sig.color_id)">{{ sig.name }}</font>
                 </span>
                 <span v-else>{{ sig.name }}</span>
               </template>
@@ -68,8 +68,8 @@
             <template v-if="language=='csharp'">
               <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}</span>
               <template v-for="sig in result.api.signature">
-                <span v-if="sig.color">
-                  <font v-bind:color="sig.color">{{ sig.name }}</font>
+                <span v-if="sig.color_id !== null">
+                  <font v-bind:color="get_color(sig.color_id)">{{ sig.name }}</font>
                 </span>
                 <span v-else>{{ sig.name }}</span>
               </template>
@@ -262,6 +262,17 @@ export default class Search extends Vue {
   reset() {
     this.search_results = undefined;
     this.error_message = undefined;
+  }
+  
+  colors = [
+    "lime",
+    "red",
+    "orange",
+    "cyan",
+  ]
+  
+  get_color(id: number): string {
+    return this.colors[id % this.colors.length];
   }
 
   search(input?: string) {

@@ -4,6 +4,8 @@ open System.Collections.Generic
 open System.Runtime.Serialization
 open Microsoft.FSharp.Reflection
 open FSharpApiSearch
+open System
+
 module ApiSearchOptions = FSharpApiSearch.SearchOptions
 
 module SearchOptionLiteral =
@@ -46,8 +48,8 @@ type ApiName = {
 type TypeName = {
   [<field: DataMember(Name = "name")>]
   Name: string
-  [<field: DataMember(Name = "color")>]
-  Color: string
+  [<field: DataMember(Name = "color_id")>]
+  ColorId: Nullable<int>
 }
 
 [<DataContract>]
@@ -115,20 +117,9 @@ module FSharpApi =
     | FSharp -> "fsharp"
     | CSharp -> "csharp"
 
-  let private colors =
-    [|
-      "lime"
-      "red"
-      "orange"
-      "cyan"
-    |]
-    |> Array.mapi (fun i x -> (i, x))
-    |> Map.ofArray
-  let private colorLength = Map.count colors
-
   let private toTypeName (name, color) = {
     Name = name
-    Color = color |> Option.map (fun c -> Map.find (c % colorLength) colors) |> Option.defaultValue null
+    ColorId = color |> Option.toNullable
   }
 
   let private toLanguageApi generator language (result: FSharpApiSearch.Result) =
