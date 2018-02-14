@@ -231,5 +231,5 @@ module FSharpApi =
         |> client.Sort
         |> Seq.truncate info.Limit
       let language = ApiSearchOptions.Language.Get options
-      Choice1Of2(language, query, actual)
-    with e -> Choice2Of2 e
+      Ok(language, query, actual)
+    with e -> Error e
