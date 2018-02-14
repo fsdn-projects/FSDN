@@ -1,8 +1,6 @@
 ﻿namespace FSDN
 
-open System.Collections.Generic
 open System.Runtime.Serialization
-open Microsoft.FSharp.Reflection
 open FSharpApiSearch
 open System
 
@@ -34,87 +32,55 @@ module SearchOptionLiteral =
   [<Literal>]
   let SingleLetterAsVariable = "single_letter_as_variable"
 
-[<DataContract>]
 type ApiName = {
-  [<field: DataMember(Name = "id")>]
   Id: string
-  [<field: DataMember(Name = "class_name")>]
+  [<DataMember(Name = "class_name")>]
   Class: string
-  [<field: DataMember(Name = "namespace")>]
   Namespace: string
 }
 
-[<DataContract>]
 type TypeName = {
-  [<field: DataMember(Name = "name")>]
   Name: string
-  [<field: DataMember(Name = "color_id")>]
-  ColorId: Nullable<int>
+  ColorId: int option
 }
 
-[<DataContract>]
 type LanguageApi = {
-  [<field: DataMember(Name = "name")>]
   Name: ApiName
-  [<field: DataMember(Name = "kind")>]
   Kind: string
-  [<field: DataMember(Name = "signature")>]
   Signature: TypeName []
-  [<field: DataMember(Name = "type_constraints")>]
   TypeConstraints: string
-  [<field: DataMember(Name = "assembly")>]
   Assembly: string
-  [<field: DataMember(Name = "xml_doc")>]
   XmlDoc: string
-  [<field: DataMember(Name = "link")>]
   Link: string
 }
 
-[<DataContract>]
 type SearchResult = {
-  [<field: DataMember(Name = "distance")>]
   Distance: int
-  [<field: DataMember(Name = "api")>]
   Api: LanguageApi
 }
 
-[<DataContract>]
 type ResultResponse = {
-  [<field: DataMember(Name = "values")>]
   Values: SearchResult []
-  [<field: DataMember(Name = "query")>]
   Query: TypeName []
 }
 
-[<DataContract>]
 type SearchOptions = {
-  [<field: DataMember(Name = SearchOptionLiteral.RespectNameDifference)>]
   RespectNameDifference: string
-  [<field: DataMember(Name = SearchOptionLiteral.GreedyMatching)>]
   GreedyMatching: string
-  [<field: DataMember(Name = SearchOptionLiteral.IgnoreParameterStyle)>]
   IgnoreParameterStyle: string
-  [<field: DataMember(Name = SearchOptionLiteral.IgnoreCase)>]
   IgnoreCase: string
-  [<field: DataMember(Name = SearchOptionLiteral.SwapOrder)>]
   SwapOrder: string
-  [<field: DataMember(Name = SearchOptionLiteral.Complement)>]
   Complement: string
-  [<field: DataMember(Name = SearchOptionLiteral.Language)>]
   Language: string
-  [<field: DataMember(Name = SearchOptionLiteral.SingleLetterAsVariable)>]
   SingleLetterAsVariable: string
 }
 
-[<DataContract>]
 type SearchInformation = {
-  [<field: DataMember(Name = "target_assemblies")>]
+  [<DataMember(Name = "target_assemblies")>]
   Targets: string []
-  [<field: DataMember(Name = "search_options")>]
+  [<DataMember(Name = "search_options")>]
   RawOptions: SearchOptions
-  [<field: DataMember(Name = "query")>]
   Query: string
-  [<field: DataMember(Name = "limit")>]
   Limit: int
 }
 
@@ -127,7 +93,7 @@ module FSharpApi =
 
   let private toTypeName (name, color) = {
     Name = name
-    ColorId = color |> Option.toNullable
+    ColorId = color
   }
 
   let private toLanguageApi generator language (result: FSharpApiSearch.Result) =

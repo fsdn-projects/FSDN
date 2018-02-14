@@ -1,1 +1,9 @@
-group Test  Suave  FSharp.Core  Argu  FSharpApiSearch  FsYaml  Persimmon
+group Test
+  Suave
+  FSharp.Core
+  Argu
+  FSharpApiSearch
+  FsYaml
+  Persimmon
+  Utf8Json.FSharpExtensions
+  

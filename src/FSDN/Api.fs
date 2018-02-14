@@ -1,12 +1,12 @@
 ﻿module FSDN.Api
 
 open System
-open System.Runtime.Serialization
 open Suave
 open Suave.Logging
 open Suave.Logging.Message
 open Suave.Operators
 open Suave.Filters
+open Utf8Json
 
 type ValidationBuilder(path, logger: Logger) =
   member inline __.Bind(x, f) = Result.bind f x
@@ -102,7 +102,7 @@ module Search =
       let! language, query, results = FSharpApi.trySearch database info
       return
         FSharpApi.toSerializable generator language query results
-        |> Json.toJson
+        |> JsonSerializer.Serialize
     }
 
 module Assembly =
@@ -114,11 +114,8 @@ module Assembly =
       match req.queryParamOpt SearchOptionLiteral.Language with
       | Some (_, Some lang) -> generator.Packages.[lang]
       | Some (_, None) | None -> generator.Packages |> Seq.map (fun (KeyValue(_, v)) -> v) |> Array.concat |> Array.distinct
-    let values =
-      System.Linq.Enumerable.OrderBy(packages, fun p -> (not p.Standard, p.Name))
-      |> Seq.toArray
-    values
-    |> Json.toJson
+    System.Linq.Enumerable.OrderBy(packages, fun p -> (not p.Standard, p.Name))
+    |> JsonSerializer.Serialize
     |> Suave.Successful.ok
 
 let app database generator logger : WebPart =

@@ -12,6 +12,8 @@ open Suave.Files
 open Argu
 open FSharpApiSearch
 open Suave.Writers
+open Utf8Json.Resolvers
+open Utf8Json.FSharp
 
 type Args =
   | Port of Sockets.Port
@@ -70,6 +72,12 @@ let parser = ArgumentParser.Create<Args>()
 
 [<EntryPoint>]
 let main args =
+
+  CompositeResolver.RegisterAndSetAsDefault(
+    FSharpResolver.Instance,
+    StandardResolver.SnakeCase
+  )
+
   let args = parser.Parse(args)
   let homeDir = DirectoryInfo(args.GetResult(<@ Home_Directory @>, ".")).FullName
   let logger = logger args

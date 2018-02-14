@@ -1,1 +1,7 @@
-group AppSuaveFSharp.CoreArguFSharpApiSearchFsYaml
+group App
+Suave
+FSharp.Core
+Argu
+FSharpApiSearch
+FsYaml
+Utf8Json.FSharpExtensions

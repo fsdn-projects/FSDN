@@ -5,17 +5,14 @@ open System.Runtime.Serialization
 open FSharpApiSearch
 open FsYaml
 
-[<DataContract>]
 type NuGetPackage = {
-  [<field: DataMember(Name = "name")>]
   Name: string
-  [<field: DataMember(Name = "checked")>]
+  [<DataMember(Name = "checked")>]
   Standard: bool
-  [<field: DataMember(Name = "version")>]
   Version: string
-  [<field: DataMember(Name = "icon_url")>]
+  [<DataMember(Name = "icon_url")>]
   IconUrl: string
-  [<field: DataMember(Name = "assemblies")>]
+  [<DataMember(Name = "assemblies")>]
   Assemblies: string []
 }
 
