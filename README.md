@@ -32,6 +32,10 @@ These styles are considered as identical.
 
 When this option is enabled, API name and type name matching are case-insensitive.
 
+### `substring` option
+
+When this option is enabled, it searchs type name by substring matching.
+
 ### `swap-order` option
 
 When this option is enabled, APIs that has swapped order of parameters or of tuple elements are searched as well.
@@ -111,7 +115,7 @@ For instance, to find all functions in `FSharp.Core.String` module, use `FSharp.
 ### Wildcard
 
 By default, FSDN doesn't return results that match type parameters, such as `'a`, with concrete type names, such as `int`.
-To find them, use wildcard: `?`.
+To find them, use wildcard: `?` or `_`.
 
 ````
 ? -> list<?> -> ?
