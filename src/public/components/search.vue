@@ -121,6 +121,10 @@
         <label for="ignore_case">ignore-case</label>
       </p>
       <p>
+        <input type="checkbox" class="filled-in" v-model="substring" id="substring" />
+        <label for="substring">substring</label>
+      </p>
+      <p>
         <input type="checkbox" class="filled-in" v-model="swap_order" id="swap_order" />
         <label for="swap_order">swap-order</label>
       </p>
@@ -169,6 +173,7 @@ interface SearchInformation {
   greedy_matching: string;
   ignore_parameter_style: string;
   ignore_case: string;
+  substring: string
   swap_order: string;
   complement: string;
   language: string;
@@ -208,6 +213,7 @@ export default class Search extends Vue {
   greedy_matching = false
   ignore_parameter_style = true
   ignore_case = true
+  substring = true
   swap_order = true
   complement = true
   single_letter_as_variable = true
@@ -302,6 +308,7 @@ export default class Search extends Vue {
         greedy_matching: boolToStatus(this.greedy_matching),
         ignore_parameter_style: boolToStatus(this.ignore_parameter_style),
         ignore_case: boolToStatus(this.ignore_case),
+        substring: boolToStatus(this.substring),
         swap_order: boolToStatus(this.swap_order),
         complement: boolToStatus(this.complement),
         single_letter_as_variable: boolToStatus(this.single_letter_as_variable),
@@ -378,6 +385,9 @@ export default class Search extends Vue {
     }
     if (queries.ignore_case) {
       this.ignore_case = statusToBool(queries.ignore_case);
+    }
+    if (queries.substring) {
+      this.substring = statusToBool(queries.substring);
     }
     if (queries.swap_order) {
       this.swap_order = statusToBool(queries.swap_order);

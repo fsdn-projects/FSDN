@@ -21,6 +21,9 @@ module SearchOptionLiteral =
   let IgnoreCase = "ignore_case"
 
   [<Literal>]
+  let Substring = "substring"
+
+  [<Literal>]
   let SwapOrder = "swap_order"
 
   [<Literal>]
@@ -69,6 +72,7 @@ type SearchOptions = {
   GreedyMatching: string
   IgnoreParameterStyle: string
   IgnoreCase: string
+  Substring: string
   SwapOrder: string
   Complement: string
   Language: string
@@ -182,6 +186,7 @@ module FSharpApi =
       |> applyStatus ApiSearchOptions.GreedyMatching info.RawOptions.GreedyMatching
       |> applyStatus ApiSearchOptions.IgnoreParameterStyle info.RawOptions.IgnoreParameterStyle
       |> applyStatus ApiSearchOptions.IgnoreCase info.RawOptions.IgnoreCase
+      |> applyStatus ApiSearchOptions.Substring info.RawOptions.Substring
       |> applyStatus ApiSearchOptions.SwapOrder info.RawOptions.SwapOrder
       |> applyStatus ApiSearchOptions.Complement info.RawOptions.Complement
       |> applyStatus ApiSearchOptions.SingleLetterAsVariable info.RawOptions.SingleLetterAsVariable
