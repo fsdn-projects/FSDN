@@ -102,7 +102,7 @@ let main args =
       |> FSharpApiSearch.LinkGenerator.fsharp
     DotNetApiBrowser =
       let baseUrl = args.GetResult(<@ DOTNET_API_Browser_Link @>, "https://docs.microsoft.com/en-us/dotnet/api/")
-      let view = "netframework-4.6.2"
+      let view = "netframework-4.7"
       FSharpApiSearch.LinkGenerator.dotNetApiBrowser baseUrl view
     FParsec =
       args.GetResult(<@ FParsec_Link @>, "http://www.quanttec.com/fparsec/reference/")
