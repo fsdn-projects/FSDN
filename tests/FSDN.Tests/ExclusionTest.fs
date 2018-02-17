@@ -11,7 +11,7 @@ let ``parse query`` = parameterize {
     ("mscorlib+FSharp.Core", ["mscorlib"; "FSharp.Core"])
   ]
   run (fun (value, expected) -> test {
-    do! assertEquals (Choice1Of2(expected)) (Exclusion.parse value) 
+    do! assertEquals (Ok expected) (Exclusion.parse value) 
   })
 }
 
@@ -22,7 +22,7 @@ let ``fail to parse`` = parameterize {
   run (fun query -> test {
     do!
       match Exclusion.parse query with
-      | Choice1Of2 x -> fail <| sprintf "expected fail, but was %A" x
-      | Choice2Of2 _ -> pass ()
+      | Ok x -> fail <| sprintf "expected fail, but was %A" x
+      | Result.Error _ -> pass ()
   })
 }

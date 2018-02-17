@@ -26,7 +26,6 @@ Languages:
   - System.Reactive.Core
   - System.Reactive.Interfaces
   - System.Reactive.Linq
-  - System.ValueTuple
   csharp:
   - mscorlib
   - System
@@ -39,7 +38,6 @@ Languages:
   - System.Reactive.Core
   - System.Reactive.Interfaces
   - System.Reactive.Linq
-  - System.ValueTuple
   - NUnit
   
 Targets:
@@ -102,8 +100,6 @@ Targets:
   Assemblies: [System.Reactive.Interfaces]
 - Name: System.Reactive.Linq
   Assemblies: [System.Reactive.Linq]
-- Name: System.ValueTuple
-  Assemblies: [System.ValueTuple]
 - Name: NUnit
   Assemblies: [nunit.framework]
 - Name: ExtCore

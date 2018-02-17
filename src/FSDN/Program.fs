@@ -12,6 +12,8 @@ open Suave.Files
 open Argu
 open FSharpApiSearch
 open Suave.Writers
+open Utf8Json.Resolvers
+open Utf8Json.FSharp
 
 type Args =
   | Port of Sockets.Port
@@ -70,14 +72,20 @@ let parser = ArgumentParser.Create<Args>()
 
 [<EntryPoint>]
 let main args =
+
+  CompositeResolver.RegisterAndSetAsDefault(
+    FSharpResolver.Instance,
+    StandardResolver.SnakeCase
+  )
+
   let args = parser.Parse(args)
   let homeDir = DirectoryInfo(args.GetResult(<@ Home_Directory @>, ".")).FullName
   let logger = logger args
   let port = args.GetResult(<@ Port @>, 8083us)
   let config = serverConfig port homeDir logger
   let database =
-    Path.Combine(homeDir, ApiLoader.databaseName)
-    |> ApiLoader.loadFromFile
+    Path.Combine(homeDir, Database.databaseName)
+    |> Database.loadFromFile
   let packages =
     Directory.GetFiles(homeDir, "packages.*.yml")
     |> Array.choose (fun path ->
@@ -94,7 +102,7 @@ let main args =
       |> FSharpApiSearch.LinkGenerator.fsharp
     DotNetApiBrowser =
       let baseUrl = args.GetResult(<@ DOTNET_API_Browser_Link @>, "https://docs.microsoft.com/en-us/dotnet/api/")
-      let view = "netframework-4.6.2"
+      let view = "netframework-4.7"
       FSharpApiSearch.LinkGenerator.dotNetApiBrowser baseUrl view
     FParsec =
       args.GetResult(<@ FParsec_Link @>, "http://www.quanttec.com/fparsec/reference/")

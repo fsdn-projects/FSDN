@@ -1,4 +1,4 @@
-import * as Vue from "vue"
+import Vue, {ComponentOptions} from "vue"
 import Assemblies from "./components/assemblies"
 
 new Vue({
@@ -7,4 +7,4 @@ new Vue({
     "app": Assemblies
   },
   render: h => h("app")
-})
+} as ComponentOptions<Vue>)

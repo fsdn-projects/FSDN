@@ -44,7 +44,10 @@ let changeMonoAssemblyPath (es: XElement seq) =
     e.Attribute(XName.Get("value")).Value <- path @@ "lib/mono/4.5/"
   )
 
-let framework = "net46"
+let changeFrameworkPath (e: XElement) =
+  e.Attribute(XName.Get("value")).Value <- @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7\;C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
+  
+let framework = "net47"
 
 let generateLoadScripts() =
   let exitCode =
@@ -108,13 +111,21 @@ let searchExternalAssemblies () =
   |]
   |> Array.toList
 
-Target "Generate" (fun _ ->
+let updateConfig() =
+  let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ ".." @@ "packages" @@ "build")
+  let doc = XDocument.Load(config)
+  
   if isMonoRuntime then
-    let config = findToolInSubPath "FSharpApiSearch.Database.exe.config" (currentDirectory @@ ".." @@ "packages" @@ "build")
-    let doc = XDocument.Load(config)
     doc.XPathSelectElements("/configuration/appSettings/add")
     |> changeMonoAssemblyPath
-    doc.Save(config)
+  else
+    doc.XPathSelectElement("/configuration/appSettings/add[@key='Framework']")
+    |> changeFrameworkPath
+
+  doc.Save(config)
+
+Target "Generate" (fun _ ->
+  updateConfig()
   let exe = findToolInSubPath "FSharpApiSearch.Database.exe" (currentDirectory @@ ".." @@ "packages" @@ "build")
   let args =
     // TODO: enable external assemblies

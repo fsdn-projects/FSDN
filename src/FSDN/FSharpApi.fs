@@ -1,10 +1,9 @@
 ﻿namespace FSDN
 
-open System.Collections.Generic
 open System.Runtime.Serialization
-open Microsoft.FSharp.Reflection
 open FSharpApiSearch
-open FSharpApiSearch.Printer
+open System
+
 module ApiSearchOptions = FSharpApiSearch.SearchOptions
 
 module SearchOptionLiteral =
@@ -22,6 +21,9 @@ module SearchOptionLiteral =
   let IgnoreCase = "ignore_case"
 
   [<Literal>]
+  let Substring = "substring"
+
+  [<Literal>]
   let SwapOrder = "swap_order"
 
   [<Literal>]
@@ -33,71 +35,56 @@ module SearchOptionLiteral =
   [<Literal>]
   let SingleLetterAsVariable = "single_letter_as_variable"
 
-[<DataContract>]
 type ApiName = {
-  [<field: DataMember(Name = "id")>]
   Id: string
-  [<field: DataMember(Name = "class_name")>]
+  [<DataMember(Name = "class_name")>]
   Class: string
-  [<field: DataMember(Name = "namespace")>]
   Namespace: string
 }
 
-[<DataContract>]
+type TypeName = {
+  Name: string
+  ColorId: int option
+}
+
 type LanguageApi = {
-  [<field: DataMember(Name = "name")>]
   Name: ApiName
-  [<field: DataMember(Name = "kind")>]
   Kind: string
-  [<field: DataMember(Name = "signature")>]
-  Signature: string
-  [<field: DataMember(Name = "type_constraints")>]
+  Signature: TypeName []
   TypeConstraints: string
-  [<field: DataMember(Name = "assembly")>]
   Assembly: string
-  [<field: DataMember(Name = "xml_doc")>]
   XmlDoc: string
-  [<field: DataMember(Name = "link")>]
   Link: string
 }
 
-[<DataContract>]
 type SearchResult = {
-  [<field: DataMember(Name = "distance")>]
   Distance: int
-  [<field: DataMember(Name = "api")>]
   Api: LanguageApi
 }
 
-[<DataContract>]
+type ResultResponse = {
+  Values: SearchResult []
+  Query: TypeName []
+}
+
 type SearchOptions = {
-  [<field: DataMember(Name = SearchOptionLiteral.RespectNameDifference)>]
   RespectNameDifference: string
-  [<field: DataMember(Name = SearchOptionLiteral.GreedyMatching)>]
   GreedyMatching: string
-  [<field: DataMember(Name = SearchOptionLiteral.IgnoreParameterStyle)>]
   IgnoreParameterStyle: string
-  [<field: DataMember(Name = SearchOptionLiteral.IgnoreCase)>]
   IgnoreCase: string
-  [<field: DataMember(Name = SearchOptionLiteral.SwapOrder)>]
+  Substring: string
   SwapOrder: string
-  [<field: DataMember(Name = SearchOptionLiteral.Complement)>]
   Complement: string
-  [<field: DataMember(Name = SearchOptionLiteral.Language)>]
   Language: string
-  [<field: DataMember(Name = SearchOptionLiteral.SingleLetterAsVariable)>]
   SingleLetterAsVariable: string
 }
 
-[<DataContract>]
 type SearchInformation = {
-  [<field: DataMember(Name = "target_assemblies")>]
+  [<DataMember(Name = "target_assemblies")>]
   Targets: string []
-  [<field: DataMember(Name = "search_options")>]
+  [<DataMember(Name = "search_options")>]
   RawOptions: SearchOptions
-  [<field: DataMember(Name = "query")>]
   Query: string
-  [<field: DataMember(Name = "limit")>]
   Limit: int
 }
 
@@ -108,20 +95,27 @@ module FSharpApi =
     | FSharp -> "fsharp"
     | CSharp -> "csharp"
 
+  let private toTypeName (name, color) = {
+    Name = name
+    ColorId = color
+  }
+
   let private toLanguageApi generator language (result: FSharpApiSearch.Result) =
     match language with
     | FSharp ->
       {
         Name =
           {
-            Id = FSharp.printApiName result.Api
-            Namespace = FSharp.printAccessPath None result.Api
-            Class = FSharp.printAccessPath (Some 1) result.Api
+            Id = StringPrinter.FSharp.printApiName result.Api
+            Namespace = StringPrinter.FSharp.printAccessPath None result.Api
+            Class = StringPrinter.FSharp.printAccessPath (Some 1) result.Api
           }
-        Kind = FSharp.printKind result.Api
-        Signature = FSharp.printSignature result.Api
+        Kind = StringPrinter.FSharp.printKind result.Api
+        Signature =
+          (HtmlPrintHelper.signature result (Printer.FSharp.printSignature result.Api)).Text
+          |> Array.map toTypeName
         TypeConstraints =
-          FSharp.tryPrintTypeConstraints result.Api
+          StringPrinter.FSharp.tryPrintTypeConstraints result.Api
           |> getOrEmpty
         Assembly = result.AssemblyName
         XmlDoc = getOrEmpty result.Api.Document
@@ -131,21 +125,23 @@ module FSharpApi =
       {
         Name =
           {
-            Id = CSharp.printApiName result.Api
-            Namespace = CSharp.printAccessPath None result.Api
-            Class = CSharp.printAccessPath (Some 1) result.Api
+            Id = StringPrinter.CSharp.printApiName result.Api
+            Namespace = StringPrinter.CSharp.printAccessPath None result.Api
+            Class = StringPrinter.CSharp.printAccessPath (Some 1) result.Api
           }
-        Kind = CSharp.printKind result.Api
-        Signature = CSharp.printSignature result.Api
+        Kind = StringPrinter.CSharp.printKind result.Api
+        Signature =
+          (HtmlPrintHelper.signature result (Printer.CSharp.printSignature result.Api)).Text
+          |> Array.map toTypeName
         TypeConstraints =
-          CSharp.tryPrintTypeConstraints result.Api
+          StringPrinter.CSharp.tryPrintTypeConstraints result.Api
           |> getOrEmpty
         Assembly = result.AssemblyName
         XmlDoc = getOrEmpty result.Api.Document
         Link = ApiLinkGenerator.generate result generator (languageToString language) |> getOrEmpty
       }
 
-  let toSerializable (generator: ApiLinkGenerator) language (results: FSharpApiSearch.Result seq) =
+  let toSerializable (generator: ApiLinkGenerator) language (query: FSharpApiSearch.Query) (results: FSharpApiSearch.Result seq) =
     {
       Values =
         results
@@ -155,6 +151,9 @@ module FSharpApi =
             Api = toLanguageApi generator language result
           })
         |> Seq.toArray
+      Query =
+        (HtmlPrintHelper.query (QueryPrinter.print query)).Text
+        |> Array.map toTypeName
     }
 
   module OptionStatus =
@@ -187,6 +186,7 @@ module FSharpApi =
       |> applyStatus ApiSearchOptions.GreedyMatching info.RawOptions.GreedyMatching
       |> applyStatus ApiSearchOptions.IgnoreParameterStyle info.RawOptions.IgnoreParameterStyle
       |> applyStatus ApiSearchOptions.IgnoreCase info.RawOptions.IgnoreCase
+      |> applyStatus ApiSearchOptions.Substring info.RawOptions.Substring
       |> applyStatus ApiSearchOptions.SwapOrder info.RawOptions.SwapOrder
       |> applyStatus ApiSearchOptions.Complement info.RawOptions.Complement
       |> applyStatus ApiSearchOptions.SingleLetterAsVariable info.RawOptions.SingleLetterAsVariable
@@ -196,9 +196,11 @@ module FSharpApi =
     let client = FSharpApiSearchClient(info.Targets, database)
     let options = SearchOptions.apply info
     try
+      let query, results = client.Search(info.Query, options)
       let actual =
-        client.Search(info.Query, options)
+        results
         |> client.Sort
         |> Seq.truncate info.Limit
-      Choice1Of2(ApiSearchOptions.Language.Get options, actual)
-    with e -> Choice2Of2 e
+      let language = ApiSearchOptions.Language.Get options
+      Ok(language, query, actual)
+    with e -> Error e

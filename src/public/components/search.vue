@@ -52,16 +52,40 @@
           </div>
         </div>
       </div>
-      <p v-if="searched && (! raised_error)">{{ api_count }} results.</p>
-      <ul class="collapsible popout" data-collapsible="expandable" v-show="searched && (! raised_error)">
+      <p v-if="suceeded">{{ api_count }} results.</p>
+      <p v-if="suceeded">
+        <template v-for="(sig, index) in result_query">
+          <span v-if="sig.color_id !== null">
+            <font v-bind:color="get_color(sig.color_id)">{{ sig.name }}</font>
+          </span>
+          <span v-else>{{ sig.name }}</span>
+        </template>
+      </p>
+      <ul class="collapsible popout" data-collapsible="expandable" v-show="suceeded">
         <li v-for="result in search_results">
           <div class="collapsible-header">
-            <span v-if="language=='fsharp'"><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : {{ result.api.signature }}</span>
-            <span v-if="language=='csharp'"><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}{{ result.api.signature }}</span>
+            <template v-if="language=='fsharp'">
+              <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }} : </span>
+              <template v-for="(sig, index) in result.api.signature">
+                <span v-if="sig.color_id !== null">
+                  <font v-bind:color="get_color(sig.color_id)">{{ sig.name }}</font>
+                </span>
+                <span v-else>{{ sig.name }}</span>
+              </template>
+            </template>
+            <template v-if="language=='csharp'">
+              <span><font color="#BDBDBD" v-if="result.api.name.class_name">{{ result.api.name.class_name }}.</font>{{ result.api.name.id }}</span>
+              <template v-for="sig in result.api.signature">
+                <span v-if="sig.color_id !== null">
+                  <font v-bind:color="get_color(sig.color_id)">{{ sig.name }}</font>
+                </span>
+                <span v-else>{{ sig.name }}</span>
+              </template>
+            </template>
           </div>
           <div class="collapsible-body">
             <ul class="collection" id="assembly_info">
-              <li class="collection-item" id="type_constraints" v-if="result.api.type_constraints">{{ result.api.type_constraints }}</span>
+              <li class="collection-item" id="type_constraints" v-if="result.api.type_constraints">{{ result.api.type_constraints }}</li>
               <li class="collection-item" id="namespace" v-if="result.api.name.namespace">namespace: {{ result.api.name.namespace }}</li>
               <li class="collection-item" id="distance">distance: {{ result.distance }}</li>
               <li class="collection-item" id="kind">kind: {{ result.api.kind }}</li>
@@ -97,6 +121,10 @@
         <label for="ignore_case">ignore-case</label>
       </p>
       <p>
+        <input type="checkbox" class="filled-in" v-model="substring" id="substring" />
+        <label for="substring">substring</label>
+      </p>
+      <p>
         <input type="checkbox" class="filled-in" v-model="swap_order" id="swap_order" />
         <label for="swap_order">swap-order</label>
       </p>
@@ -112,7 +140,7 @@
         <div class="card-content white-text">
           <span class="card-title">Target Assemblies</span>
           <div class="collection">
-            <p class="collection-item" v-for="assembly in all_assemblies">
+            <p class="collection-item" v-for="assembly in all_assemblies" :key="assembly.name">
               <input type="checkbox" class="filled-in" v-bind:id="assembly.name" v-bind:value="assembly.name" v-model="assembly.checked" />
               <label v-bind:for="assembly.name">{{assembly.name}}</label>
             </p>
@@ -134,6 +162,10 @@ interface Assembly {
   checked: boolean
 }
 
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+}
+
 interface SearchInformation {
   query: string;
   exclusion: string;
@@ -141,6 +173,7 @@ interface SearchInformation {
   greedy_matching: string;
   ignore_parameter_style: string;
   ignore_case: string;
+  substring: string
   swap_order: string;
   complement: string;
   language: string;
@@ -180,6 +213,7 @@ export default class Search extends Vue {
   greedy_matching = false
   ignore_parameter_style = true
   ignore_case = true
+  substring = true
   swap_order = true
   complement = true
   single_letter_as_variable = true
@@ -188,6 +222,7 @@ export default class Search extends Vue {
   assembly_cache = {}
   progress = false
   search_results: any[] = undefined
+  result_query: any = undefined
   error_message: string = undefined
 
   examples = {
@@ -234,6 +269,10 @@ export default class Search extends Vue {
     return this.search_results.length;
   }
   
+  get suceeded(): boolean {
+    return this.searched && (! this.raised_error);
+  }
+  
   languageChanged() {
     this.reset();
     this.updateAssemblies();
@@ -241,7 +280,19 @@ export default class Search extends Vue {
   
   reset() {
     this.search_results = undefined;
+    this.result_query = undefined;
     this.error_message = undefined;
+  }
+  
+  colors = [
+    "lime",
+    "red",
+    "orange",
+    "cyan",
+  ]
+  
+  get_color(id: number): string {
+    return this.colors[id % this.colors.length];
   }
 
   search(input?: string) {
@@ -257,6 +308,7 @@ export default class Search extends Vue {
         greedy_matching: boolToStatus(this.greedy_matching),
         ignore_parameter_style: boolToStatus(this.ignore_parameter_style),
         ignore_case: boolToStatus(this.ignore_case),
+        substring: boolToStatus(this.substring),
         swap_order: boolToStatus(this.swap_order),
         complement: boolToStatus(this.complement),
         single_letter_as_variable: boolToStatus(this.single_letter_as_variable),
@@ -267,9 +319,11 @@ export default class Search extends Vue {
           if (res.status !== 200) {
             this.error_message = res.data;
             this.search_results = [];
+            this.result_query = undefined;
           } else {
             this.error_message = undefined;
             this.search_results = res.data.values;
+            this.result_query = res.data.query;
           }
           this.query = query;
           this.progress = false;
@@ -281,6 +335,7 @@ export default class Search extends Vue {
             this.error_message = err;
           }
           this.search_results = [];
+          this.result_query = undefined;
           this.query = query;
           this.progress = false;
         });
@@ -299,7 +354,7 @@ export default class Search extends Vue {
           } else {
             this.error_message = undefined;
             this.all_assemblies =
-              res.data.values.map((a: any) => ({
+              res.data.map((a: any) => ({
                 name: a.name,
                 checked: a.checked
               }));
@@ -314,7 +369,7 @@ export default class Search extends Vue {
   }
   
   @Lifecycle beforeMount() {
-    const queries = querystring.parse(window.location.search.substring(1));
+    const queries = querystring.parse<Partial<SearchInformation>>(window.location.search.substring(1));
     
     if (queries.query) {
       this.query = queries.query
@@ -330,6 +385,9 @@ export default class Search extends Vue {
     }
     if (queries.ignore_case) {
       this.ignore_case = statusToBool(queries.ignore_case);
+    }
+    if (queries.substring) {
+      this.substring = statusToBool(queries.substring);
     }
     if (queries.swap_order) {
       this.swap_order = statusToBool(queries.swap_order);
