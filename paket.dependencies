@@ -25,7 +25,7 @@ group Build
 group Database
   source https://api.nuget.org/v3/index.json
 
-  http https://github.com/fsdn-projects/FSDN.Database/releases/download/2018%2F02%2F17-115333/FSDN.Database.zip
+  http https://github.com/fsdn-projects/FSDN.Database/releases/download/2018%2F02%2F28-073023/FSDN.Database.zip
 
 group Test
   source https://api.nuget.org/v3/index.json
