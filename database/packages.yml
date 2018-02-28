@@ -16,7 +16,7 @@ Languages:
   - FSharp.Compiler.Service
   - FSharp.Collections.ParallelSeq
   - FSharp.Control.AsyncSeq
-  - FSharp.Control.Reqctive
+  - FSharp.Control.Reactive
   - FSharp.Data
   - FSharp.ViewModule.Core
   - FsPickler
