@@ -19,11 +19,13 @@
         </div>
       </div>
       <ul class="collection" v-cloak v-show="! raised_error">
-        <li class="collection-item" v-for="assembly in assemblies">
-          <img v-bind:src="assembly.icon_url" alt="" width="32px" height="32px" v-if="assembly.icon_url"></img>
-          {{ assembly.name }} {{ assembly.version }}
-          <a v-bind:href="'https://www.nuget.org/packages/' + assembly.name + '/' + assembly.version" class="secondary-content" v-if="! assembly.checked" target="_blank" rel="noopener"><i class="fa fa-arrow-circle-right"></i></a>
-        </li>
+        <template v-for="group in package_groups">
+          <li class="collection-item" v-for="package_ in group.packages">
+            <img v-bind:src="package_.icon_url" alt="" width="32px" height="32px" v-if="package_.icon_url"></img>
+            {{ package_.name }} {{ package_.version }}
+            <a v-bind:href="'https://www.nuget.org/packages/' + package_.name + '/' + package_.version" class="secondary-content" v-if="! package_.checked" target="_blank" rel="noopener"><i class="fa fa-arrow-circle-right"></a>
+          </li>
+        </template>
       </ul>
     </div>
   </div>
@@ -34,7 +36,7 @@ import {Vue, Component, Lifecycle} from "av-ts"
 import axios from "axios";
 import {baseUrl} from "../util";
 
-interface Assembly {
+interface Package {
   version: string;
   name: string;
   checked: boolean;
@@ -42,9 +44,15 @@ interface Assembly {
   assemblies: string[];
 }
 
+interface PackageGroup {
+  group_name: string;
+  packages: Package[];
+  checked: boolean;
+}
+
 @Component
 export default class Assemblies extends Vue {
-  assemblies: Assembly[] = []
+  package_groups: PackageGroup[] = []
   error_message: string = undefined
 
   get raised_error(): boolean {
@@ -59,7 +67,7 @@ export default class Assemblies extends Vue {
           this.error_message = res.data;
         } else {
           this.error_message = undefined;
-          this.assemblies = res.data;
+          this.package_groups = res.data;
         }
       })
       .catch(err => {

@@ -22,7 +22,6 @@ Languages:
   - FsPickler
   - FsUnit
   - Suave
-  - Suave.Experimental
   - System.Reactive.Core
   - System.Reactive.Interfaces
   - System.Reactive.Linq
@@ -90,10 +89,6 @@ Targets:
   Assemblies: [FsPickler]
 - Name: FsUnit
   Assemblies: [FsUnit.NUnit]
-- Name: Suave
-  Assemblies: [Suave]
-- Name: Suave.Experimental
-  Assemblies: [Suave.Experimental]
 - Name: System.Reactive.Core
   Assemblies: [System.Reactive.Core]
 - Name: System.Reactive.Interfaces
@@ -104,3 +99,11 @@ Targets:
   Assemblies: [nunit.framework]
 - Name: ExtCore
   Assemblies: [ExtCore]
+
+TargetGroups:
+- GroupName: Suave
+  Targets:
+  - Name: Suave
+    Assemblies: [Suave]
+  - Name: Suave.Experimental
+    Assemblies: [Suave.Experimental]

@@ -158,7 +158,7 @@ Target "Generate" (fun _ ->
   MoveFile out (currentDirectory @@ "database")
 )
 
-type PackageInfo = {
+type NuGetPackageTemp = {
   Name: string
   Standard: bool
   Version: SemVerInfo option
@@ -166,13 +166,26 @@ type PackageInfo = {
   Assemblies: string []
 }
 with
-  member this.ToSerializablePackage =
+  member this.ToSerializablePackage() =
     {
       NuGetPackage.Name = this.Name
       Standard = this.Standard
       Version = (match this.Version with | Some v -> v.AsString | None -> "")
       IconUrl = (match this.IconUrl with | Some v -> v | None -> "")
       Assemblies = this.Assemblies
+    }
+
+type NuGetPackageGroupTemp = {
+  GroupName: string
+  Packages: NuGetPackageTemp[]
+  Standard: bool
+}
+with
+  member this.ToSerializablePackage() =
+    {
+      NuGetPackageGroup.GroupName = this.GroupName
+      Packages = this.Packages |> Array.map (fun x -> x.ToSerializablePackage())
+      Standard = this.Standard
     }
 
 let tryFindIconUrl name =
@@ -186,6 +199,24 @@ let tryFindIconUrl name =
     doc.XPathSelectElements("/x:package/x:metadata/x:iconUrl", manager)
   |> Seq.tryPick (fun e -> Some e.Value)
 
+let targetPackageToTemp (packages: PackageResolver.PackageResolution) (x: TargetPackage) =
+  {
+    Name = x.Name
+    Standard = x.Standard
+    Version =
+      if x.Standard then
+        None
+      else
+        let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = x.Name then Some v else None)
+        Some p.Version
+    IconUrl =
+      if x.Standard then
+        None
+      else
+        tryFindIconUrl x.Name
+    Assemblies = x.Assemblies
+  }
+
 Target "GenerateTargetAssembliesFile" (fun _ ->
   ensureDirectory out
   let packages =
@@ -195,30 +226,34 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
   let config = Package.loadTargets "./packages.yml"
   let allTargets =
     if isMonoRuntime then [||]
-    else config.Targets
-    |> Array.map (fun x ->
-      {
-        Name = x.Name
-        Standard = x.Standard
-        Version =
-          if x.Standard then
-            None
-          else
-            let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = x.Name then Some v else None)
-            Some p.Version
-        IconUrl =
-          if x.Standard then
-            None
-          else
-            tryFindIconUrl x.Name
-        Assemblies = x.Assemblies
-      }
-    )
-    |> Array.map (fun x -> x.ToSerializablePackage)
+    else
+      let singleTargets =
+        config.Targets
+        |> Array.map (fun x ->
+          {
+            GroupName = x.Name
+            Packages = [| targetPackageToTemp packages x |]
+            Standard = x.Standard
+          }
+        )
+      let multiTargets =
+        config.TargetGroups
+        |> Array.map (fun group ->
+          {
+            GroupName = group.GroupName
+            Packages =
+              let packages = group.Targets |> Array.map (targetPackageToTemp packages)
+              System.Linq.Enumerable.OrderBy(packages, fun x -> x.Name)
+              |> Seq.toArray
+            Standard = false
+          }
+        )
+      Array.concat [| singleTargets; multiTargets |]
+      |> Array.map (fun x -> x.ToSerializablePackage())
   config.Languages
   |> Map.iter (fun lang langTargets ->
     allTargets
-    |> Array.filter (fun at -> Array.contains at.Name langTargets)
+    |> Array.filter (fun at -> Array.contains at.GroupName langTargets)
     |> Package.dump (out @@ sprintf "packages.%s.yml" lang)
   )
 )

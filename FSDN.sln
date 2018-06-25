@@ -2,11 +2,26 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.14
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSDN", "src\FSDN\FSDN.fsproj", "{F4DC2D27-5813-479A-A7CA-F1D8A6CF792D}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSDN.Tests", "tests\FSDN.Tests\FSDN.Tests.fsproj", "{0EF378C3-28C6-45C3-9599-C748B906CA14}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSDN.Package", "src\FSDN.Package\FSDN.Package.fsproj", "{52E5CC20-CD00-4C62-8AB9-7A80C4D78C19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{2E50DF27-0A0C-414E-99E3-9462829039E2}"
+	ProjectSection(SolutionItems) = preProject
+		database\generate.fsx = database\generate.fsx
+		database\packages.yml = database\packages.yml
+		database\paket.dependencies = database\paket.dependencies
+		database\paket.lock = database\paket.lock
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{25BD9C41-73BC-4983-8E8F-CDC9B78D5FA0}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,5 +44,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F4860D4F-328A-462E-A30D-FDC8F5257DCC}
 	EndGlobalSection
 EndGlobal

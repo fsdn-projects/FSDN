@@ -16,6 +16,14 @@ type NuGetPackage = {
   Assemblies: string []
 }
 
+type NuGetPackageGroup = {
+  [<DataMember(Name = "group_name")>]
+  GroupName: string
+  Packages: NuGetPackage[]
+  [<DataMember(Name = "checked")>]
+  Standard: bool
+}
+
 type TargetPackage = {
   Name: string
   Assemblies: string []
@@ -24,9 +32,18 @@ type TargetPackage = {
 with
   static member DefaultStandard = false
 
+type TargetPackageGroup = {
+  GroupName: string
+  Targets: TargetPackage []
+  Standard: bool
+}
+with
+  static member DefaultStandard = false
+
 type PackageInput = {
   Languages: Map<string, string []>
   Targets: TargetPackage []
+  TargetGroups: TargetPackageGroup []
 }
 
 module Package =
@@ -40,10 +57,10 @@ module Package =
 
   let load fileName =
     File.ReadAllText(fileName)
-    |> Yaml.tryLoad<NuGetPackage []>
+    |> Yaml.tryLoad<NuGetPackageGroup []>
 
   let dump fileName packages =
-    File.WriteAllText(fileName, Yaml.dump<NuGetPackage []> packages)
+    File.WriteAllText(fileName, Yaml.dump<NuGetPackageGroup []> packages)
 
   let loadTargets fileName =
     File.ReadAllText(fileName)
