@@ -68,6 +68,8 @@ let searchExternalAssemblies () =
     let reference = line.Substring(4).TrimEnd('"', ' ')
     if reference.StartsWith(@"..") then
       Path.GetFullPath(loadScriptDir @@ reference)
+    elif reference.Contains(",") then
+      reference.Substring(0, reference.IndexOf(","))
     else
       reference
   )
@@ -207,8 +209,9 @@ let targetPackageToTemp (packages: PackageResolver.PackageResolution) (x: Target
       if x.Standard then
         None
       else
-        let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = x.Name then Some v else None)
-        Some p.Version
+        match packages |> Map.toSeq |> Seq.tryPick (fun (k, v) -> if k.ToString() = x.Name then Some v else None) with
+        | Some p -> Some p.Version
+        | None -> failwithf "%s is not found" x.Name
     IconUrl =
       if x.Standard then
         None
