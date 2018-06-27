@@ -22,9 +22,7 @@ Languages:
   - FsPickler
   - FsUnit
   - Suave
-  - System.Reactive.Core
-  - System.Reactive.Interfaces
-  - System.Reactive.Linq
+  - System.Reactive
   csharp:
   - mscorlib
   - System
@@ -34,9 +32,7 @@ Languages:
   - System.Xml
   - System.Xml.Linq
   - Newtonsoft.Json
-  - System.Reactive.Core
-  - System.Reactive.Interfaces
-  - System.Reactive.Linq
+  - System.Reactive
   - NUnit
   
 Targets:
@@ -89,12 +85,8 @@ Targets:
   Assemblies: [FsPickler]
 - Name: FsUnit
   Assemblies: [FsUnit.NUnit]
-- Name: System.Reactive.Core
-  Assemblies: [System.Reactive.Core]
-- Name: System.Reactive.Interfaces
-  Assemblies: [System.Reactive.Interfaces]
-- Name: System.Reactive.Linq
-  Assemblies: [System.Reactive.Linq]
+- Name: System.Reactive
+  Assemblies: [System.Reactive]
 - Name: NUnit
   Assemblies: [nunit.framework]
 - Name: ExtCore

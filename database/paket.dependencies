@@ -15,6 +15,7 @@ nuget Suave
 nuget Suave.Experimental
 nuget Newtonsoft.Json
 nuget FSharp.Control.Reactive
+nuget System.Reactive
 nuget FAKE.Lib
 nuget NUnit
 nuget ExtCore
