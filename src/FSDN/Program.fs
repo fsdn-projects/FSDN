@@ -45,7 +45,6 @@ let notFound homeDir ctx = asyncOption {
 }
 
 let fileRequest homeDir =
-  let notFound = notFound homeDir
   choose [
     path "/" >=> browseFile homeDir "index.html"
     browseHome

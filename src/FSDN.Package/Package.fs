@@ -2,7 +2,6 @@
 
 open System.IO
 open System.Runtime.Serialization
-open FSharpApiSearch
 open FsYaml
 
 type NuGetPackage = {
@@ -46,22 +45,15 @@ type PackageInput = {
   TargetGroups: TargetPackageGroup []
 }
 
+module PackageInput =
+  let loadTargets fileName =
+    File.ReadAllText(fileName)
+    |> Yaml.load<PackageInput>
+
 module Package =
-
-  let all asms =
-    asms
-    |> Array.append (FSharpApiSearchClient.DefaultTargets
-      |> List.map (fun x -> { Name = x; Standard = true; Version = ""; IconUrl = ""; Assemblies = [|x|] })
-      |> List.toArray)
-    |> Array.distinct
-
   let load fileName =
     File.ReadAllText(fileName)
     |> Yaml.tryLoad<NuGetPackageGroup []>
 
   let dump fileName packages =
     File.WriteAllText(fileName, Yaml.dump<NuGetPackageGroup []> packages)
-
-  let loadTargets fileName =
-    File.ReadAllText(fileName)
-    |> Yaml.load<PackageInput>

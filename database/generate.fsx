@@ -144,17 +144,10 @@ Target "Generate" (fun _ ->
       |> String.concat " "
 
   let exitCode =
-    use timer = new System.Timers.Timer(1000.0)
-    do timer.Elapsed |> Event.add (fun _ -> printf ".")
-    timer.Start()
-    let exitCode =
-      ExecProcess (fun info ->
-        info.FileName <- exe
-        info.Arguments <- args)
-        TimeSpan.MaxValue
-    timer.Stop()
-    printfn ""
-    exitCode
+    ExecProcess (fun info ->
+      info.FileName <- exe
+      info.Arguments <- args)
+      TimeSpan.MaxValue
     
   if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
   MoveFile out (currentDirectory @@ "database")
@@ -226,7 +219,7 @@ Target "GenerateTargetAssembliesFile" (fun _ ->
     LockFile.LoadFrom("./paket.lock")
       .GetGroup(GroupName("Main"))
       .Resolution
-  let config = Package.loadTargets "./packages.yml"
+  let config = PackageInput.loadTargets "./packages.yml"
   let allTargets =
     if isMonoRuntime then [||]
     else
