@@ -1341,7 +1341,7 @@ GROUP Database
 
 HTTP
   remote: https://github.com
-    FSDN.Database.zip (/fsdn-projects/FSDN.Database/releases/download/2018%2F04%2F08-190900/FSDN.Database.zip)
+    FSDN.Database.zip (/fsdn-projects/FSDN.Database/releases/download/2018%2F07%2F09-003702/FSDN.Database.zip)
 GROUP Test
 NUGET
   remote: https://api.nuget.org/v3/index.json
