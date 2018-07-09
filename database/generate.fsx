@@ -68,6 +68,8 @@ let searchExternalAssemblies () =
     let reference = line.Substring(4).TrimEnd('"', ' ')
     if reference.StartsWith(@"..") then
       Path.GetFullPath(loadScriptDir @@ reference)
+    elif reference.Contains(",") then
+      reference.Substring(0, reference.IndexOf(","))
     else
       reference
   )
@@ -142,23 +144,16 @@ Target "Generate" (fun _ ->
       |> String.concat " "
 
   let exitCode =
-    use timer = new System.Timers.Timer(1000.0)
-    do timer.Elapsed |> Event.add (fun _ -> printf ".")
-    timer.Start()
-    let exitCode =
-      ExecProcess (fun info ->
-        info.FileName <- exe
-        info.Arguments <- args)
-        TimeSpan.MaxValue
-    timer.Stop()
-    printfn ""
-    exitCode
+    ExecProcess (fun info ->
+      info.FileName <- exe
+      info.Arguments <- args)
+      TimeSpan.MaxValue
     
   if exitCode <> 0 then failwithf "failed to generate F# API database: %d" exitCode
   MoveFile out (currentDirectory @@ "database")
 )
 
-type PackageInfo = {
+type NuGetPackageTemp = {
   Name: string
   Standard: bool
   Version: SemVerInfo option
@@ -166,13 +161,26 @@ type PackageInfo = {
   Assemblies: string []
 }
 with
-  member this.ToSerializablePackage =
+  member this.ToSerializablePackage() =
     {
       NuGetPackage.Name = this.Name
       Standard = this.Standard
       Version = (match this.Version with | Some v -> v.AsString | None -> "")
       IconUrl = (match this.IconUrl with | Some v -> v | None -> "")
       Assemblies = this.Assemblies
+    }
+
+type NuGetPackageGroupTemp = {
+  GroupName: string
+  Packages: NuGetPackageTemp[]
+  Standard: bool
+}
+with
+  member this.ToSerializablePackage() =
+    {
+      NuGetPackageGroup.GroupName = this.GroupName
+      Packages = this.Packages |> Array.map (fun x -> x.ToSerializablePackage())
+      Standard = this.Standard
     }
 
 let tryFindIconUrl name =
@@ -186,39 +194,62 @@ let tryFindIconUrl name =
     doc.XPathSelectElements("/x:package/x:metadata/x:iconUrl", manager)
   |> Seq.tryPick (fun e -> Some e.Value)
 
+let targetPackageToTemp (packages: PackageResolver.PackageResolution) (x: TargetPackage) =
+  {
+    Name = x.Name
+    Standard = x.Standard
+    Version =
+      if x.Standard then
+        None
+      else
+        match packages |> Map.toSeq |> Seq.tryPick (fun (k, v) -> if k.ToString() = x.Name then Some v else None) with
+        | Some p -> Some p.Version
+        | None -> failwithf "%s is not found" x.Name
+    IconUrl =
+      if x.Standard then
+        None
+      else
+        tryFindIconUrl x.Name
+    Assemblies = x.Assemblies
+  }
+
 Target "GenerateTargetAssembliesFile" (fun _ ->
   ensureDirectory out
   let packages =
     LockFile.LoadFrom("./paket.lock")
       .GetGroup(GroupName("Main"))
       .Resolution
-  let config = Package.loadTargets "./packages.yml"
+  let config = PackageInput.loadTargets "./packages.yml"
   let allTargets =
     if isMonoRuntime then [||]
-    else config.Targets
-    |> Array.map (fun x ->
-      {
-        Name = x.Name
-        Standard = x.Standard
-        Version =
-          if x.Standard then
-            None
-          else
-            let p = packages |> Map.toSeq |> Seq.pick (fun (k, v) -> if k.ToString() = x.Name then Some v else None)
-            Some p.Version
-        IconUrl =
-          if x.Standard then
-            None
-          else
-            tryFindIconUrl x.Name
-        Assemblies = x.Assemblies
-      }
-    )
-    |> Array.map (fun x -> x.ToSerializablePackage)
+    else
+      let singleTargets =
+        config.Targets
+        |> Array.map (fun x ->
+          {
+            GroupName = x.Name
+            Packages = [| targetPackageToTemp packages x |]
+            Standard = x.Standard
+          }
+        )
+      let multiTargets =
+        config.TargetGroups
+        |> Array.map (fun group ->
+          {
+            GroupName = group.GroupName
+            Packages =
+              let packages = group.Targets |> Array.map (targetPackageToTemp packages)
+              System.Linq.Enumerable.OrderBy(packages, fun x -> x.Name)
+              |> Seq.toArray
+            Standard = false
+          }
+        )
+      Array.concat [| singleTargets; multiTargets |]
+      |> Array.map (fun x -> x.ToSerializablePackage())
   config.Languages
   |> Map.iter (fun lang langTargets ->
     allTargets
-    |> Array.filter (fun at -> Array.contains at.Name langTargets)
+    |> Array.filter (fun at -> Array.contains at.GroupName langTargets)
     |> Package.dump (out @@ sprintf "packages.%s.yml" lang)
   )
 )

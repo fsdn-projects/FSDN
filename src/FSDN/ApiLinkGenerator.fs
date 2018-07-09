@@ -2,11 +2,13 @@ namespace FSDN
 
 open FSharpApiSearch
 
+type LanguageName = string
+
 type ApiLinkGenerator = {
   FSharp: LinkGenerator
   DotNetApiBrowser: LinkGenerator
   FParsec: LinkGenerator
-  Packages: Map<string, NuGetPackage []>
+  Packages: Map<LanguageName, NuGetPackageGroup []>
 }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -23,5 +25,7 @@ module ApiLinkGenerator =
 
   let generate result (generator: ApiLinkGenerator) language =
     generator.Packages.[language]
-    |> Array.tryPick (impl generator result)
+    |> Array.tryPick (fun group ->
+      group.Packages |> Array.tryPick (impl generator result)
+    )
 

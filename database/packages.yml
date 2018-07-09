@@ -11,7 +11,7 @@ Languages:
   - Argu
   - Newtonsoft.Json
   - ExtCore
-  - FAKE.Lib
+  - Fake
   - FParsec
   - FSharp.Compiler.Service
   - FSharp.Collections.ParallelSeq
@@ -22,10 +22,7 @@ Languages:
   - FsPickler
   - FsUnit
   - Suave
-  - Suave.Experimental
-  - System.Reactive.Core
-  - System.Reactive.Interfaces
-  - System.Reactive.Linq
+  - System.Reactive
   csharp:
   - mscorlib
   - System
@@ -35,9 +32,7 @@ Languages:
   - System.Xml
   - System.Xml.Linq
   - Newtonsoft.Json
-  - System.Reactive.Core
-  - System.Reactive.Interfaces
-  - System.Reactive.Linq
+  - System.Reactive
   - NUnit
   
 Targets:
@@ -70,8 +65,6 @@ Targets:
   Assemblies: [Argu]
 - Name: Newtonsoft.Json
   Assemblies: [Newtonsoft.Json]
-- Name: FAKE.Lib
-  Assemblies: [FakeLib]
 - Name: FParsec
   Assemblies: [FParsec]
 - Name: FSharp.Compiler.Service
@@ -90,17 +83,133 @@ Targets:
   Assemblies: [FsPickler]
 - Name: FsUnit
   Assemblies: [FsUnit.NUnit]
-- Name: Suave
-  Assemblies: [Suave]
-- Name: Suave.Experimental
-  Assemblies: [Suave.Experimental]
-- Name: System.Reactive.Core
-  Assemblies: [System.Reactive.Core]
-- Name: System.Reactive.Interfaces
-  Assemblies: [System.Reactive.Interfaces]
-- Name: System.Reactive.Linq
-  Assemblies: [System.Reactive.Linq]
+- Name: System.Reactive
+  Assemblies: [System.Reactive]
 - Name: NUnit
   Assemblies: [nunit.framework]
 - Name: ExtCore
   Assemblies: [ExtCore]
+
+TargetGroups:
+- GroupName: Suave
+  Targets:
+  - Name: Suave
+    Assemblies: [Suave]
+  - Name: Suave.Experimental
+    Assemblies: [Suave.Experimental]
+- GroupName: Fake
+  Targets:
+  - Name: Fake.Api.GitHub
+    Assemblies: [Fake.Api.GitHub]
+  - Name: Fake.Api.HockeyApp
+    Assemblies: [Fake.Api.HockeyApp]
+  - Name: Fake.Api.Slack
+    Assemblies: [Fake.Api.Slack]
+  - Name: Fake.Azure.CloudServices
+    Assemblies: [Fake.Azure.CloudServices]
+  - Name: Fake.Azure.Emulators
+    Assemblies: [Fake.Azure.Emulators]
+  - Name: Fake.Azure.Kudu
+    Assemblies: [Fake.Azure.Kudu]
+  - Name: Fake.Azure.WebJobs
+    Assemblies: [Fake.Azure.WebJobs]
+  - Name: Fake.BuildServer.AppVeyor
+    Assemblies: [Fake.BuildServer.AppVeyor]
+  - Name: Fake.BuildServer.GitLab
+    Assemblies: [Fake.BuildServer.GitLab]
+  - Name: Fake.BuildServer.TeamCity
+    Assemblies: [Fake.BuildServer.TeamCity]
+  - Name: Fake.BuildServer.TeamFoundation
+    Assemblies: [Fake.BuildServer.TeamFoundation]
+  - Name: Fake.BuildServer.Travis
+    Assemblies: [Fake.BuildServer.Travis]
+  - Name: Fake.Core.CommandLineParsing
+    Assemblies: [Fake.Core.CommandLineParsing]
+  - Name: Fake.Core.Context
+    Assemblies: [Fake.Core.Context]
+  - Name: Fake.Core.Environment
+    Assemblies: [Fake.Core.Environment]
+  - Name: Fake.Core.Process
+    Assemblies: [Fake.Core.Process]
+  - Name: Fake.Core.ReleaseNotes
+    Assemblies: [Fake.Core.ReleaseNotes]
+  - Name: Fake.Core.SemVer
+    Assemblies: [Fake.Core.SemVer]
+  - Name: Fake.Core.String
+    Assemblies: [Fake.Core.String]
+  - Name: Fake.Core.Target
+    Assemblies: [Fake.Core.Target]
+  - Name: Fake.Core.Tasks
+    Assemblies: [Fake.Core.Tasks]
+  - Name: Fake.Core.Trace
+    Assemblies: [Fake.Core.Trace]
+  - Name: Fake.Core.UserInput
+    Assemblies: [Fake.Core.UserInput]
+  - Name: Fake.Core.Xml
+    Assemblies: [Fake.Core.Xml]
+  - Name: Fake.Documentation.DocFx
+    Assemblies: [Fake.Documentation.DocFx]
+  - Name: Fake.DotNet.AssemblyInfoFile
+    Assemblies: [Fake.DotNet.AssemblyInfoFile]
+  - Name: Fake.DotNet.Cli
+    Assemblies: [Fake.DotNet.Cli]
+  - Name: Fake.DotNet.Fsc
+    Assemblies: [Fake.DotNet.Fsc]
+  - Name: Fake.DotNet.Fsi
+    Assemblies: [Fake.DotNet.Fsi]
+  - Name: Fake.DotNet.FSFormatting
+    Assemblies: [Fake.DotNet.FSFormatting]
+  - Name: Fake.DotNet.Mage
+    Assemblies: [Fake.DotNet.Mage]
+  - Name: Fake.DotNet.MSBuild
+    Assemblies: [Fake.DotNet.MSBuild]
+  - Name: Fake.DotNet.NuGet
+    Assemblies: [Fake.DotNet.NuGet]
+  - Name: Fake.DotNet.Paket
+    Assemblies: [Fake.DotNet.Paket]
+  - Name: Fake.DotNet.Testing.Expecto
+    Assemblies: [Fake.DotNet.Testing.Expecto]
+  - Name: Fake.DotNet.Testing.MSpec
+    Assemblies: [Fake.DotNet.Testing.MSpec]
+  - Name: Fake.DotNet.Testing.MSTest
+    Assemblies: [Fake.DotNet.Testing.MSTest]
+  - Name: Fake.DotNet.Testing.NUnit
+    Assemblies: [Fake.DotNet.Testing.NUnit]
+  - Name: Fake.DotNet.Testing.OpenCover
+    Assemblies: [Fake.DotNet.Testing.OpenCover]
+  - Name: Fake.DotNet.Testing.SpecFlow
+    Assemblies: [Fake.DotNet.Testing.SpecFlow]
+  - Name: Fake.DotNet.Testing.XUnit2
+    Assemblies: [Fake.DotNet.Testing.XUnit2]
+  - Name: Fake.DotNet.Xamarin
+    Assemblies: [Fake.DotNet.Xamarin]
+  - Name: Fake.Installer.InnoSetup
+    Assemblies: [Fake.Installer.InnoSetup]
+  - Name: Fake.IO.FileSystem
+    Assemblies: [Fake.IO.FileSystem]
+  - Name: Fake.IO.Zip
+    Assemblies: [Fake.IO.Zip]
+  - Name: Fake.JavaScript.Npm
+    Assemblies: [Fake.JavaScript.Npm]
+  - Name: Fake.JavaScript.Yarn
+    Assemblies: [Fake.JavaScript.Yarn]
+  - Name: Fake.Net.Http
+    Assemblies: [Fake.Net.Http]
+  - Name: Fake.Sql.DacPac
+    Assemblies: [Fake.Sql.DacPac]
+  - Name: Fake.Testing.Common
+    Assemblies: [Fake.Testing.Common]
+  - Name: Fake.Testing.ReportGenerator
+    Assemblies: [Fake.Testing.ReportGenerator]
+  - Name: Fake.Testing.SonarQube
+    Assemblies: [Fake.Testing.SonarQube]
+  - Name: Fake.Tools.Git
+    Assemblies: [Fake.Tools.Git]
+  - Name: Fake.Tools.Pickles
+    Assemblies: [Fake.Tools.Pickles]
+  - Name: Fake.Tools.GitVersion
+    Assemblies: [Fake.Tools.GitVersion]
+  - Name: Fake.Windows.Chocolatey
+    Assemblies: [Fake.Windows.Chocolatey]
+  - Name: Fake.Windows.Registry
+    Assemblies: [Fake.Windows.Registry]

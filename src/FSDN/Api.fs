@@ -84,8 +84,12 @@ module Search =
       )
       let info = {
         Targets =
-          generator.Packages.[language]
-          |> Array.collect (fun x -> if List.exists ((=) x.Name) excluded then [||] else x.Assemblies)
+          let targets = ResizeArray()
+          for group in generator.Packages.[language] do
+            if List.exists ((=) group.GroupName) excluded = false then
+              for package in group.Packages do
+                targets.AddRange(package.Assemblies)
+          targets.ToArray()
         RawOptions =
           {
             RespectNameDifference = respectNameDifference
@@ -116,7 +120,7 @@ module Assembly =
       match req.queryParamOpt SearchOptionLiteral.Language with
       | Some (_, Some lang) -> generator.Packages.[lang]
       | Some (_, None) | None -> generator.Packages |> Seq.map (fun (KeyValue(_, v)) -> v) |> Array.concat |> Array.distinct
-    System.Linq.Enumerable.OrderBy(packages, fun p -> (not p.Standard, p.Name))
+    System.Linq.Enumerable.OrderBy(packages, fun p -> (not p.Standard, p.GroupName))
     |> JsonSerializer.Serialize
     |> Suave.Successful.ok
 

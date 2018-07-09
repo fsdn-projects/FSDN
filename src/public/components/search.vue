@@ -140,9 +140,9 @@
         <div class="card-content white-text">
           <span class="card-title">Target Assemblies</span>
           <div class="collection">
-            <p class="collection-item" v-for="assembly in all_assemblies" :key="assembly.name">
-              <input type="checkbox" class="filled-in" v-bind:id="assembly.name" v-bind:value="assembly.name" v-model="assembly.checked" />
-              <label v-bind:for="assembly.name">{{assembly.name}}</label>
+            <p class="collection-item" v-for="group in all_packages" :key="group.group_name">
+              <input type="checkbox" class="filled-in" v-bind:id="group.group_name" v-bind:value="group.group_name" v-model="group.checked" />
+              <label v-bind:for="group.group_name">{{group.group_name}}</label>
             </p>
           </div>
         </div>
@@ -157,8 +157,8 @@ import axios from "axios";
 import * as querystring from "querystring";
 import {baseUrl, enabled, disabled} from "../util";
 
-interface Assembly {
-  name: string;
+interface PackageGroup {
+  group_name: string;
   checked: boolean
 }
 
@@ -195,8 +195,8 @@ function validate(query: string): boolean {
 
 const space = "+";
 
-function buildExclusion(assemblies: Assembly[]): string {
-  return assemblies.filter((a: Assembly) => !a.checked).map((a: Assembly) => a.name).join(space);
+function buildExclusion(packages: PackageGroup[]): string {
+  return packages.filter((g: PackageGroup) => !g.checked).map((g: PackageGroup) => g.group_name).join(space);
 }
 
 function searchApis(info: SearchInformation) {
@@ -218,8 +218,8 @@ export default class Search extends Vue {
   complement = true
   single_letter_as_variable = true
   language = "fsharp"
-  all_assemblies: Assembly[] = []
-  assembly_cache = {}
+  all_packages: PackageGroup[] = []
+  package_cache = {}
   progress = false
   search_results: any[] = undefined
   result_query: any = undefined
@@ -275,7 +275,7 @@ export default class Search extends Vue {
   
   languageChanged() {
     this.reset();
-    this.updateAssemblies();
+    this.updatePackages();
   }
   
   reset() {
@@ -303,7 +303,7 @@ export default class Search extends Vue {
       this.progress = true;
       searchApis({
         query,
-        exclusion: buildExclusion(this.all_assemblies),
+        exclusion: buildExclusion(this.all_packages),
         respect_name_difference: boolToStatus(this.respect_name_difference),
         greedy_matching: boolToStatus(this.greedy_matching),
         ignore_parameter_style: boolToStatus(this.ignore_parameter_style),
@@ -342,9 +342,9 @@ export default class Search extends Vue {
     }
   }
   
-  updateAssemblies() {
-    if (this.assembly_cache[this.language]) {
-      this.all_assemblies = this.assembly_cache[this.language];
+  updatePackages() {
+    if (this.package_cache[this.language]) {
+      this.all_packages = this.package_cache[this.language];
     } else {
       axios
         .get(baseUrl + "/api/assemblies", { params: { language: this.language } })
@@ -353,13 +353,13 @@ export default class Search extends Vue {
             this.error_message = res.data;
           } else {
             this.error_message = undefined;
-            this.all_assemblies =
+            this.all_packages =
               res.data.map((a: any) => ({
-                name: a.name,
+                group_name: a.group_name,
                 checked: a.checked
               }));
 
-            this.assembly_cache[this.language] = this.all_assemblies;
+            this.package_cache[this.language] = this.all_packages;
           }
         })
         .catch(err => {
@@ -402,12 +402,12 @@ export default class Search extends Vue {
       this.language = queries.language
     }
     
-    this.updateAssemblies();
+    this.updatePackages();
 
     if (window.location.search) {
       if (queries.exclusion) {
         const exclusion = queries.exclusion.split("+");
-        this.all_assemblies.forEach((asm: any) => {
+        this.all_packages.forEach((asm: any) => {
           if (exclusion.indexOf(asm.name) == -1) {
             asm.checked = true;
           }
