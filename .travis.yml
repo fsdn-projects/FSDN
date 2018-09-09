@@ -2,7 +2,7 @@ language: csharp
 sudo: false
 
 mono:
-  - 5.8.0
+  - 5.14.0
 solution: FSDN.sln
 
 before_install:
