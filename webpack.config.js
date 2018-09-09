@@ -1,13 +1,15 @@
 var webpack = require("webpack");
 var path = require("path");
+var VueLoaderPlugin = require("vue-loader/lib/plugin")
 var HtmlWebpackPlugin = require("html-webpack-plugin");
+var LicenseInfoWebpackPlugin = require("license-info-webpack-plugin").default;
 
 var srcDir = path.join(__dirname, "src/public");
-var docDir = path.join(srcDir, "docs");
 var outDir = path.join(__dirname, "bin/FSDN");
-var isProd = process.env.NODE_ENV === 'production';
+var isProd = process.env.NODE_ENV === "production";
 
 var config = {
+  mode: isProd ? 'production' : "development",
   entry: {
     "assemblies": path.join(srcDir, "assemblies.ts"),
     "search": path.join(srcDir, "search.ts"),
@@ -62,6 +64,7 @@ var config = {
     }
   },
   plugins: [
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       chunks: ['assemblies'],
       filename: path.join(outDir, 'assemblies.html'),
@@ -88,13 +91,8 @@ if (isProd) {
   ]
     .concat(config.plugins)
     .concat([
-      new webpack.optimize.UglifyJsPlugin({
-        compress: {
-          warnings: false
-        },
-        output  : {
-          comments: require("uglify-save-license")
-        }
+      new LicenseInfoWebpackPlugin({
+        glob: '{LICENSE,license,License}*'
       })
     ]);
 }

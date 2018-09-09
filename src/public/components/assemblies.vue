@@ -23,7 +23,7 @@
           <li class="collection-item" v-for="package_ in group.packages">
             <img v-bind:src="package_.icon_url" alt="" width="32px" height="32px" v-if="package_.icon_url"></img>
             {{ package_.name }} {{ package_.version }}
-            <a v-bind:href="'https://www.nuget.org/packages/' + package_.name + '/' + package_.version" class="secondary-content" v-if="! package_.checked" target="_blank" rel="noopener"><i class="fa fa-arrow-circle-right"></a>
+            <a v-bind:href="'https://www.nuget.org/packages/' + package_.name + '/' + package_.version" class="secondary-content" v-if="! package_.checked" target="_blank" rel="noopener"><i class="fa fa-arrow-circle-right" /></a>
           </li>
         </template>
       </ul>
