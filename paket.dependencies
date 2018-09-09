@@ -12,15 +12,16 @@ group App
 group Build
   source https://api.nuget.org/v3/index.json
 
-  nuget FAKE
+  nuget FAKE < 5.0
   nuget KuduSync.NET
-  nuget FSharpApiSearch.Console  prerelease
+  nuget FSharpApiSearch.Console
   nuget Fake.Persimmon
   nuget Paket.Core
+  nuget Octokit = 0.29
 
   github fsdn-projects/fsdn-logo:master fsdn_mono_85x64.png
   github fsdn-projects/fsdn-logo:master favicon.ico
-  github fsharp/FAKE modules/Octokit/Octokit.fsx
+  github fsharp/FAKE:2bd41546d8549654ad4d4b5639425537afe5e1f7 modules/Octokit/Octokit.fsx
 
 group Database
   source https://api.nuget.org/v3/index.json
