@@ -399,9 +399,9 @@ System.Int32.Parse(string s) : int, static method, mscorlib
 
 ## Required Tools
 
-- Node.js >= 7.x
-- F# 4.1
-- .NET Framework 4.6 or Mono >= 4.8.0
+- Node.js >= 8.x
+- F# 4.5
+- .NET Framework 4.7 or Mono >= 5.14.0
 
 ## How To build
 

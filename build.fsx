@@ -1,5 +1,5 @@
 #r @"packages/build/FAKE/tools/FakeLib.dll"
-#r @"packages/build/FAKE.Persimmon/lib/net451/FAKE.Persimmon.dll"
+#r @"packages/build/Fake.Persimmon/lib/net451/FAKE.Persimmon.dll"
 open Fake
 open Fake.Git
 open System

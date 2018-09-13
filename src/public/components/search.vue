@@ -162,10 +162,6 @@ interface PackageGroup {
   checked: boolean
 }
 
-type Partial<T> = {
-  [P in keyof T]?: T[P];
-}
-
 interface SearchInformation {
   query: string;
   exclusion: string;
