@@ -3,8 +3,8 @@
 #I @"../packages/build/Chessie/lib/net40"
 #r @"Chessie.dll"
 #r "../packages/build/Paket.Core/lib/net45/Paket.Core.dll"
-#I @"../packages/app/YamlDotNet/lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1"
-#I @"../packages/app/FSharp.Configuration/lib/net40"
+#I @"../packages/app/YamlDotNet/lib/net45"
+#I @"../packages/app/FSharp.Configuration/lib/net45"
 #r @"../packages/app/FsYaml/lib/net45/FsYaml.dll"
 #r "../bin/FSDN.Package/FSDN.Package.dll"
 open Fake
