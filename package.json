@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "av-ts": "0.10.0",
-    "axios": "0.18.0",
+    "axios": "0.21.1",
     "vue": "2.5.17"
   },
   "devDependencies": {
